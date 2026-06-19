@@ -1,0 +1,7 @@
+{
+  "name": "hamakom-leads",
+  "version": "1.0.0",
+  "description": "המקום לידים — בריף לידים ועורך בוקר ל'המקום הכי חם בגיהנום', ישירות מ-osint-db (חדשות מ-33 מקורות + רשומות ממשלתיות חדשות). מדרג לפי DNA, מחבר חדשות↔דאטה, ומצב פיץ' עומק. האיסוף ב-osint-db (פלאגין hamakom-osint); כאן הבחירה והדירוג.",
+  "author": { "name": "Dor Zommer / Ha-Makom", "email": "zommerd@gmail.com" },
+  "skills": [ "./skills/hamakom-leads" ]
+}

@@ -1,0 +1,14 @@
+services:
+  osint-db:
+    build: .
+    container_name: osint-db-mcp
+    restart: unless-stopped
+    # Bind to localhost only — nginx (or Tailscale) sits in front. See README.md.
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      OSINT_DB_PATH: /data/osint.db
+      HOST: 0.0.0.0
+      PORT: "8765"
+    volumes:
+      - ./osint.db:/data/osint.db:ro

@@ -1,0 +1,95 @@
+{
+  "_comment": "דוגמה מלאה עם כל הפינות (מבוססת על גיליון 13.6). שדה ריק או <<<...>>> נחתך/מסומן. slug = ה-slug של הכתבה ב-ha-makom (כמו ב-articles.json). אפשר להשתמש ב-slug של כל כתבה שפורסמה — גם אם לא במשיכת השבוע — הוא יימשך אוטומטית מוורדפרס.",
+
+  "week_date": "13 ביוני 2026",
+  "preheader": "השבוע: המלחמה השקטה, חווארה, חברון, פירר ועוד 19 כתבות",
+
+  "editor_note": {
+    "headline": "קודם כל, שקרנים",
+    "paragraphs": [
+      "קוראות וקוראים יקרים,",
+      "<<< פסקת פתיח — דור כותב. אפשר כמה פסקאות. >>>",
+      "קריאה מהנה,"
+    ]
+  },
+
+  "project": {
+    "label": "חדש באתר · פרויקט מתעדכן",
+    "title": "המלחמה השקטה",
+    "url": "https://www.ha-makom.co.il/silent-war/",
+    "desc": "פוסט-טראומה בכוחות הביטחון — חיילים, הלומי קרב, שוטרים וסוהרים מול מנגנון שדוחה אותם. כל התחקירים, העדויות והמסמכים במקום אחד.",
+    "cta": "לפרויקט המלא ⟵"
+  },
+
+  "lead": "police-ptsd-shalvata",
+  "lead_kicker": "תחקיר השבוע",
+
+  "data_stat": {
+    "label": "הנתון של השבוע",
+    "img": "https://www.ha-makom.co.il/wp-content/uploads/2026/06/sw_chart_74.png",
+    "alt": "74 לוחמים שמו קץ לחייהם — המדינה מכירה ב-15",
+    "url": "https://www.ha-makom.co.il/silent-war/"
+  },
+
+  "followup": {
+    "slug": "fuehrer-property-pattern",
+    "banner_title": "בעקבות הפרסום",
+    "banner_sub": "פולו-אפ לתחקיר ״דרך יפו 44״ — מאות עדויות הגיעו אחרי החשיפה"
+  },
+
+  "rundown_label": "עוד שברים שקרו השבוע במקום הכי חם בגיהנום",
+  "rundown": [
+    "baby-killed-hebron",
+    "pogrom-huwara-2",
+    "icrc-prison-visits-ruling",
+    "kat-ramati",
+    "lawyer-fees-disabled-veterans",
+    "state-comptroller-cyber-privacy-2026"
+  ],
+
+  "photo_of_week": {
+    "img": "https://www.ha-makom.co.il/wp-content/uploads/2026/06/F260612ALH004-scaled.jpg",
+    "caption": "<strong style=\"color:#fff\">אל-מע׳אזי, מרכז רצועת עזה.</strong> פלסטיני עומד בין הריסות ביתו לאחר תקיפה אווירית, 12.6.2026.",
+    "credit": "צילום: עלי חסן / פלאש 90",
+    "place_after": 1
+  },
+
+  "hero": {
+    "slug": "data-centers-national-infrastructure",
+    "kicker": "מתחת לרדאר"
+  },
+
+  "reel": {
+    "url": "https://www.instagram.com/ha_makom/reel/DZcA-mfs_kv/",
+    "poster": "https://www.ha-makom.co.il/wp-content/uploads/2026/06/reel_electricity.jpg",
+    "cta": "▶  לריל (1:14)",
+    "caption": "״צריכת חשמל של עיר שלמה — כל שנה״: הגרסה המונפשת של תחקיר חוות השרתים."
+  },
+
+  "quote": {
+    "slug": "hanan-opinion-settlers",
+    "text": "כשראיתי את הלבן בעיניים של האנשים שירו לעברי עשרה כדורים — נפקחו גם העיניים שלי",
+    "attrib": "חנן אופנר, על ההתפכחות שהתחילה כשנקלע למארב ירי מחוץ להתנחלות שבה גדל."
+  },
+
+  "opinions": {
+    "feature": "tal-rozenblit-huji",
+    "items": [
+      "michael-rabillo-netanyahu-iran",
+      "lapid-pery",
+      "deri-prison10-shas"
+    ]
+  },
+
+  "reads": [
+    {
+      "outlet": "העין השביעית",
+      "headline": "המדינה מודיעה לעליון: לא נאפשר כניסת עיתונאים לרצועה",
+      "url": "https://www.the7eye.org.il/586297",
+      "dek": "אלף ימים של איסור סיקור עצמאי בעזה. דיווח של אורן פרסיקו."
+    }
+  ],
+
+  "legal": "default",
+  "support_banner": "default"
+}
