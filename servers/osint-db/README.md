@@ -1,6 +1,6 @@
 # osint-db — שרת MCP מרוחק למסד ה-OSINT הממשלתי
 
-שרת MCP (FastMCP 2.x, טרנספורט HTTP) שמגיש את `osint.db` — מסד SQLite עם דאטה ממשלתי ישראלי (exemptions, knesset_bills, knesset_votes, mavat_plans, legislation, mevaker_reports, police_announcements ועוד) — לכל חברי הצוות דרך הפלאגין `hamakom-research`.
+שרת MCP (FastMCP 2.x, טרנספורט HTTP) שמגיש את `osint.db` — מסד SQLite עם דאטה ממשלתי ישראלי (exemptions, knesset_bills, knesset_votes, mavat_plans, legislation, mevaker_reports, police_announcements ועוד) — לכל חברי הצוות דרך הפלאגין `hamakom-osint`.
 
 חמישה כלים, כולם קריאה-בלבד:
 
@@ -85,6 +85,6 @@ export OSINT_DB_MCP_URL=https://<vm-host>/mcp
 export OSINT_DB_TOKEN=<הטוקן שקיבלתם מדור>
 ```
 
-זהו. הפלאגין `hamakom-research` (דרך ה-`.mcp.json` שלו) מחבר את שרת ה-osint-db אוטומטית בכל סשן Claude Code — בלי קונפיגורציה נוספת. בדיקה מהירה: בתוך Claude Code לבקש "תריץ list_tables על osint-db".
+זהו. הפלאגין `hamakom-osint` (דרך ה-`.mcp.json` שלו) מחבר את שרת ה-osint-db אוטומטית בכל סשן Claude Code — בלי קונפיגורציה נוספת. בדיקה מהירה: בתוך Claude Code לבקש "תריץ list_tables על osint-db".
 
 אל תשמרו את הטוקן בריפו או בקבצים משותפים — רק במשתני סביבה מקומיים.
