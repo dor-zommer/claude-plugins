@@ -1,14 +1,43 @@
 {
   "name": "hamakom-plugins",
-  "owner": { "name": "Dor Zommer / Ha-Makom", "email": "zommerd@gmail.com" },
-  "metadata": { "description": "Internal Claude plugins for ha-makom.co.il editorial work", "version": "2.0.0" },
+  "owner": {
+    "name": "Dor Zommer / Ha-Makom",
+    "email": "zommerd@gmail.com"
+  },
+  "metadata": {
+    "description": "Internal Claude plugins for ha-makom.co.il editorial work",
+    "version": "2.1.0"
+  },
   "plugins": [
-    { "name": "hamakom-leads", "source": "./plugins/hamakom-leads", "description": "המקום לידים — בריף לידים ועורך בוקר מתוך osint-db, חיבורי חדשות↔דאטה ופיץ' עומק" },
-    { "name": "hamakom-factcheck", "source": "./plugins/hamakom-factcheck", "description": "המקום פאקטצ'ק — אימות תוכן ויראלי, נתונים, ציטוטים, גיאו, פורנזיקת תמונה, ואימות כתבה" },
-    { "name": "hamakom-osint", "source": "./plugins/hamakom-osint", "description": "המקום אוסינט — תחקיר מעל מסד OSINT ממשלתי (פטורים, כנסת, תכנון, מבקר) + שרת osint-db" },
-    { "name": "hamakom-editorial", "source": "./plugins/hamakom-editorial", "description": "הפקה ועריכה — ניתוח דוחות, עריכה לשונית, עריכה ישירה, Yoast, הכנה לפרסום" },
-    { "name": "hamakom-desk", "source": "./plugins/hamakom-desk", "description": "ניהול מערכת — סנכרון נושן, ליינאפ, ניוזלטר, אסטרטגיה" },
-    { "name": "hamakom-visuals", "source": "./plugins/hamakom-visuals", "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, ורילים" },
-    { "name": "searchfit-seo", "source": "./plugins/searchfit-seo", "description": "ערכת SEO לחדשות בעברית, מותאמת ל-ha-makom.co.il" }
+    {
+      "name": "hamakom-leads",
+      "source": "./plugins/hamakom-leads",
+      "description": "המקום לידים — בריף לידים ועורך בוקר מתוך osint-db, חיבורי חדשות↔דאטה ופיץ' עומק"
+    },
+    {
+      "name": "hamakom-factcheck",
+      "source": "./plugins/hamakom-factcheck",
+      "description": "המקום פאקטצ'ק — אימות תוכן ויראלי, נתונים, ציטוטים, גיאו, פורנזיקת תמונה, ואימות כתבה"
+    },
+    {
+      "name": "hamakom-osint",
+      "source": "./plugins/hamakom-osint",
+      "description": "המקום אוסינט — תחקיר מעל מסד OSINT ממשלתי (פטורים, כנסת, תכנון, מבקר) + שרת osint-db"
+    },
+    {
+      "name": "hamakom-desk",
+      "source": "./plugins/hamakom-desk",
+      "description": "ניהול מערכת — סנכרון נושן, ליינאפ, ניוזלטר, אסטרטגיה"
+    },
+    {
+      "name": "hamakom-visuals",
+      "source": "./plugins/hamakom-visuals",
+      "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, ורילים"
+    },
+    {
+      "name": "searchfit-seo",
+      "source": "./plugins/searchfit-seo",
+      "description": "ערכת SEO לחדשות בעברית, מותאמת ל-ha-makom.co.il"
+    }
   ]
 }
