@@ -1,6 +1,0 @@
-{
-  "name": "hamakom-editorial",
-  "version": "2.0.0",
-  "description": "הפקה ועריכה ל'המקום הכי חם בגיהנום' — ניתוח דוחות ומסמכים (hamakom-doc-analysis), עריכה לשונית והגהה (hamakom-language-editor), עריכה ישירה (hamakom-direct), שדות Yoast SEO (hamakom-yoast), והכנה לפרסום בוורדפרס (publish-ready).",
-  "author": { "name": "Dor Zommer / Ha-Makom", "email": "zommerd@gmail.com" }
-}

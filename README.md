@@ -12,7 +12,6 @@ hamakom-claude-plugins/
 │   ├── hamakom-leads/          ← בריף לידים ועורך בוקר מ-osint-db (hamakom-leads)
 │   ├── hamakom-factcheck/      ← אימות: תוכן ויראלי, נתונים, ציטוטים, גיאו, פורנזיקה, אימות כתבה
 │   ├── hamakom-osint/          ← תחקיר מעל osint-db (פטורים/כנסת/תכנון/מבקר) + חיבור MCP
-│   ├── hamakom-editorial/      ← ניתוח דוחות, עריכה לשונית, עריכה ישירה, Yoast, הכנה לפרסום
 │   ├── hamakom-desk/           ← ניהול מערכת: investigations-sync, weekly-lineup, weekly-newsletter, site-strategist
 │   ├── hamakom-visuals/        ← מדיה: גרפיקות כתבה, קרוסלות אינסטגרם, רילים
 │   └── searchfit-seo/          ← ערכת SEO לעברית/חדשות, מותאמת ל-ha-makom.co.il
@@ -55,7 +54,6 @@ git push -u origin main
 /plugin install hamakom-leads@hamakom-plugins
 /plugin install hamakom-factcheck@hamakom-plugins
 /plugin install hamakom-osint@hamakom-plugins
-/plugin install hamakom-editorial@hamakom-plugins
 /plugin install hamakom-desk@hamakom-plugins
 /plugin install hamakom-visuals@hamakom-plugins
 /plugin install searchfit-seo@hamakom-plugins
@@ -81,7 +79,6 @@ git push -u origin main
     "hamakom-leads@hamakom-plugins": true,
     "hamakom-factcheck@hamakom-plugins": true,
     "hamakom-osint@hamakom-plugins": true,
-    "hamakom-editorial@hamakom-plugins": true,
     "hamakom-desk@hamakom-plugins": true,
     "hamakom-visuals@hamakom-plugins": true,
     "searchfit-seo@hamakom-plugins": true

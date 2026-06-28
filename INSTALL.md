@@ -33,7 +33,6 @@ gh auth status         # לוודא שמחובר
 /plugin install hamakom-leads@hamakom-plugins
 /plugin install hamakom-factcheck@hamakom-plugins
 /plugin install hamakom-osint@hamakom-plugins
-/plugin install hamakom-editorial@hamakom-plugins
 /plugin install hamakom-desk@hamakom-plugins
 /plugin install hamakom-visuals@hamakom-plugins
 /plugin install searchfit-seo@hamakom-plugins
