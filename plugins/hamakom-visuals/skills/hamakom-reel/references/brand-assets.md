@@ -25,11 +25,20 @@ Image.fromarray(a).save('sq_ivory.png')
 
 | פונט | נתיב | שימוש |
 |---|---|---|
-| Narkiss Shimshon Extended | `Desktop/NarkissShimshon-Extended.otf` | ציטוטים, כותרות, קיקרים |
-| Narkiss Tam Regular/Medium | `שיווק/Bezalel Fonts/Narkiss_Fontef/NarkissTam-*.otf` | שורות "בתיעוד:" |
-| DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני בלבד |
+| **Suez One** (DS תצוגה) | Google Fonts — `ofl/suezone/SuezOne-Regular.ttf` | כותרות, ציטוטים (ברירת-מחדל DS) |
+| **IBM Plex Sans Hebrew** (DS גוף) | Google Fonts — `ofl/ibmplexsanshebrew/IBMPlexSansHebrew-*.ttf` | שורות משנה, "בתיעוד:", URL (יש גליפים לטיניים) |
+| Narkiss Shimshon Extended (אופציה) | `Desktop/NarkissShimshon-Extended.otf` | ציטוט עריכתי גדול — חתך הכותרות של המותג |
+| DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני fallback |
 
-חשוב: לפונטים העבריים אין גליפים לטיניים — "ha-makom.co.il" בנרקיס ייצא ריבועים.
+ברירת-המחדל היא **DS 2026**: Suez One + IBM Plex Sans Hebrew (ראה
+`../../design-system/HAMAKOM-DS-2026.md`). התקנה:
+```bash
+curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o /tmp/SuezOne-Regular.ttf
+B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
+for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "/tmp/IBMPlexSansHebrew-$w.ttf"; done
+cp /tmp/SuezOne-Regular.ttf /tmp/IBMPlexSansHebrew-*.ttf ~/Library/Fonts/
+```
+IBM Plex Sans Hebrew מכסה גם לטינית — "ha-makom.co.il" ייצא תקין.
 
 ## בעיית iCloud — קבצים ריקים / Resource deadlock
 

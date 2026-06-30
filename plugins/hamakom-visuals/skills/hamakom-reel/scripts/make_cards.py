@@ -10,8 +10,8 @@ F_QUOTE = f"{WORKDIR}/NarkissShimshon-Extended.otf"   # ציטוטים וקיק�
 F_UI    = f"{WORKDIR}/NarkissTam-Regular.otf"          # שורות "בתיעוד:"
 F_LATIN = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # URL בלבד
 W = 1080
-IVORY = (255, 255, 255, 255)
-TERRA = (224, 138, 106, 255)   # טרקוטה מובהרת לווידאו
+IVORY = (250, 249, 245, 255)   # שנהב DS #faf9f5
+TERRA = (232, 144, 111, 255)   # טרקוטה DS מובהרת לווידאו #E8906F
 MUTED = (235, 233, 225, 255)
 
 def wrap(d, text, font, maxw):
