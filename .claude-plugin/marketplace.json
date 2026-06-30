@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "plugins": [
     {
@@ -38,6 +38,11 @@
       "name": "searchfit-seo",
       "source": "./plugins/searchfit-seo",
       "description": "ערכת SEO לחדשות בעברית, מותאמת ל-ha-makom.co.il"
+    },
+    {
+      "name": "hamakom-data-page",
+      "source": "./plugins/hamakom-data-page",
+      "description": "עמוד דאטה-ז'ורנליזם סקרולי-טלינג + אריזה כתוסף WordPress מבודד. סיקור-מקדים מ-WP REST API, טמפלייט, ספריית קומפוננטות, וכללי מותג/קול."
     }
   ]
 }
