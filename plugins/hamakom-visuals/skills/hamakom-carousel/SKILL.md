@@ -6,14 +6,14 @@ description: >
   נפרד מ-hamakom-graphic (שמטפל בפוסטים בודדים). גרפיקות הכתבה ב-6 פורמטים
   מיוצרות עכשיו ע"י הסקיל הנפרד hamakom-graphic — לא כאן.
 
-  המודל: 12-14 שקפים. קאבר עם hero image + label/name/tagline. פסקה-לשקף
-  לפי סדר הכתבה — מילה במילה. מספור גדול "01"-"NN" באדום. פורטרטים של
-  הדוברים לצד הציטוטים שלהם. תמונת הקשר איפה שצריך. CTA אחיד בסוף.
+  המודל: 10-16 שקפים. קאבר עם hero image full-bleed + label/title verbatim.
+  פסקה-לשקף לפי סדר הכתבה — מילה במילה, מיושר-לעליון. פסי-חתימה טריקולור.
+  פורטרטים/תמונות הקשר איפה שצריך. CTA אחיד בסוף.
 
   פלט: קובץ Figma חדש לכל כתבה, עם Frames של 1080×1350 מוכנים לעריכה ו-export.
-  פלטה: **דינמית — נבחרת מחדש לכל כתבה בהתאם לנושא ולמצב הרגשי של הסיפור.**
-  אין פלטה קבועה של המותג. ראה חוק 0b לפרטים.
-  פונטים: NextExit (תצוגה) + Narkiss Tam (גוף) + Inter (UI/מספור).
+  פלטה: **HaMakom DS 2026 (קבועה) — שנהב #faf9f5 / דיו #141413 / טרקוטה #D97757**
+  (טריו: +מרווה +אברש לפי תפקיד). ראה `design-system/HAMAKOM-DS-2026.md` (מקור-אמת).
+  פונטים: **Suez One** (תצוגה) + **IBM Plex Sans Hebrew** (גוף/UI).
 
   הפעל את הסקיל בכל פעם שדור מבקש:
   - "תעשה קרוסלה לכתבה" / "carousel" / "אינסטגרם רב-שקפי"
@@ -51,12 +51,12 @@ NN CTA  (CTA קנוני)
 
 ### 3. גודל פונט אחיד בכל שקפי הטקסט
 
-- **42pt Narkiss Tam Regular** (fallback: Inter Regular).
-- line-height 152%.
-- **בלי Semibold לקריאוויטיב** — אותו משקל בכל הקרוסלה.
-- אם פסקה מאוחדת ארוכה מדי — מקטינים אוטומטית עד 28pt (בודק `body.height`),
+- **40pt IBM Plex Sans Hebrew Regular** (fallback: Inter Regular).
+- line-height 160%.
+- **בלי Bold/SemiBold לקריאוויטיב** — אותו משקל בכל הקרוסלה.
+- אם פסקה ארוכה מדי — מקטינים אוטומטית עד 26pt (בודק `body.height`),
   אבל **לא משנים גודל בין שקפים שכן נכנסים**.
-- טקסט ממורכז אנכית בשטח של y=320 → y=1230 (גובה 910).
+- טקסט **מיושר-לעליון** (y=212), x=80, w=920, RIGHT — לא ממורכז אנכית.
 
 ### 4. h1 verbatim בקאבר ובגרפיקות
 
@@ -108,30 +108,32 @@ NN CTA  (CTA קנוני)
 ### 10. CTA קנוני (בלי שינויים)
 
 ```
+[וורדמרק לבן]
 בלי בעלי הון.  בלי פרסומות.
 בלי בולשיט
-[לתחקיר המלא]  ← pill button
+[לכתבה המלאה]  ← pill button שנהב
 ```
-רקע אדום `#f70d28`, טקסט לבן. **לעולם לא "כשציבור מממן, ציבור קובע".**
+רקע **דיו** `#141413`, טקסט לבן (Suez One), כפתור pill **שנהב** `#faf9f5` עם טקסט דיו.
+**לעולם לא "כשציבור מממן, ציבור קובע".**
 
-### 11. פלטה — קנונית אלא אם הסיפור דורש אחרת
+### 11. פלטה — HaMakom DS 2026 (קבועה)
 
-ברירת מחדל לתחקירים: `#141413` שחור + `#f4f1ec` קרם + `#f70d28` אדום + `#9e8e7c` אפור.
+**שנהב `#faf9f5` (רקע) · דיו `#141413` (טקסט/CTA) · טרקוטה `#D97757` (אקסנט/קטגוריה/נתון)**
++ טריו: מרווה `#788C5D` (תמיכה/נתונים) + אברש `#8E6FA8` (דעה). פסי-חתימה טריקולור.
 
-אם הסיפור דורש פלטה שונה (אבל בעזה, אקלים, וכו׳) — ראה חוק 0b למטה. אבל במקרה ספק — קנונית.
+הפלטה **קבועה — לא דינמית.** הפלטה הישנה (שחור/אדום `#f70d28`) בוטלה.
+מקור-אמת מלא: `design-system/HAMAKOM-DS-2026.md`.
 
 ### 12. שקף ראיה (Evidence slide) — תבנית
 
 ```javascript
 async function ISlide(idx, imageHash, imgW, imgH, label, credit, xPos){
   // Full-bleed FIT image, no crop
-  // - top stripe red 3px
-  // - small label top-right: "ראיה · [תיאור]" (Inter Bold 20pt, accent)
-  // - logo top-right
-  // - number top-right (Inter Bold 78pt, accent)
-  // - image FIT centered in area y=200 to y=1190
-  // - credit bottom-center (FD Light 16pt): "שימוש לפי סעיף 27א׳"
-  // - URL strip bottom
+  // - top tricolor signature bar (SIG, h=8)
+  // - small label top-right: "ראיה · [תיאור]" (IBM Plex Bold 22pt, terra-deep)
+  // - image FIT centered in area y=200 to y=1180 (רקע שנהב סביב)
+  // - credit bottom-center (IBM Plex Regular 18pt, ink-soft): "שימוש לפי סעיף 27א׳"
+  // - FOOT(false): logo + url + bottom tricolor signature bar
 }
 ```
 
@@ -142,30 +144,33 @@ async function ISlide(idx, imageHash, imgW, imgH, label, credit, xPos){
 אחרי הקרוסלה, **מציעים קאפשיין לאינסטגרם** עם:
 - שורת hook (שאלה רטורית או ציטוט מהכתבה)
 - 2-3 שורות הסבר על המהות
-- bullets ← עם הנקודות העיקריות
-- ההצהרה החדה ("**זאת לא חוליה שבורה אחת. זאת שיטה.**")
-- "החליקו ←" + הפניה ללינק בביו
+- bullets עם הנקודות העיקריות (בלי חצים — אסור אימוג'ים/← )
+- ההצהרה החדה של הכתבה
+- "החליקו" + הפניה ללינק בביו
 - credit לכותב + hashtags
+
+**אסור אימוג'ים בכלל — כולל ←, 👇, ✓.**
 
 ---
 
-## פלטה — מתי לסטות מהקנונית
+## פלטה — HaMakom DS 2026 (קבועה, לפי תפקיד)
 
-ברירת המחדל היא הקנונית (סעיף 11 לעיל). סטייה מותרת **רק** כשהסיפור באמת דורש זה — לרוב לא.
+הפלטה **קבועה** — לא נבחרת לכל כתבה. ~90% מכל שקף ניטרלי (שנהב+דיו); הצבע נדיר ולכן קורא.
 
-**טבלת השוואה — לא קטלוג שאסור לחרוג ממנו:**
+| Token | Hex | תפקיד |
+|-------|-----|--------|
+| שנהב `--bg` | `#faf9f5` | רקע / קנבס |
+| דיו `--ink` | `#141413` | טקסט ראשי + רקע CTA |
+| **טרקוטה `--terra`** | `#D97757` | אינטראקציה, קיקר קטגוריה, **מספרי-נתון** |
+| מרווה `--sage` | `#788C5D` | CTA תמיכה (תרומה) + ברים/מפת-נתונים |
+| אברש `--heather` | `#8E6FA8` | קול הדעה, סדרת-נתונים שנייה |
 
-| נושא | bg | fg | accent | תחושה |
-|------|----|----|--------|--------|
-| תחקיר/חקיקה (ברירת מחדל) | `#141413` שחור עמוק | `#f4f1ec` קרם | `#f70d28` אדום | אזעקה, חד |
-| הומניטריות בעזה | `#1a1a2e` נייבי כהה | `#e8e4d6` קרם לח | `#c97064` חימר אדום | אבל, גרון תקוע |
-| כסף ציבורי/שחיתות | `#2d2620` חום שרוף | `#f2c14e` ענבר זהב | `#d62828` אדום פצע | כעס, גניבה |
-| משבר אקלים | `#0d1f1a` ירוק יער | `#e8f1ee` מנטה | `#ff7849` שמש קלויה | דחיפות |
-| דעה — פוליטיקה | `#0f1620` כחול שינה | `#f7f3e8` ניר ישן | `#e76f51` אש קטנה | פרשנות שקטה |
+מספרים מדויקים (כולל Figma RGB 0–1) + תתי-גוונים: `design-system/HAMAKOM-DS-2026.md`.
 
-**אסור תמיד:** פסטל-סוכר, corporate-tech (turquoise-OpenAI), צבעי-מותג מזוהים (ירוק WhatsApp), pastel.
+**אסור:** אדום `#f70d28` / ענבר `#d4a13a` (פלטה ישנה — בוטלה), pastel-סוכר,
+corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 
-**בדיקת contrast:** `fg` על `bg` חייב לעבור WCAG AA (4.5:1 ל-body).
+**בדיקת contrast:** `fg` על `bg` = WCAG AA (4.5:1 ל-body). דיו על שנהב = AAA.
 
 ---
 
@@ -173,59 +178,50 @@ async function ISlide(idx, imageHash, imgW, imgH, label, credit, xPos){
 
 | שכבה | פונט | משקלים | שימוש |
 |------|------|---------|--------|
-| **תצוגה** | NextExit | Bold / Regular / Light | שם בקאבר, label "כנסת"/"תחקיר"/"דעה", tagline, ציטוטים בולטים, CTA, byline |
-| **גוף** | Narkiss Tam | Regular / Semibold | פסקאות הכתבה (38-45pt). Semibold לדגש על ציטוט מרכזי בפסקה |
-| **UI** | Inter | Bold / Light | מספור גדול "01"-"NN", טקסט בכפתור, URL בפס תחתון |
+| **תצוגה** | **Suez One** | Regular (כבד מטבעו) | כותרת קאבר, ציטוטים, מספרי-נתון ענקיים, שורות CTA |
+| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | פסקאות, קיקרים, byline, credit, url, כפתור |
 
-**הקבצים** ב-`assets/fonts/`:
-- `NextExitBold.otf`
-- `NextExitRegular.otf`
-- `NextExitLight.otf`
-- (Narkiss Tam מותקן במחשב של דור דרך Font Book — לא בתיקייה)
+שני הפונטים ב-Google Fonts (פתוחים). **לא מותקנים מקומית כברירת מחדל** — Figma צריך אותם.
 
-**התקנה חד-פעמית במחשב לפני הפעלה:**
+**התקנה חד-פעמית (אין צורך ב-restart ל-Figma):**
 ```bash
-cp ~/Documents/המקום/שיווק/hamakom-carousel/assets/fonts/*.otf ~/Library/Fonts/
+mkdir -p /tmp/hmfonts && cd /tmp/hmfonts
+curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o SuezOne-Regular.ttf
+B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
+for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "IBMPlexSansHebrew-$w.ttf"; done
+cp *.ttf ~/Library/Fonts/
 ```
 
-**אם Figma plugin עדיין מציג Inter** אחרי ההתקנה — צריך **restart מלא ל-Figma desktop** (סגירה + פתיחה). plugin context שומר cache של רשימת הפונטים בפתיחה.
+Figma רואה אותם **מיד אחרי `cp`** (בדקנו — אין צורך ב-Cmd+Q).
 
-**Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם NextExit/Narkiss Tam לא מותקנים — נופל אוטומטית ל-Inter ומחזיר flag `font_fallback_used: true` בפלט, כדי שדור ידע לעשות restart ולהפעיל שוב.
+**Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
 
 ---
 
 ## מבנה הקאבר הקנוני (שקף 00)
 
-**הקאבר חייב hero image.** טקסט-בלבד הוא לא הסטנדרט.
+**הקאבר חייב hero image full-bleed.** טקסט-בלבד הוא לא הסטנדרט.
 
 ```
-y=0      פס אדום 3px
-y=3      תמונה full-bleed עד y=820
-         - gradient שחור יורד למטה (alpha 0.10 → 0.50 → 1.00)
-         - credit לתמונה ב-bottom של אזור התמונה (y=770, Light 22pt, opacity 0.85)
-y=820    בלוק שחור עד y=1294
-y=850    label — NextExit Regular 32pt אדום, letter-spacing 6px
-         (קטגוריית הכתבה: "כנסת" / "תחקיר" / "דעה" / "מדיני-בטחוני" וכו')
-y=900    title — NextExit Bold (גודל דינמי 64-100pt לפי אורך) לבן
-         **הכותרת המלאה של הכתבה — מילה במילה. לא קיצור, לא "ידית".**
-         אם הכותרת ארוכה: מקטינים fontSize (מינ׳ 64pt) ומפצלים לכמה
-         שורות באופן טבעי. הכותרת תופסת את כל גובה ה-content area של
-         הבלוק השחור (y=900 עד y=1200).
-y=1230   byline — NextExit Regular 28pt אפור: "תחקיר: [שם]" / "דעה: [שם]"
-y=1294   פס אדום תחתון 56px + "H A - M A K O M . C O . I L"
-chrome:  לוגו SVG ימין-עליון 72×72 לבן (מ-assets/logo-square-black.svg)
-         REC dot אדום עליון-שמאל + "REC" Inter Bold 18pt לבן
+y=0      פס-חתימה טריקולור עליון (h=8): טרקוטה·מרווה·אברש
+y=0      תמונה full-bleed מקצה לקצה (1080×1350, FILL)
+         - gradient דיו אנכי שמתחזק למטה (a 0→0.1@40%→0.5@58%→0.92@78%→1@100%)
+y=884    label — IBM Plex SemiBold 27pt טרקוטה-בהיר (#E8906F), letter-spacing 2
+         (קטגוריה: "דעה · יהודה ושומרון" / "תחקיר · ..." וכו')
+y=934    title — Suez One (גודל דינמי 56-72pt) לבן
+         **הכותרת המלאה — מילה במילה. לא קיצור, לא "ידית".**
+y=1186   byline — IBM Plex Medium 25pt (#b7b5ac): "טור דעה · [שם]" / "תחקיר · [שם]"
+footer:  credit תמונה (לבן op .6, שמאל-תחתון) · url ימין · לוגו לבן ימין-תחתון · פס-חתימה תחתון (y=1342)
 ```
 
 **הכותרת מילה במילה (חוק 0a):** הקאבר מחזיק את הכותרת המלאה של הכתבה.
-לא לגזור, לא לקצר, לא להמציא "ידית". הגודל הוא הדינמי שמתאים:
+לא לגזור, לא לקצר, לא להמציא "ידית". הגודל הדינמי (Suez One):
 
-| אורך הכותרת | fontSize | שורות אופייני |
-|--------------|----------|----------------|
-| עד 25 תווים | 100pt | 1-2 שורות |
-| 25-45 תווים | 84pt | 2-3 שורות |
-| 45-65 תווים | 72pt | 3 שורות |
-| 65+ תווים | 64pt | 4 שורות |
+| אורך הכותרת | fontSize |
+|--------------|----------|
+| עד 30 תווים | 72pt |
+| 30-50 תווים | 64pt |
+| 50+ תווים | 56pt |
 
 מקטינים את ה-fontSize רק אם הכותרת בגודל מקסימלי לא נכנסת. לא חותכים מילים.
 
@@ -233,17 +229,17 @@ chrome:  לוגו SVG ימין-עליון 72×72 לבן (מ-assets/logo-square-b
 
 ## מבנה שקף-פסקה (שקפים 01 עד N-1)
 
-ראה סעיף 3 ב"מודל הפשוט" + הקוד המלא ב-`scripts/build_figma_simple.md` (`PSlide`).
+ראה סעיף 3 ב"מודל הפשוט" + הקוד המלא ב-`scripts/build_figma_simple.md` (`PS`).
 
-תקציר: פס אדום 3px → לוגו פינתי → מספר אדום Inter Bold 110pt → קו אדום קצר → טקסט Narkiss Tam **42pt Regular אחיד** ממורכז אנכית בשטח y=320 עד y=1230 → פס URL אדום תחתון.
+תקציר: רקע שנהב → פס-חתימה טריקולור עליון → קיקר קטגוריה ("דעה" טרקוטה-עמוק) + אינדקס "02 / 09" + קו טרקוטה קצר → טקסט IBM Plex **40pt Regular אחיד** **מיושר-לעליון** (y=212) → פוטר (לוגו + url + פס-חתימה תחתון).
 
-**לא** משלבים פורטרטים בתוך שקף הפסקה, **לא** משלבים תמונות הקשר בתוך שקף הפסקה. אם רוצים תמונה — שקף Evidence נפרד (ראה סעיף 12 ב"מודל הפשוט" + `ISlide` בקובץ ה-scripts).
+**לא** משלבים פורטרטים/תמונות הקשר בתוך שקף הפסקה. אם רוצים תמונה — שקף Evidence נפרד (ראה סעיף 12 + `ISlide`).
 
 ---
 
 ## מבנה ה-CTA (שקף N — אחרון תמיד)
 
-ראה סעיף 10 ב"מודל הפשוט". רקע אדום, לוגו wordmark לבן, שלוש שורות, כפתור pill, פס תחתון לבן.
+ראה סעיף 10 ב"מודל הפשוט". רקע **דיו**, פס-חתימה טריקולור עליון, לוגו wordmark לבן ממורכז, שתי שורות Suez One לבנות, כפתור pill **שנהב** ("לכתבה המלאה"), פוטר כהה. **לעולם לא "כשציבור מממן".**
 
 ---
 
@@ -262,8 +258,8 @@ chrome:  לוגו SVG ימין-עליון 72×72 לבן (מ-assets/logo-square-b
 **קאטאוטים (background-removed)** — תמיד דרך MCP
 `image_remove_background` של Adobe לפני הצבה בפיגמה.
 
-**credit חובה לכל תמונה** — text node קטן Narkiss Tam Light 22pt בתחתית
-התמונה, opacity 0.85.
+**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt
+בתחתית התמונה (ink-soft, או לבן opacity 0.6 על תמונה).
 
 ---
 
@@ -271,8 +267,8 @@ chrome:  לוגו SVG ימין-עליון 72×72 לבן (מ-assets/logo-square-b
 
 | נכס | נתיב | שימוש |
 |-----|------|--------|
-| לוגו ריבועי שחור (SVG) | `assets/logo-square-black.svg` | chrome פינתי ~72×72 (לבן על שחור) בכל שקף |
-| לוגו wordmark לבן (PNG) | `assets/logo-wordmark-white.png` | CTA במרכז עליון, ~480×142 |
+| לוגו ריבועי (SVG) | `assets/logo-square-black.svg` | פוטר ימין-תחתון ~50px (דיו על שנהב / לבן על דיו) בכל שקף |
+| לוגו wordmark לבן (PNG) | `assets/logo-wordmark-white.png` | CTA במרכז, ~480×150 |
 
 **חוק ברזל:** לעולם **לא** ליצור `figma.createText("המקום\nהכי חם\nבגיהנום")`
 לבניית לוגו. תמיד `figma.createNodeFromSvg()` ל-SVG או `upload_assets()` ל-PNG.
@@ -307,9 +303,9 @@ h1 verbatim).
 ## תהליך הפעלה (Claude reads this and follows)
 
 1. קורא SKILL.md הזה.
-2. (אופציונלי) קורא `design-spec/tokens.md` לפרטי צבע מדויקים (chrome נגזר משם).
-3. **לא קורא** `design-spec/archetypes.md` ו-`design-spec/slide-blocks.md` —
-   הם ארכיון של הארכיטקטורה הישנה.
+2. **קורא `design-system/HAMAKOM-DS-2026.md`** (מקור-אמת — צבעים, פונטים, חתימה, פוטר, סוגי שקפים).
+3. **לא קורא** `design-spec/archetypes.md` / `design-spec/slide-blocks.md` —
+   ארכיון של הארכיטקטורה הישנה.
 4. שולף את הכתבה (WebFetch / defuddle) ומחלץ:
    - og:image
    - byline
@@ -340,14 +336,14 @@ h1 verbatim).
 
 ולוודא:
 - ☐ אין "כשציבור מממן" באף מקום
-- ☐ פונט 42pt Regular אחיד בכל שקפי הטקסט (סעיף 3 ב"מודל הפשוט")
-- ☐ אין pull-quotes שכופלים טקסט שכבר נמצא בפסקה אחרת
-- ☐ צילומי מסך ב-FIT mode, ללא קרופ
-- ☐ אין אותה תמונה בשני שקפים שונים (חוץ מהקאבר)
-- ☐ לוגו chrome מופיע בכל שקף (לא רק ריבוע לבן ריק)
-- ☐ לוגו wordmark מופיע ב-CTA
-- ☐ מספור 01..NN בכל שקף תוכן
-- ☐ פסקאות הן verbatim מהכתבה (לא נוסחו מחדש)
+- ☐ פלטה DS: שנהב רקע / דיו טקסט / טרקוטה אקסנט (לא שחור-אדום)
+- ☐ פונטים: Suez One (תצוגה) + IBM Plex Sans Hebrew (גוף) — לא NextExit/Narkiss
+- ☐ פס-חתימה טריקולור (טרקוטה·מרווה·אברש) למעלה+למטה בכל שקף
+- ☐ פונט 40pt Regular אחיד בשקפי הטקסט, **מיושר-לעליון** (לא ממורכז)
+- ☐ קאבר full-bleed (לא קארד ממורכז), CTA רקע דיו + pill שנהב "לכתבה המלאה"
+- ☐ אין pull-quotes שכופלים טקסט; צילומי מסך ב-FIT ללא קרופ
+- ☐ אין אותה תמונה בשני שקפים (חוץ מהקאבר); פוטר (לוגו+url) בכל שקף
+- ☐ אינדקס "NN / TOTAL" בשקפי תוכן; פסקאות verbatim (לא נוסחו מחדש)
 
 ---
 
@@ -378,12 +374,13 @@ h1 verbatim).
 
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
-פונט בשימוש: NextExit + Narkiss Tam (font_fallback_used: false)
+פלטה: שנהב #faf9f5 + דיו #141413 + טרקוטה #D97757 (טריו +מרווה +אברש)
+פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
 
 עמוד 1 — Carousel (13 שקפים: cover + 11 paragraphs + cta)
-  00 cover         hero image (og:image) + name "חוק המורשת לעזה"
-  01..11 paragraph פסקאות verbatim מהכתבה
-  12 cta           "בלי בעלי הון. בלי פרסומות. / בלי בולשיט / לתחקיר המלא"
+  00 cover         hero full-bleed + h1 verbatim + קיקר קטגוריה
+  01..11 paragraph פסקאות verbatim מהכתבה (מיושר-לעליון)
+  12 cta           "בלי בעלי הון. בלי פרסומות. / בלי בולשיט / לכתבה המלאה"
 
-תמונות: 4 hero/context (פלאש 90) + 3 פורטרטים (Wikipedia)
+תמונות: hero/context + פורטרטים (פלאש 90 / Wikipedia)
 ```
