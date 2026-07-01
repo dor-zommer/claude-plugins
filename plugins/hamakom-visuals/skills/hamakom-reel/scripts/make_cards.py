@@ -100,6 +100,6 @@ if __name__ == "__main__":
          qsize=54)
     card("H", "לפחות תשעה פלסטינים שנפלו קורבן למסע האלימות נפצעו")
     # סגיר DS: כותרת Suez One + שורת סלוגן (IBM Plex) + URL טרקוטה
-    card("CTA", "כל התחקיר באתר", qsize=48, qfont=F_DISPLAY,
+    card("CTA", "התחקיר המלא באתר", qsize=48, qfont=F_DISPLAY,
          slogan="בלי בעלי הון · בלי פרסומות · בלי בולשיט",
          explainer="ha-makom.co.il")
