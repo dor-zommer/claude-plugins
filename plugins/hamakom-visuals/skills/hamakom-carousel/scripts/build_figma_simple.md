@@ -1,51 +1,46 @@
-# Build Figma Simple — קוד מינימלי לקרוסלה
+# Build Figma Simple — בילדר קרוסלה (HaMakom DS 2026)
 
-> **תקן 2026** — זה הקוד שהתכנס אליו אחרי עשרות איטרציות עם דור.
-> תמיד קוראים את SKILL.md (סעיף "המודל הפשוט") לפני שמשתמשים בקובץ הזה.
+> **תקן 2026** — הקוד הזה אומת חזותית מול דור (קרוסלת "בנט / הסכסוך הוא לא רסיס", יוני 2026).
+> **קרא קודם** את `design-system/HAMAKOM-DS-2026.md` (מקור-האמת) ואת SKILL.md.
+> פלטה: שנהב/דיו/טרקוטה. פונטים: Suez One + IBM Plex Sans Hebrew. פסי-חתימה טריקולור.
+> **הפלטה הישנה (שחור/אדום `#f70d28` + NextExit/Narkiss Tam) בוטלה.**
 
 ---
 
 ## תהליך עבודה — צ׳ק-ליסט
 
 ```
-[ ] WebFetch של הכתבה
-[ ] חלץ: h1 verbatim, lede, byline, og:image, פסקאות
-[ ] בדוק תיקיות מקומיות לתמונות (Downloads, ~/Documents/המקום/...)
+[ ] שלוף את הכתבה (WP REST: /wp-json/wp/v2/posts?slug=<slug>&_embed)
+[ ] חלץ: h1 verbatim, byline, קטגוריה (label), פסקאות גוף, og/featured image
+[ ] התקן Suez One + IBM Plex Sans Hebrew אם חסרים (ראה DS §2)
 [ ] צור Figma file: create_new_file editorType=design
-[ ] upload_assets לתמונות
-[ ] use_figma → build Carousel (קוד למטה)
-[ ] use_figma → build Graphics page (ראה build_graphics_page.md)
-[ ] upload_assets לוורדמרק (לחיוב על ה-CTA)
-[ ] screenshot ל-QA חזותי
+[ ] use_figma → בנה Carousel (קוד למטה): cover + פסקאות + CTA
+[ ] upload_assets: hero → cover-hero-image ; wordmark → wordmark-logo (CTA)
+[ ] get_screenshot ל-QA (cover + פסקה + CTA)
 [ ] הצע קאפשיין לפוסט
 ```
 
 ---
 
-## פלטה ופונטים — שיגרת ברירת מחדל
+## פלטה + פונטים — prelude (תמיד אותו)
 
 ```javascript
-const PALETTE = {
-  bg:     { r: 0.0784, g: 0.0784, b: 0.0745 },  // #141413
-  fg:     { r: 0.9569, g: 0.9451, b: 0.9255 },  // #f4f1ec
-  accent: { r: 0.9686, g: 0.0510, b: 0.1569 },  // #f70d28
-  muted:  { r: 0.6196, g: 0.5569, b: 0.4863 },  // #9e8e7c
+const C = {
+  bg:{r:0.9804,g:0.9765,b:0.9608}, paper:{r:0.9529,g:0.9451,b:0.9176},
+  ink:{r:0.0784,g:0.0784,b:0.0745}, ink2:{r:0.2314,g:0.2275,b:0.2118}, inkSoft:{r:0.4196,g:0.4157,b:0.3882},
+  terra:{r:0.851,g:0.4667,b:0.3412}, terraDeep:{r:0.6118,g:0.2706,b:0.1529}, terraCta:{r:0.7608,g:0.3373,b:0.1843},
+  sage:{r:0.4706,g:0.549,b:0.3647}, heather:{r:0.5569,g:0.4353,b:0.6588},
+  scTerra:{r:0.9098,g:0.5647,b:0.4353}, onDarkSoft:{r:0.7176,g:0.7098,b:0.6745}, white:{r:1,g:1,b:1},
 };
 
-let FD = "Inter", FB = "Inter";
-try {
-  const fs = await figma.listAvailableFontsAsync();
-  if (fs.some(f => f.fontName.family === "NextExit")) FD = "NextExit";
-  if (fs.some(f => f.fontName.family === "Narkiss Tam")) FB = "Narkiss Tam";
-} catch(e) {}
-for (const fam of [FD, FB, "Inter"]) {
-  for (const st of ["Bold", "Regular", "Light", "Semi Bold", "Medium"]) {
-    try { await figma.loadFontAsync({ family: fam, style: st }); } catch(e){}
-  }
-}
-
-const BODY_SIZE = 42;
-const BODY_LH = 152;
+let HEAD="Inter", BODY="Inter";
+const fonts = await figma.listAvailableFontsAsync();
+if (fonts.some(f => f.fontName.family === "Suez One")) HEAD = "Suez One";
+if (fonts.some(f => f.fontName.family === "IBM Plex Sans Hebrew")) BODY = "IBM Plex Sans Hebrew";
+for (const fn of [{family:HEAD,style:"Regular"},{family:BODY,style:"Regular"},
+  {family:BODY,style:"Medium"},{family:BODY,style:"SemiBold"},{family:BODY,style:"Bold"}])
+  { try{ await figma.loadFontAsync(fn);}catch(e){} }
+const fontFallback = (HEAD==="Inter" || BODY==="Inter");
 ```
 
 ---
@@ -53,368 +48,162 @@ const BODY_LH = 152;
 ## Helpers — תמיד אותם
 
 ```javascript
-const LOGO_SVG = `<svg xmlns="..." viewBox="0 0 826.779 981.533">...</svg>`;
-// (קופי מ-build_figma.md המלא)
+const LOGO_SVG = `<svg ...>`; // קופי מלא מ-assets/logo-square-black.svg (single-line) — ראה build_figma.md
 
-function NF(name, bg) {
-  const f = figma.createFrame();
-  f.name = name; f.resize(1080, 1350); f.y = 0;
-  f.fills = [{ type: "SOLID", color: bg || PALETTE.bg }];
-  f.clipsContent = true;
-  return f;
-}
+function NF(name, bg){ const f=figma.createFrame(); f.name=name; f.resize(1080,1350); f.y=0;
+  f.fills=[{type:"SOLID",color:bg||C.bg}]; f.clipsContent=true; return f; }
 
-function R({x,y,w,h,color,cornerRadius,opacity=1,fills}) {
-  const r = figma.createRectangle();
-  r.x = x; r.y = y; r.resize(w, h);
-  if (fills) r.fills = fills;
-  else r.fills = [{ type: "SOLID", color, opacity }];
-  if (cornerRadius) r.cornerRadius = cornerRadius;
-  return r;
-}
+function R(o){ const r=figma.createRectangle(); r.x=o.x; r.y=o.y; r.resize(o.w,o.h);
+  if(o.fills) r.fills=o.fills; else r.fills=[{type:"SOLID",color:o.color,opacity:o.opacity==null?1:o.opacity}];
+  if(o.cornerRadius!=null) r.cornerRadius=o.cornerRadius; return r; }
 
-async function T(o) {
-  const t = figma.createText();
-  try { t.fontName = { family: o.family, style: o.style }; }
-  catch(e) {
-    try { t.fontName = { family: "Inter", style: o.style }; }
-    catch(e2) { t.fontName = { family: "Inter", style: "Regular" }; }
-  }
-  t.fontSize = o.size;
-  if (o.lhPct) t.lineHeight = { unit: "PERCENT", value: o.lhPct };
-  if (o.letterSpacing != null) t.letterSpacing = { unit: "PIXELS", value: o.letterSpacing };
-  t.characters = o.chars;
-  t.textAlignHorizontal = o.align;
-  t.fills = [{ type: "SOLID", color: o.color }];
-  t.x = o.x; t.y = o.y; t.resize(o.w, t.height);
-  return t;
-}
+async function T(o){ const t=figma.createText();
+  try{t.fontName={family:o.family,style:o.style};}catch(e){t.fontName={family:BODY,style:"Regular"};}
+  t.fontSize=o.size; if(o.lhPct) t.lineHeight={unit:"PERCENT",value:o.lhPct};
+  if(o.letterSpacing!=null) t.letterSpacing={unit:"PIXELS",value:o.letterSpacing};
+  t.characters=o.chars; t.textAlignHorizontal=o.align; t.fills=[{type:"SOLID",color:o.color}];
+  t.x=o.x; t.y=o.y; t.resize(o.w,t.height); return t; }
 
-function L(frame, fill) {
-  const n = figma.createNodeFromSvg(LOGO_SVG);
-  if ("fills" in n) n.fills = [];
-  const rec = (x) => {
-    if (["VECTOR","BOOLEAN_OPERATION","POLYGON","RECTANGLE"].includes(x.type)) {
-      if ("fills" in x) x.fills = [{ type: "SOLID", color: fill || PALETTE.fg }];
-    }
-    if ("children" in x) x.children.forEach(rec);
-  };
-  rec(n); n.resize(61, 72); n.x = 947; n.y = 56; n.name = "logo";
-  frame.appendChild(n);
-}
+// פס-חתימה טריקולור — ימין טרקוטה, מרכז מרווה, שמאל אברש
+function SIG(f,y,h){ f.appendChild(R({x:720,y,w:360,h,color:C.terra}));
+  f.appendChild(R({x:360,y,w:360,h,color:C.sage})); f.appendChild(R({x:0,y,w:360,h,color:C.heather})); }
 
-async function BB(frame, bg, fg) {
-  frame.appendChild(R({ x:0, y:1294, w:1080, h:56, color: bg || PALETTE.accent }));
-  frame.appendChild(await T({
-    chars: "H A - M A K O M . C O . I L",
-    family: "Inter", style: "Bold", size: 22,
-    color: fg || PALETTE.fg,
-    x: 0, y: 1310, w: 1080, align: "CENTER", letterSpacing: 4
-  }));
-}
+function LOGO(f,fill,x,y,size){ const n=figma.createNodeFromSvg(LOGO_SVG); if("fills" in n) n.fills=[];
+  const rec=(z)=>{ if(["VECTOR","BOOLEAN_OPERATION","POLYGON","RECTANGLE"].includes(z.type)){ if("fills" in z) z.fills=[{type:"SOLID",color:fill}]; } if("children" in z) z.children.forEach(rec); };
+  rec(n); const w=size*(826.779/981.533); n.resize(w,size); n.x=x; n.y=y; n.name="logo"; f.appendChild(n); }
+
+async function FOOT(f,dark){ const fg=dark?C.onDarkSoft:C.inkSoft;
+  LOGO(f, dark?C.white:C.ink, 952, 1244, 50);
+  f.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:fg,x:400,y:1262,w:520,align:"RIGHT",letterSpacing:3}));
+  SIG(f,1342,8); }
 ```
 
 ---
 
-## שקף טקסט — אחיד, 42pt, ממורכז אנכית
+## קאבר (image, full-bleed)
 
 ```javascript
-async function PSlide(idx, text, xPos) {
-  const num = String(idx).padStart(2, "0");
-  const f = NF(`${num}-paragraph`);
-  f.x = xPos;
-
-  f.appendChild(R({ x:0, y:0, w:1080, h:3, color: PALETTE.accent }));
-  L(f);
-  f.appendChild(await T({
-    chars: num, family: "Inter", style: "Bold", size: 110, color: PALETTE.accent,
-    x: 820, y: 150, w: 200, align: "LEFT", lhPct: 100
-  }));
-  f.appendChild(R({ x:928, y:290, w:80, h:3, color: PALETTE.accent }));
-
-  const body = await T({
-    chars: text, family: FB, style: "Regular", size: BODY_SIZE, color: PALETTE.fg,
-    x: 72, y: 340, w: 936, align: "RIGHT", lhPct: BODY_LH
-  });
-  body.textAutoResize = "HEIGHT";
-  body.resize(936, body.height);
-
-  // אם הטקסט גדול מדי — מקטינים, אבל לא מתחת ל-28pt
-  const avail = 910;
-  if (body.height > avail) {
-    let s = BODY_SIZE;
-    while (body.height > avail && s > 28) {
-      s -= 2;
-      body.fontSize = s;
-      body.resize(936, body.height);
-    }
-  }
-
-  // ממרכז אנכית בשטח הזמין
-  body.y = 320 + Math.max(0, Math.floor((avail - body.height) / 2));
-  f.appendChild(body);
-
-  await BB(f);
-  figma.currentPage.appendChild(f);
-  return f.id;
-}
-```
-
----
-
-## שקף ראיה (Evidence) — FIT, ללא קרופ
-
-```javascript
-async function ISlide(idx, imageHash, imgW, imgH, label, credit, xPos) {
-  const num = String(idx).padStart(2, "0");
-  const f = NF(`${num}-image`);
-  f.x = xPos;
-
-  f.appendChild(R({ x:0, y:0, w:1080, h:3, color: PALETTE.accent }));
-  L(f);
-
-  // Number top-right
-  f.appendChild(await T({
-    chars: num, family: "Inter", style: "Bold", size: 78, color: PALETTE.accent,
-    x: 820, y: 120, w: 200, align: "LEFT", lhPct: 100
-  }));
-
-  // Label top-right
-  if (label) {
-    f.appendChild(await T({
-      chars: label, family: "Inter", style: "Bold", size: 20, color: PALETTE.accent,
-      x: 72, y: 60, w: 740, align: "RIGHT", letterSpacing: 4
-    }));
-  }
-
-  // FIT image in middle area — ללא קרופ, התמונה במלואה
-  const availTop = 200, availBottom = 1190;
-  const availH = availBottom - availTop;
-  const availW = 936;
-  const aspect = imgW / imgH;
-  let dispW, dispH;
-  if (availW / availH > aspect) {
-    dispH = availH;
-    dispW = aspect * availH;
-  } else {
-    dispW = availW;
-    dispH = availW / aspect;
-  }
-  const imgX = Math.floor((1080 - dispW) / 2);
-  const imgY = availTop + Math.floor((availH - dispH) / 2);
-  const img = R({ x: imgX, y: imgY, w: dispW, h: dispH, color: PALETTE.bg });
-  // CRITICAL: scaleMode FILL בתוך rect שכבר חתוך לפי הפרופורציה הנכונה
-  // (לא scaleMode FIT, כי FILL ב-rect בגודל הנכון = אין קרופ)
-  img.fills = [{ type: "IMAGE", scaleMode: "FILL", imageHash: imageHash }];
-  f.appendChild(img);
-
-  // Credit bottom-center
-  const credTxt = await T({
-    chars: credit, family: FD, style: "Light", size: 16, color: PALETTE.fg,
-    x: 72, y: 1230, w: 936, align: "CENTER"
-  });
-  credTxt.opacity = 0.85;
-  f.appendChild(credTxt);
-
-  await BB(f);
-  figma.currentPage.appendChild(f);
-  return f.id;
-}
-```
-
----
-
-## CTA — קנוני, לא משתנה
-
-```javascript
-const cta = NF("NN-cta", PALETTE.accent);
-cta.x = xPos;
-
-const wm = R({ x:300, y:200, w:480, h:142, color: PALETTE.accent });
-wm.name = "wordmark-logo";
-cta.appendChild(wm);
-// אחרי הבנייה — upload_assets עם logo-wordmark-white.png ל-nodeId שלו
-
-cta.appendChild(await T({
-  chars: "בלי בעלי הון.  בלי פרסומות.",
-  family: FD, style: "Bold", size: 56, color: PALETTE.fg,
-  x: 72, y: 460, w: 936, align: "CENTER", lhPct: 120
-}));
-cta.appendChild(await T({
-  chars: "בלי בולשיט",
-  family: FD, style: "Bold", size: 130, color: PALETTE.fg,
-  x: 72, y: 600, w: 936, align: "CENTER", lhPct: 105
-}));
-const btn = R({ x:320, y:900, w:440, h:110, color: PALETTE.fg, cornerRadius: 55 });
-btn.name = "btn-pill";
-cta.appendChild(btn);
-cta.appendChild(await T({
-  chars: "לתחקיר המלא",
-  family: "Inter", style: "Bold", size: 38, color: PALETTE.accent,
-  x: 320, y: 935, w: 440, align: "CENTER"
-}));
-cta.appendChild(R({ x:0, y:0, w:1080, h:3, color: PALETTE.fg }));
-L(cta, PALETTE.fg);
-await BB(cta, PALETTE.fg, PALETTE.accent);  // bottom strip white bg, red text
-figma.currentPage.appendChild(cta);
-```
-
----
-
-## אחוד פסקאות — איך מחלקים את הכתבה
-
-**עיקרון:** פסקה אחת = שקף אחד, אלא אם **הפסקה קצרה מ-200 תווים** — אז מאחדים עם הסמוכה.
-
-```javascript
-// דוגמה: פסקה 1 ופסקה 2 בכתבה
-const SLIDE_1_TEXT = "אתחיל בגילוי נאות... [פסקה 1 קצרה]\n\nבילדותי הסכנה הייתה דבר מוחשי... [פסקה 2 ארוכה]";
-// → שקף אחד
-```
-
-**אם פסקה ארוכה מ-500 תווים** — היא תופסת שקף לעצמה (לא מאחדים).
-
-**מילוי שקף — שואפים ל-85-95%:**
-- אחרי `body.resize(936, body.height)`, גובה הטקסט צריך להיות בין 770 ל-870 (מתוך 910 זמין).
-- אם פחות → לאחד עם הפסקה הבאה.
-- אם יותר → להוריד פונט עד 28pt (Auto-Fit Loop).
-
----
-
-## ניקוי לפני rebuild
-
-**רק** מוחקים frames של עצמנו:
-
-```javascript
-for (const c of [...page.children]) {
-  const n = c.name || "";
-  if (n === "00-cover" ||
-      /^\d{2}-paragraph$/.test(n) ||
-      /^\d{2}-paragraph-image$/.test(n) ||
-      /^\d{2}-image$/.test(n) ||
-      n.startsWith("evidence-") ||
-      /^\d{2}-cta$/.test(n)) {
-    c.remove();
-  }
-}
-// כל מה ששמו "אינסטגרם", "Frame N", "unnamed N", או שם בעברית של דור —
-// לא נוגעים!
-```
-
----
-
-## upload_assets — gotcha חוזר
-
-```javascript
-// השקף שלך:
-const photoNode = ...;  // rect שתשמש פלייסהולדר לתמונה
-
-// 1. בקש upload_assets (מחזיר submitUrl):
-//    mcp.figma upload_assets fileKey count=1
-// 2. POST קובץ ל-submitUrl
-// 3. מקבל imageHash בתגובה
-
-// אחר כך תמיד החל ידנית עם imageHash:
-photoNode.fills = [{
-  type: "IMAGE",
-  scaleMode: "FILL",  // או "FIT" לראיה
-  imageHash: HASH_FROM_UPLOAD
-}];
-
-// אל תסמוך על "placedOnNodeId" — לא תמיד עובד.
-```
-
----
-
-## מבנה הקאבר — תבנית סטנדרטית
-
-```javascript
-const cover = NF("00-cover");
-cover.x = 0;
-
-// Hero image (placeholder + apply imageHash אחרי upload)
-const hImg = R({ x:0, y:3, w:1080, h:817, color: PALETTE.bg });
-hImg.name = "cover-hero-image";
-hImg.fills = [{ type:"IMAGE", scaleMode:"FILL", imageHash: HERO_HASH }];
-cover.appendChild(hImg);
-
-// Gradient overlay (image → bg)
-const grad = R({ x:0, y:3, w:1080, h:817, color: PALETTE.bg });
-grad.fills = [{
-  type: "GRADIENT_LINEAR",
-  gradientTransform: [[0,1,0], [-1,0,1]],
-  gradientStops: [
-    { position: 0,    color: { ...PALETTE.bg, a: 0.10 } },
-    { position: 0.55, color: { ...PALETTE.bg, a: 0.55 } },
-    { position: 1,    color: { ...PALETTE.bg, a: 1.00 } },
-  ],
-}];
+const HERO = "<imageHash מה-upload>";
+const cover=NF("00-cover",C.ink); cover.x=0;
+const hImg=R({x:0,y:0,w:1080,h:1350,color:C.ink}); hImg.name="cover-hero-image";
+hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(hImg);
+const grad=R({x:0,y:0,w:1080,h:1350,color:C.ink});
+grad.fills=[{type:"GRADIENT_LINEAR",gradientTransform:[[0,1,0],[-1,0,1]],gradientStops:[
+  {position:0,color:{...C.ink,a:0}},{position:0.4,color:{...C.ink,a:0.1}},
+  {position:0.58,color:{...C.ink,a:0.5}},{position:0.78,color:{...C.ink,a:0.92}},{position:1,color:{...C.ink,a:1}}]}];
 cover.appendChild(grad);
-
-// Credit למקור התמונה
-const cr = await T({ chars: IMG_CREDIT, family: FD, style:"Light", size:20, color: PALETTE.fg, x:72, y:770, w:936, align:"RIGHT" });
-cr.opacity = 0.85;
-cover.appendChild(cr);
-
-// Bg block למטה
-cover.appendChild(R({ x:0, y:820, w:1080, h:474, color: PALETTE.bg }));
-
-// Label
-cover.appendChild(await T({
-  chars: LABEL,  // "תחקיר · המקומון" / "דעה · יהודה ושומרון"
-  family: FD, style: "Regular", size: 30, color: PALETTE.accent,
-  x: 72, y: 846, w: 936, align: "RIGHT", letterSpacing: 6
-}));
-
-// Title — H1 VERBATIM (חוק 0a)
-cover.appendChild(await T({
-  chars: TITLE,  // ה-h1 המלא של הכתבה
-  family: FD, style: "Bold", size: 62,  // התאם 50-80 לפי אורך
-  color: PALETTE.fg,
-  x: 72, y: 898, w: 936, align: "RIGHT", lhPct: 110
-}));
-
-// Byline
-cover.appendChild(await T({
-  chars: BYLINE,  // "דעה: שם" / "תחקיר: שם"
-  family: FD, style: "Regular", size: 26, color: PALETTE.muted,
-  x: 72, y: 1240, w: 936, align: "RIGHT"
-}));
-
-// REC chrome
-const dot = figma.createEllipse();
-dot.x = 56; dot.y = 64; dot.resize(20, 20);
-dot.fills = [{ type:"SOLID", color: PALETTE.accent }];
-cover.appendChild(dot);
-cover.appendChild(await T({
-  chars: "REC", family: "Inter", style: "Bold", size: 18, color: PALETTE.fg,
-  x: 84, y: 64, w: 80, align: "LEFT"
-}));
-
-cover.appendChild(R({ x:0, y:0, w:1080, h:3, color: PALETTE.accent }));
-L(cover);
-await BB(cover);
+SIG(cover,0,8);
+cover.appendChild(await T({chars:LABEL, family:BODY, style:"SemiBold", size:27, color:C.scTerra, x:80, y:884, w:920, align:"RIGHT", letterSpacing:2}));   // קיקר טרקוטה "דעה · יהודה ושומרון"
+cover.appendChild(await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:934, w:920, align:"RIGHT", lhPct:108}));            // h1 verbatim (Suez One)
+cover.appendChild(await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.onDarkSoft, x:80, y:1186, w:920, align:"RIGHT"}));                  // "טור דעה · אריאל שוורץ"
+const cr=await T({chars:CREDIT, family:BODY, style:"Regular", size:18, color:C.white, x:80, y:1266, w:400, align:"LEFT"}); cr.opacity=0.6; cover.appendChild(cr);
+cover.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:C.onDarkSoft,x:430,y:1262,w:490,align:"RIGHT",letterSpacing:3}));
+LOGO(cover,C.white,952,1244,50);
+SIG(cover,1342,8);
 figma.currentPage.appendChild(cover);
+// כותרת דינמית: ≤30 תווים→72 ; 30–50→64 ; 50+→56
 ```
 
 ---
 
-## פלט אופייני — דוגמה
+## שקף-פסקה — שנהב, IBM Plex, מיושר-לעליון
+
+```javascript
+async function PS(idx, total, text, xPos, kicker){
+  const num=String(idx).padStart(2,"0");
+  const f=NF(`${num}-paragraph`); f.x=xPos;
+  SIG(f,0,8);
+  f.appendChild(await T({chars:kicker||"דעה",family:BODY,style:"Bold",size:24,color:C.terraDeep,x:80,y:96,w:920,align:"RIGHT",letterSpacing:3}));
+  f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
+  f.appendChild(R({x:936,y:148,w:64,h:4,color:C.terra}));
+  const body=await T({chars:text,family:BODY,style:"Regular",size:40,color:C.ink,x:80,y:212,w:920,align:"RIGHT",lhPct:160});
+  body.textAutoResize="HEIGHT"; body.resize(920,body.height);
+  let s=40; while(body.height>990 && s>26){ s-=2; body.fontSize=s; body.resize(920,body.height); }
+  f.appendChild(body);          // מיושר-לעליון (y=212), לא ממורכז אנכית
+  await FOOT(f,false);
+  figma.currentPage.appendChild(f);
+  return f.id;
+}
+```
+
+---
+
+## שקף-נתון (data) — מספר ענק בטרקוטה
+
+```javascript
+async function DSlide(idx, total, number, kicker, headline, detail, source, xPos){
+  const num=String(idx).padStart(2,"0");
+  const f=NF(`${num}-data`); f.x=xPos;
+  SIG(f,0,8);
+  f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
+  f.appendChild(await T({chars:kicker,family:BODY,style:"Bold",size:26,color:C.terraDeep,x:80,y:330,w:920,align:"CENTER",letterSpacing:2}));
+  f.appendChild(await T({chars:number,family:HEAD,style:"Regular",size:260,color:C.terra,x:40,y:380,w:1000,align:"CENTER",lhPct:100}));   // מספר ענק טרקוטה
+  f.appendChild(await T({chars:headline,family:BODY,style:"Bold",size:42,color:C.ink,x:80,y:760,w:920,align:"CENTER",lhPct:130}));
+  f.appendChild(await T({chars:detail,family:BODY,style:"Regular",size:28,color:C.ink2,x:80,y:880,w:920,align:"CENTER",lhPct:150}));
+  f.appendChild(await T({chars:source,family:BODY,style:"Regular",size:20,color:C.inkSoft,x:80,y:1080,w:920,align:"CENTER"}));
+  await FOOT(f,false);
+  figma.currentPage.appendChild(f);
+  return f.id;
+}
+```
+
+---
+
+## CTA — dark, pill שנהב
+
+```javascript
+const WM = "<imageHash וורדמרק לבן>";
+const cta=NF("NN-cta",C.ink); cta.x=ctaX;
+SIG(cta,0,8);
+const wm=R({x:300,y:250,w:480,h:150,color:C.ink}); wm.name="wordmark-logo";
+wm.fills=[{type:"IMAGE",scaleMode:"FIT",imageHash:WM}]; cta.appendChild(wm);
+cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:HEAD,style:"Regular",size:48,color:C.white,x:72,y:560,w:936,align:"CENTER",lhPct:120}));
+cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Regular",size:112,color:C.white,x:72,y:650,w:936,align:"CENTER",lhPct:110}));
+const btn=R({x:330,y:920,w:420,h:108,color:C.bg,cornerRadius:54}); btn.name="btn-pill"; cta.appendChild(btn);
+cta.appendChild(await T({chars:"לכתבה המלאה",family:BODY,style:"Bold",size:36,color:C.ink,x:330,y:952,w:420,align:"CENTER"}));
+await FOOT(cta,true);
+figma.currentPage.appendChild(cta);
+// לעולם לא "כשציבור מממן, ציבור קובע".
+```
+
+---
+
+## פריסת frames
+
+כל שקף ברוחב 1080 עם מרווח 100 → `x = i * 1180`. cover ב-0, CTA אחרון.
+טקסט verbatim מהכתבה, בסדר הכתיבה; פסקה ארוכה מ-~520 תווים — אפשר לפצל בגבול משפט.
+
+---
+
+## ניקוי לפני rebuild (רק frames שלי)
+
+```javascript
+for (const c of [...figma.currentPage.children]) {
+  const n=c.name||"";
+  if (n==="00-cover" || /^\d{2}-paragraph$/.test(n) || /^\d{2}-data$/.test(n) || n==="NN-cta") c.remove();
+}
+// frames של דור (שם בעברית / "unnamed N") — לא נוגעים. אם דור ערך ידנית — עורכים פריים-פריים.
+```
+
+---
+
+## upload_assets — gotcha
+
+1. `upload_assets fileKey count=1 nodeId=<rect>` → מחזיר submitUrl.
+2. POST הקובץ ל-submitUrl (multipart `file=@...`) → מחזיר `imageHash`.
+3. אפשר להחיל ידנית: `node.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HASH}]`
+   (cover hero = FILL ; wordmark = FIT).
+
+---
+
+## פלט — דוגמה
 
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
-פונט: Inter (fallback אם NextExit לא נטען)
-פלטה: שחור #141413 + קרם #f4f1ec + אדום #f70d28
+פלטה: שנהב #faf9f5 + דיו #141413 + טרקוטה #D97757 (טריו +מרווה +אברש)
+פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
 
-עמוד 1 — Carousel (12 שקפים):
-  00 Cover (hero + h1 verbatim)
-  01-10 פסקאות verbatim (מאוחדות לפי הצורך)
-  11 CTA קנוני
-
-עמוד 2 — Graphics — פורמטים (6 פריימים):
-  hero-1140x815-site, instagram-1080x1350, ig-story-1080x1920,
-  facebook-1200x630, x-1600x900, whatsapp-1080x1080
-
-תמונות: og:image (cover) + N תמונות ראיה
+עמוד Carousel: cover (full-bleed) + N פסקאות verbatim + CTA (dark)
 ```
 
-ואחר כך **תמיד מציעים קאפשיין** לפוסט.
+ואחר כך **תמיד מציעים קאפשיין** לפוסט (בלי אימוג'ים).

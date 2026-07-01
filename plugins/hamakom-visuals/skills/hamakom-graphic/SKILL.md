@@ -9,11 +9,12 @@ description: >
   הפלט: עמוד Figma אחד עם 3 פריימים ממותגים של אותה כתבה —
   whatsapp-1080x1080 (ריבוע 1:1), instagram-1080x1350 (פיד 4:5),
   ig-story-1080x1920 (סטורי 9:16).
-  כל פריים: תמונה full-bleed + gradient + label/title/lede/byline + לוגו
-  במרכז התחתון + פס URL אדום. הכותרת = h1 verbatim של הכתבה.
+  כל פריים: תמונה full-bleed + gradient דיו + label/title/lede/byline + לוגו
+  לבן במרכז התחתון + פס-חתימה טריקולור. הכותרת = h1 verbatim של הכתבה.
 
-  פלטה קנונית כברירת מחדל. פונטים NextExit + Narkiss Tam + Inter.
-  עיצוב זהה לקאבר של hamakom-carousel.
+  פלטה: HaMakom DS 2026 — שנהב/דיו/טרקוטה (טריו +מרווה +אברש). פונטים
+  Suez One + IBM Plex Sans Hebrew. עיצוב זהה לקאבר של hamakom-carousel.
+  מקור-אמת: `../../design-system/HAMAKOM-DS-2026.md`.
 
   הפעל כשדור מבקש:
   - "תעשה גרפיקה לכתבה" / "גרפיקת כתבה" / "תכין לי את הגרפיקות לכתבה"
@@ -76,65 +77,54 @@ fontSize מותרת; שינוי הטקסט אסור.
 
 | שכבה | פונט | משקלים | שימוש |
 |------|------|---------|--------|
-| **תצוגה** | NextExit | Bold / Regular / Light | title, label "כנסת"/"תחקיר"/"דעה" |
-| **גוף** | Narkiss Tam | Regular / Semibold | טקסט עברי (כשנדרש), credit לתמונה |
-| **UI** | Inter | Bold / Regular / Light | label, lede, byline, URL בפס תחתון |
+| **תצוגה** | **Suez One** | Regular | title (h1 verbatim), ציטוטים |
+| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | label, lede, byline, credit, url |
 
-**הקבצים** ב-`assets/fonts/`:
-- `NextExitBold.otf`
-- `NextExitRegular.otf`
-- `NextExitLight.otf`
-- (Narkiss Tam מותקן במחשב של דור דרך Font Book — לא בתיקייה)
-
-**התקנה חד-פעמית במחשב לפני הפעלה:**
+שני הפונטים ב-Google Fonts. התקנה חד-פעמית (אין צורך ב-restart):
 ```bash
-cp <skill-dir>/assets/fonts/*.otf ~/Library/Fonts/
+mkdir -p /tmp/hmfonts && cd /tmp/hmfonts
+curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o SuezOne-Regular.ttf
+B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
+for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "IBMPlexSansHebrew-$w.ttf"; done
+cp *.ttf ~/Library/Fonts/
 ```
 
-**אם Figma plugin עדיין מציג Inter** אחרי ההתקנה — צריך **restart מלא ל-Figma desktop**
-(סגירה + פתיחה). plugin context שומר cache של רשימת הפונטים בפתיחה.
-
 **Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם
-NextExit/Narkiss Tam לא מותקנים — נופל אוטומטית ל-Inter ומחזיר flag
-`font_fallback_used: true` בפלט, כדי שדור ידע לעשות restart ולהפעיל שוב.
+Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
 
 ---
 
-## פלטה — קנונית אלא אם הסיפור דורש אחרת
+## פלטה — HaMakom DS 2026 (קבועה)
 
-ברירת מחדל לתחקירים: `#141413` שחור + `#f4f1ec` קרם + `#f70d28` אדום + `#9e8e7c` אפור.
-במקרה ספק — קנונית. סטייה מותרת **רק** כשהסיפור באמת דורש זאת — לרוב לא.
+הגרפיקה היא **cover-style**: תמונה full-bleed + gradient דיו + טקסט לבן.
 
-**טבלת השוואה — לא קטלוג שאסור לחרוג ממנו:**
+| Token | Hex | תפקיד |
+|-------|-----|--------|
+| דיו `--ink` | `#141413` | gradient + רקע |
+| לבן | `#ffffff` | כותרת (Suez One), לוגו |
+| טרקוטה-בהיר | `#E8906F` | label קטגוריה (על כהה) |
+| `--on-dark-soft` | `#b7b5ac` | lede + byline |
+| חתימה | טרקוטה `#D97757` · מרווה `#788C5D` · אברש `#8E6FA8` | פס-חתימה למעלה+למטה |
 
-| נושא | bg | fg | accent | תחושה |
-|------|----|----|--------|--------|
-| תחקיר/חקיקה (ברירת מחדל) | `#141413` שחור עמוק | `#f4f1ec` קרם | `#f70d28` אדום | אזעקה, חד |
-| הומניטריות בעזה | `#1a1a2e` נייבי כהה | `#e8e4d6` קרם לח | `#c97064` חימר אדום | אבל, גרון תקוע |
-| כסף ציבורי/שחיתות | `#2d2620` חום שרוף | `#f2c14e` ענבר זהב | `#d62828` אדום פצע | כעס, גניבה |
-| משבר אקלים | `#0d1f1a` ירוק יער | `#e8f1ee` מנטה | `#ff7849` שמש קלויה | דחיפות |
-| דעה — פוליטיקה | `#0f1620` כחול שינה | `#f7f3e8` ניר ישן | `#e76f51` אש קטנה | פרשנות שקטה |
+**אסור:** אדום `#f70d28` / ענבר `#d4a13a` (פלטה ישנה — בוטלה), pastel,
+corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 
-**אסור תמיד:** פסטל-סוכר, corporate-tech (turquoise-OpenAI), צבעי-מותג מזוהים (ירוק WhatsApp), pastel.
-
-**בדיקת contrast:** `fg` על `bg` חייב לעבור WCAG AA (4.5:1 ל-body).
-
-צבעים מדויקים ב-`design-spec/tokens.md`.
+מספרים מדויקים (Figma RGB) ב-`../../design-system/HAMAKOM-DS-2026.md`.
 
 ---
 
 ## Layout pattern (זהה לכל 3 הפורמטים)
 
 ```
-y=0       פס אדום 4px
-y=4..H-4  תמונה (full-bleed, scaleMode FILL) + gradient overlay
+y=0       פס-חתימה טריקולור 8px (טרקוטה·מרווה·אברש)
+y=0..H    תמונה (full-bleed, scaleMode FILL) + gradient דיו overlay
 y=textStart*H  אזור טקסט מתחיל (textStart ~0.45-0.55 לפי פורמט)
-          label (Inter Bold, אדום, letter-spacing 4px)
-          title (NextExit Bold, גדול, letter-spacing -2%, line-height 112%) — h1 verbatim
-          lede  (Inter Regular, רוחב ~65% מהמסגרת, RTL right-aligned)
-          byline (Inter Regular, אפור-credit)
+          label (IBM Plex SemiBold, טרקוטה-בהיר #E8906F, letter-spacing 2)
+          title (Suez One, גדול, line-height 108%) — h1 verbatim
+          lede  (IBM Plex Regular, רוחב ~68% מהמסגרת, RTL right-aligned)
+          byline (IBM Plex Medium, on-dark-soft)
           logo  (SVG ריבועי, ממורכז במרכז התחתון, לבן)
-y=H-stripeH  פס URL אדום + "H A - M A K O M . C O . I L" (Inter Bold)
+y=H-sigH  פס-חתימה טריקולור תחתון + "HA-MAKOM.CO.IL" (IBM Plex SemiBold) מתחתיו
 ```
 
 **שני מאפיינים קריטיים של הפורמט הזה:**
@@ -151,10 +141,10 @@ function gradientFor(textStart) {
     type: "GRADIENT_LINEAR",
     gradientTransform: [[0, 1, 0], [-1, 0, 1]],
     gradientStops: [
-      { position: 0.00, color: { ...PALETTE.bg, a: 0.0 } },                    // שקוף
-      { position: Math.max(0.01, textStart - 0.15), color: { ...PALETTE.bg, a: 0.0 } },  // שקוף
-      { position: textStart, color: { ...PALETTE.bg, a: 0.78 } },              // מתחיל להחשיך
-      { position: 1.00, color: { ...PALETTE.bg, a: 1.0 } },                    // שחור מלא
+      { position: 0.00, color: { ...C.ink, a: 0.0 } },                    // שקוף
+      { position: Math.max(0.01, textStart - 0.15), color: { ...C.ink, a: 0.0 } },  // שקוף
+      { position: textStart, color: { ...C.ink, a: 0.8 } },               // מתחיל להחשיך
+      { position: 1.00, color: { ...C.ink, a: 1.0 } },                    // דיו מלא
     ],
   };
 }
@@ -189,11 +179,13 @@ for (const id of photoNodeIds) {
 הפריים (כפי שדור אישר על דוגמת דרעי/ביקורי משפחות). **לכותרת h1 ארוכה —
 הקטן titleSize בלבד, לא את שאר היחסים.**
 
-| frame | מידות | textStart | padX | labelSize | titleSize | ledeSize | bylineSize | stripeH | logoH |
-|-------|-------|-----------|------|-----------|-----------|----------|-----------|---------|-------|
-| whatsapp-1080x1080  | 1080×1080 | 0.45 | 60 | 24 | 60 | 22 | 22 | 50 | 64 |
-| instagram-1080x1350 | 1080×1350 | 0.50 | 60 | 24 | 52 | 24 | 22 | 52 | 72 |
-| ig-story-1080x1920  | 1080×1920 | 0.55 | 72 | 26 | 95 | 35 | 30 | 56 | 92 |
+| frame | מידות | textStart | padX | labelSize | titleSize (Suez One) | ledeSize | bylineSize | sigH | logoH |
+|-------|-------|-----------|------|-----------|-----------|----------|-----------|------|-------|
+| whatsapp-1080x1080  | 1080×1080 | 0.45 | 64 | 24 | 56 | 22 | 22 | 8 | 60 |
+| instagram-1080x1350 | 1080×1350 | 0.50 | 64 | 25 | 56 | 24 | 23 | 8 | 64 |
+| ig-story-1080x1920  | 1080×1920 | 0.55 | 72 | 28 | 80 | 32 | 28 | 8 | 84 |
+
+(`sigH` = גובה פס-החתימה התחתון; ה-url יושב מתחתיו.)
 
 ראה `scripts/build_graphics_page.md` לתבנית JS מלאה.
 
@@ -210,7 +202,7 @@ for (const id of photoNodeIds) {
 5. **Adobe Firefly** — fallback להמחשה (אם אין תמונה אמיתית). פרומפט קבוע:
    `dark cinematic Hebrew journalism aesthetic, no text, no faces, atmospheric`.
 
-**credit חובה לכל תמונה** — text node קטן Narkiss Tam Light 22pt, opacity 0.85.
+**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt, לבן opacity 0.6.
 
 ---
 
@@ -242,7 +234,7 @@ recurse(node);
 ## תהליך הפעלה (Claude reads this and follows)
 
 1. קורא SKILL.md הזה.
-2. (אופציונלי) קורא `design-spec/tokens.md` לפרטי צבע מדויקים.
+2. **קורא `../../design-system/HAMAKOM-DS-2026.md`** (מקור-אמת — צבעים, פונטים, חתימה).
 3. שולף את הכתבה (WebFetch / defuddle) ומחלץ:
    - **h1 verbatim** (הכותרת — לא og:title!)
    - og:image (התמונה)
@@ -250,7 +242,7 @@ recurse(node);
    - קטגוריה (label)
    - משפט lede אחד שמסכם את הכתבה
 4. בוחר/מאתר את התמונה (ראה "איסוף תמונות").
-5. בוחר פלטה — קנונית אלא אם הנושא דורש סטייה (ראה טבלת הפלטה).
+5. פלטה קבועה — HaMakom DS 2026 (שנהב/דיו/טרקוטה). אין בחירת פלטה.
 6. קורא ל-MCP figma `create_new_file` editorType=design + planKey.
 7. **קורא ל-`use_figma` עם הקוד מ-`scripts/build_graphics_page.md`** כדי לבנות
    את 3 הפריימים: whatsapp-1080x1080, instagram-1080x1350, ig-story-1080x1920.
@@ -272,10 +264,10 @@ recurse(node);
 - ☐ כל 3 הפריימים קיימים: whatsapp-1080x1080, instagram-1080x1350, ig-story-1080x1920
 - ☐ **התמונה מופיעה בכל 3 הפריימים** (לא שחור — בדוק אם `upload_assets` לא הפעיל; אם כן, החל ידנית עם imageHash)
 - ☐ **גרדיאנט שקוף למעלה** בכל הפריימים (התמונה נראית, לא מוסתרת)
-- ☐ **לוגו במרכז התחתון** של כל פריים (לא בפינה ימין-עליון)
+- ☐ **לוגו לבן במרכז התחתון** של כל פריים (לא בפינה)
 - ☐ אינסטגרם הוא 4:5 (1080×1350), לא ריבוע
-- ☐ label + lede + byline במקום
-- ☐ פס URL אדום בתחתית
+- ☐ label טרקוטה + lede + byline במקום; כותרת Suez One (לא NextExit)
+- ☐ פס-חתימה טריקולור למעלה+למטה (לא פס אדום); url מתחת לפס התחתון
 
 ---
 
@@ -307,7 +299,7 @@ recurse(node);
 
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
-פונט בשימוש: NextExit + Narkiss Tam (font_fallback_used: false)
+פלטה: שנהב/דיו/טרקוטה · פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
 
 Graphics — פורמטים (3 פריימים)
   whatsapp-1080x1080     (ריבוע 1:1)

@@ -6,13 +6,28 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 
 WORKDIR = os.environ.get("REEL_WORKDIR", "/tmp/vid")
-F_QUOTE = f"{WORKDIR}/NarkissShimshon-Extended.otf"   # ציטוטים וקיקרים
-F_UI    = f"{WORKDIR}/NarkissTam-Regular.otf"          # שורות "בתיעוד:"
-F_LATIN = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # URL בלבד
+HOME_F  = os.path.expanduser("~/Library/Fonts")
+
+def _font(*cands):
+    """הפונט הראשון שקיים — WORKDIR ואז ~/Library/Fonts (Mac / VM)."""
+    for c in cands:
+        if c and os.path.exists(c):
+            return c
+    return cands[-1]
+
+# ציטוט עריכתי בגוף הריל — נשאר Narkiss Shimshon (חתך הכותרות של המותג)
+F_QUOTE   = _font(f"{WORKDIR}/NarkissShimshon-Extended.otf",
+                  f"{HOME_F}/NarkissShimshon-Extended.otf",
+                  os.path.expanduser("~/Desktop/NarkissShimshon-Extended.otf"))
+# תצוגה ב-DS (כותרת הסגיר) — Suez One
+F_DISPLAY = _font(f"{WORKDIR}/SuezOne-Regular.ttf", f"{HOME_F}/SuezOne-Regular.ttf")
+# גוף/UI ב-DS — IBM Plex Sans Hebrew (שורות "בתיעוד:", סלוגן, URL — יש גליפים לטיניים)
+F_UI      = _font(f"{WORKDIR}/IBMPlexSansHebrew-Regular.ttf", f"{HOME_F}/IBMPlexSansHebrew-Regular.ttf")
+F_LATIN   = F_UI
 W = 1080
-IVORY = (255, 255, 255, 255)
-TERRA = (224, 138, 106, 255)   # טרקוטה מובהרת לווידאו
-MUTED = (235, 233, 225, 255)
+IVORY = (250, 249, 245, 255)   # שנהב DS #faf9f5
+TERRA = (232, 144, 111, 255)   # טרקוטה DS מובהרת לווידאו #E8906F
+MUTED = (200, 198, 189, 255)   # שנהב-מעומעם לסלוגן/משנה
 
 def wrap(d, text, font, maxw):
     words = text.split(); lines, cur = [], ""
@@ -25,17 +40,24 @@ def wrap(d, text, font, maxw):
     if cur: lines.append(cur)
     return lines
 
-def card(name, quote, qsize=56, explainer=None, kicker=None, qcolor=IVORY):
+def card(name, quote, qsize=56, explainer=None, kicker=None, qcolor=IVORY,
+         qfont=None, slogan=None):
     """כרטיס אחד. quote=ציטוט מילה-במילה מהכתבה. kicker=תג קצר בטרקוטה.
-    explainer=שורת 'בתיעוד:' (עברית) או URL (לטינית, ייצבע טרקוטה אוטומטית)."""
+    explainer=שורת 'בתיעוד:' (עברית) או URL (לטינית, ייצבע טרקוטה אוטומטית).
+    qfont=חריגה מפונט הציטוט (למשל F_DISPLAY/Suez One בסגיר).
+    slogan=שורת סלוגן קטנה (IBM Plex, שנהב-מעומעם) — לסגיר."""
+    qfont = qfont or F_QUOTE
     tmp = Image.new("RGBA", (W, 10)); d = ImageDraw.Draw(tmp)
     pad_x = 60; maxw = W - 2 * pad_x
     blocks = []
     if kicker:
         kf = ImageFont.truetype(F_QUOTE, 40)
         blocks.append((wrap(d, kicker, kf, maxw), kf, TERRA, 54, 14, 'rtl'))
-    qf = ImageFont.truetype(F_QUOTE, qsize)
+    qf = ImageFont.truetype(qfont, qsize)
     blocks.append((wrap(d, quote, qf, maxw), qf, qcolor, int(qsize * 1.34), 18, 'rtl'))
+    if slogan:
+        sf = ImageFont.truetype(F_UI, 34)
+        blocks.append((wrap(d, slogan, sf, maxw), sf, MUTED, 46, 16, 'rtl'))
     if explainer:
         if all(ord(c) < 1024 for c in explainer):   # לטיני → DejaVu, כיוון LTR
             ef = ImageFont.truetype(F_LATIN, 52)
@@ -77,4 +99,7 @@ if __name__ == "__main__":
     card("G", "אחת מההצתות שהתפשטה לשריפה, הוסיפה לבעור שעות לאחר תחילת האירוע",
          qsize=54)
     card("H", "לפחות תשעה פלסטינים שנפלו קורבן למסע האלימות נפצעו")
-    card("CTA", "הכתבה המלאה באתר", qsize=50, explainer="ha-makom.co.il")
+    # סגיר DS: כותרת Suez One + שורת סלוגן (IBM Plex) + URL טרקוטה
+    card("CTA", "התחקיר המלא באתר", qsize=48, qfont=F_DISPLAY,
+         slogan="בלי בעלי הון · בלי פרסומות · בלי בולשיט",
+         explainer="ha-makom.co.il")
