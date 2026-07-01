@@ -1,6 +1,9 @@
 {
   "name": "hamakom-desk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ניהול מערכת ואסטרטגיה ל'המקום הכי חם בגיהנום' — סנכרון וורדפרס↔נושן (hamakom-investigations-sync), ליינאפ שבועי (hamakom-weekly-lineup), ניוזלטר שבועי (hamakom-weekly-newsletter), וניתוח DNA מערכתי ופערי סיקור (site-strategist).",
-  "author": { "name": "Dor Zommer / Ha-Makom", "email": "zommerd@gmail.com" }
+  "author": {
+    "name": "Dor Zommer / Ha-Makom",
+    "email": "zommerd@gmail.com"
+  }
 }
