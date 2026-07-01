@@ -3,8 +3,8 @@
 build_weekly.py — בונה את הניוזלטר השבועי של "המקום הכי חם בגיהנום" כ-HTML
 מתוך articles.json (פלט fetch_week.py) + issue.json (קונפיג העורך לשבוע).
 
-עיצוב זהה לגיליון שפורסם (v2): רוחב 600, RTL, פונט Heebo,
-שחור #1A1A1A, זהב #E3B438 / #9C6F15.
+עיצוב HaMakom DS 2026: רוחב 600, RTL. שנהב #faf9f5 / דיו #141413 / טרקוטה #D97757,
+Suez One (כותרות) + IBM Plex Sans Hebrew (גוף), פס-חתימה טריקולור.
 
 כלל בטיחות (הלקח מהמשבר של שני סשנים שדרסו זה לזה): כותב תמיד קובץ חדש
 עם חותמת תאריך-שעה, ולעולם לא דורס קובץ קיים.
@@ -24,8 +24,14 @@ ARTICLES_PATH = os.environ.get("ARTICLES", "articles.json")
 OUT_DIR       = os.environ.get("OUT_DIR", ".")
 UTM           = os.environ.get("UTM", "?utm_campaign=weekly&utm_medium=email&utm_source=newsletter")
 
-FONT = "'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif"
-INK='#1A1A1A'; GOLD='#9C6F15'; AMBER='#E3B438'; GREY='#6B6B6B'; LINE='#E6E6E6'
+FONT_HEAD = "'Suez One','Heebo',Georgia,serif"                       # כותרות/תצוגה (DS)
+FONT_BODY = "'IBM Plex Sans Hebrew','Heebo',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif"  # גוף/UI (DS)
+FONT = FONT_BODY
+# פלטת HaMakom DS 2026
+INK='#141413'; IVORY='#faf9f5'; TERRA='#D97757'; SAGE='#788C5D'; HEATHER='#8E6FA8'
+GOLD='#B4581F'   # טרקוטה כהה — אקסנט טקסט קטן על בהיר (קיקר/קרדיט/מאת)
+AMBER='#E8906F'  # טרקוטה מובהרת — לייבלים/כפתורים/פסים על רקע דיו כהה
+GREY='#6B6B6B'; LINE='#E6E6E6'
 LOGO_WHITE=('https://uccprg.stripocdn.email/content/guids/'
             'CABINET_63cfa9cad8ed0171fb3fe41bc5aa8946a5ebd57995774e9a3e262bf666f3a22b/'
             'images/hamakomsquarewhiteh600_JLe.png')
@@ -124,6 +130,14 @@ def _with_utm(u):
 
 
 # ---------- sections ----------
+def sig_bar(h=6):
+    """פס-חתימה טריקולור: טרקוטה·מרווה·אברש (ימין→שמאל ב-RTL) — חתימת המותג."""
+    cell = lambda c: (f'<td width="33.33%" height="{h}" style="height:{h}px;font-size:0;'
+                      f'line-height:0;background-color:{c}">&nbsp;</td>')
+    return ('<tr><td style="padding:0;Margin:0"><table width="100%" cellpadding="0" '
+            'cellspacing="0" role="presentation" style="border-collapse:collapse"><tbody><tr>'
+            f'{cell(TERRA)}{cell(SAGE)}{cell(HEATHER)}</tr></tbody></table></td></tr>')
+
 def header():
     return (f'<tr><td align="center" bgcolor="{INK}" style="padding:24px 0 18px;Margin:0;background-color:{INK}">'
             f'<a href="https://ha-makom.co.il/{UTM}" target="_blank"><img src="{LOGO_WHITE}" height="80" '
@@ -135,8 +149,8 @@ def note():
     en = cfg.get('editor_note', {}) or {}
     head = en.get('headline', ''); paras = en.get('paragraphs', []) or []
     if _is_ph(head) or any(_is_ph(p) for p in paras): MISSING.append('פתיח עורך')
-    inner = (f'<p style="Margin:0 0 16px;font-family:{FONT};font-size:27px;font-weight:900;line-height:34px;'
-             f'color:#111;direction:rtl;text-align:right">{hl(head)}</p>')
+    inner = (f'<p style="Margin:0 0 16px;font-family:{FONT_HEAD};font-size:27px;font-weight:900;line-height:34px;'
+             f'color:#141413;direction:rtl;text-align:right">{hl(head)}</p>')
     for p in paras:
         inner += P(hl(p) if _is_ph(p) else p)
     inner += P('<strong>דור זומר</strong>, עורך ראשי', GREY, 14, 0)
@@ -148,17 +162,17 @@ def project():
     u = _with_utm(pr.get('url', '') or 'https://ha-makom.co.il/')
     return (f'<tr><td bgcolor="{INK}" align="center" dir="rtl" style="padding:38px 30px;Margin:0;background-color:{INK}">'
             f'<p style="Margin:0 0 14px;font-family:{FONT};font-size:12px;font-weight:800;letter-spacing:4px;color:{AMBER};direction:rtl">{pr.get("label","חדש באתר")}</p>'
-            f'<p style="Margin:0 0 14px;font-family:{FONT};font-size:44px;font-weight:900;line-height:48px;color:#fff;direction:rtl">'
-            f'<a target="_blank" href="{u}" style="text-decoration:none;color:#fff">{pr["title"]}</a></p>'
+            f'<p style="Margin:0 0 14px;font-family:{FONT_HEAD};font-size:44px;font-weight:900;line-height:48px;color:#faf9f5;direction:rtl">'
+            f'<a target="_blank" href="{u}" style="text-decoration:none;color:#faf9f5">{pr["title"]}</a></p>'
             + (f'<p style="Margin:0 0 22px;font-family:{FONT};font-size:16px;line-height:25px;color:#C7C7C7;direction:rtl">{pr.get("desc","")}</p>' if pr.get("desc") else '')
-            + f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto"><tbody><tr><td bgcolor="{AMBER}" style="border-radius:6px"><a target="_blank" href="{u}" style="display:inline-block;padding:13px 36px;font-family:{FONT};font-size:16px;font-weight:800;color:{INK};text-decoration:none">{pr.get("cta","לפרויקט המלא ⟵")}</a></td></tr></tbody></table></td></tr>')
+            + f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto"><tbody><tr><td bgcolor="{AMBER}" style="border-radius:6px"><a target="_blank" href="{u}" style="display:inline-block;padding:13px 36px;font-family:{FONT};font-size:16px;font-weight:800;color:{INK};text-decoration:none">{pr.get("cta","לפרויקט המלא")}</a></td></tr></tbody></table></td></tr>')
 
 def lead(slug, kicker='תחקיר השבוע'):
     return (f'<tr><td style="padding:18px 28px 8px;Margin:0">'
             f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:13px;font-weight:800;letter-spacing:3px;color:{GOLD};direction:rtl">{kicker}</p>'
             f'<a target="_blank" href="{link(slug)}"><img src="{img(slug)}" alt="{title(slug)[:70]}" width="544" style="display:block;border:0;width:100%;border-radius:8px;margin:0 0 16px"></a>'
-            f'<h1 style="Margin:0 0 10px;font-family:{FONT};font-size:30px;font-weight:900;line-height:37px;color:#111111;direction:rtl;text-align:right">'
-            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#111111">{title(slug)}</a></h1>'
+            f'<h1 style="Margin:0 0 10px;font-family:{FONT_HEAD};font-size:30px;font-weight:900;line-height:37px;color:#141413;direction:rtl;text-align:right">'
+            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#141413">{title(slug)}</a></h1>'
             + P(excerpt(slug, 240), '#333333', 16, 12)
             + f'<p style="Margin:0;font-family:{FONT};font-size:12px;font-weight:700;color:{GOLD};direction:rtl;text-align:right">מאת {author(slug)} · {dt(slug)}</p></td></tr>')
 
@@ -166,8 +180,8 @@ def hero(slug, kicker='מתחת לרדאר'):
     return (f'<tr><td style="padding:22px 28px 8px;Margin:0;border-top:6px solid {INK}">'
             f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:13px;font-weight:800;letter-spacing:3px;color:{GOLD};direction:rtl">{kicker}</p>'
             f'<a target="_blank" href="{link(slug)}"><img src="{img(slug)}" alt="{title(slug)[:70]}" width="544" style="display:block;border:0;width:100%;border-radius:8px;margin:0 0 16px"></a>'
-            f'<h2 style="Margin:0 0 10px;font-family:{FONT};font-size:27px;font-weight:900;line-height:34px;color:#111111;direction:rtl;text-align:right">'
-            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#111111">{title(slug)}</a></h2>'
+            f'<h2 style="Margin:0 0 10px;font-family:{FONT_HEAD};font-size:27px;font-weight:900;line-height:34px;color:#141413;direction:rtl;text-align:right">'
+            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#141413">{title(slug)}</a></h2>'
             + P(excerpt(slug, 230), '#333333', 16, 12)
             + f'<p style="Margin:0;font-family:{FONT};font-size:12px;font-weight:700;color:{GOLD};direction:rtl;text-align:right">מאת {author(slug)} · {dt(slug)}</p></td></tr>')
 
@@ -176,7 +190,7 @@ def item(slug):
             f'<table width="100%" dir="rtl" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse"><tbody><tr>'
             f'<td class="imgcell" width="140" valign="top" style="padding:0 0 0 16px"><a target="_blank" href="{link(slug)}"><img class="thumb" src="{img(slug)}" alt="" width="140" style="display:block;border:0;width:140px;border-radius:5px"></a></td>'
             f'<td class="txtcell" valign="top" align="right" dir="rtl" style="padding:0">'
-            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#111111"><span style="font-family:{FONT};font-size:18px;font-weight:700;line-height:24px;color:#111111">{title(slug)}</span></a>'
+            f'<a target="_blank" href="{link(slug)}" style="text-decoration:none;color:#141413"><span style="font-family:{FONT};font-size:18px;font-weight:700;line-height:24px;color:#141413">{title(slug)}</span></a>'
             f'<p class="m-hide" style="Margin:6px 0 0;font-family:{FONT};font-size:13px;line-height:19px;color:#444;direction:rtl">{excerpt(slug,90)}</p>'
             f'<p style="Margin:6px 0 0;font-family:{FONT};font-size:12px;color:{GREY};direction:rtl">מאת {author(slug)} · {dt(slug)}</p>'
             f'</td></tr></tbody></table></td></tr>')
@@ -198,7 +212,7 @@ def followup():
             + (f'<p style="Margin:4px 0 0;font-family:{FONT};font-size:13px;font-weight:700;color:{INK};direction:rtl">{fu["banner_sub"]}</p>' if fu.get("banner_sub") else '')
             + f'</td></tr><tr><td dir="rtl" align="right" style="padding:18px 28px 8px">'
             f'<a target="_blank" href="{link(s)}"><img src="{img(s)}" alt="{title(s)[:70]}" width="544" style="display:block;border:0;width:100%;border-radius:8px;margin:0 0 14px"></a>'
-            f'<a target="_blank" href="{link(s)}" style="text-decoration:none"><span style="font-family:{FONT};font-size:23px;font-weight:900;line-height:30px;color:#111;direction:rtl">{title(s)}</span></a>'
+            f'<a target="_blank" href="{link(s)}" style="text-decoration:none"><span style="font-family:{FONT_HEAD};font-size:23px;font-weight:900;line-height:30px;color:#141413;direction:rtl">{title(s)}</span></a>'
             + P(excerpt(s, 200), '#333', 15, 8, ';margin-top:10px')
             + f'<p style="Margin:0;font-family:{FONT};font-size:12px;font-weight:700;color:{GOLD};direction:rtl">מאת {author(s)} · {dt(s)}</p></td></tr>')
 
@@ -223,8 +237,8 @@ def reel_strip():
     cap = r.get('caption', '')
     return strip('ברשתות שלנו',
         f'<a target="_blank" href="{r["url"]}"><img src="{enc(r["poster"])}" alt="" width="280" style="display:block;border:0;width:280px;max-width:100%;margin:0 auto 14px;border-radius:8px"></a>'
-        + f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 12px"><tbody><tr><td bgcolor="{AMBER}" style="border-radius:6px"><a target="_blank" href="{r["url"]}" style="display:inline-block;padding:11px 28px;font-family:{FONT};font-size:15px;font-weight:700;color:{INK};text-decoration:none">{r.get("cta","▶ לריל")}</a></td></tr></tbody></table>'
-        + (P(cap + ' ' + A('https://www.instagram.com/ha_makom/', '@ha_makom ⟵', AMBER), '#D8D8D8', 14, 0, ';text-align:center') if cap else ''))
+        + f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 12px"><tbody><tr><td bgcolor="{AMBER}" style="border-radius:6px"><a target="_blank" href="{r["url"]}" style="display:inline-block;padding:11px 28px;font-family:{FONT};font-size:15px;font-weight:700;color:{INK};text-decoration:none">{r.get("cta","לריל")}</a></td></tr></tbody></table>'
+        + (P(cap + ' ' + A('https://www.instagram.com/ha_makom/', '@ha_makom', AMBER), '#D8D8D8', 14, 0, ';text-align:center') if cap else ''))
 
 def quote_strip():
     q = cfg.get('quote', {}) or {}
@@ -234,9 +248,9 @@ def quote_strip():
     body = ''
     if not _is_ph(s):
         body += f'<a target="_blank" href="{link(s)}"><img src="{img(s)}" alt="" width="544" style="display:block;border:0;width:100%;border-radius:8px;margin:0 0 16px"></a>'
-    body += (f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:24px;font-weight:800;line-height:33px;'
-             f'color:#fff;direction:rtl;text-align:right">{hl(txt) if _is_ph(txt) else "״"+txt+"״"}</p>')
-    more = A(link(s), 'לכתבה המלאה ⟵', AMBER) if not _is_ph(s) else ''
+    body += (f'<p style="Margin:0 0 12px;font-family:{FONT_HEAD};font-size:24px;font-weight:800;line-height:33px;'
+             f'color:#faf9f5;direction:rtl;text-align:right">{hl(txt) if _is_ph(txt) else "״"+txt+"״"}</p>')
+    more = A(link(s), 'לכתבה המלאה', AMBER) if not _is_ph(s) else ''
     body += P((hl(attrib) if _is_ph(attrib) else attrib) + ' ' + more, '#D8D8D8', 14, 0)
     return strip('ציטוט השבוע', body)
 
@@ -248,7 +262,7 @@ def opinions_block():
         out += (f'<tr><td dir="rtl" align="right" style="padding:6px 28px 16px;Margin:0">'
                 f'<a target="_blank" href="{link(feat)}"><img src="{img(feat)}" alt="{title(feat)[:70]}" width="544" style="display:block;border:0;width:100%;border-radius:8px;margin:0 0 14px"></a>'
                 f'<p style="Margin:0 0 8px;font-family:{FONT};font-size:12px;font-weight:800;letter-spacing:2px;color:{GOLD};direction:rtl">הטור של {author(feat)}</p>'
-                f'<a target="_blank" href="{link(feat)}" style="text-decoration:none"><span style="font-family:{FONT};font-size:23px;font-weight:900;line-height:30px;color:#111;direction:rtl">{title(feat)}</span></a>'
+                f'<a target="_blank" href="{link(feat)}" style="text-decoration:none"><span style="font-family:{FONT_HEAD};font-size:23px;font-weight:900;line-height:30px;color:#141413;direction:rtl">{title(feat)}</span></a>'
                 + P(excerpt(feat, 180), '#333', 15, 0, ';margin-top:10px') + '</td></tr>')
     for s in items:
         if _is_ph(s): continue
@@ -256,7 +270,7 @@ def opinions_block():
                 f'<table width="100%" dir="rtl" cellpadding="0" cellspacing="0" role="presentation"><tbody><tr>'
                 f'<td class="imgcell" width="96" valign="top" style="padding:0 0 0 14px"><a target="_blank" href="{link(s)}"><img class="thumb" src="{img(s)}" alt="" width="96" style="display:block;border:0;width:96px;border-radius:5px"></a></td>'
                 f'<td class="txtcell" valign="top" align="right" dir="rtl">'
-                f'<a target="_blank" href="{link(s)}" style="text-decoration:none"><span style="font-family:{FONT};font-size:16px;font-weight:700;color:#111;line-height:22px">{title(s)}</span></a>'
+                f'<a target="_blank" href="{link(s)}" style="text-decoration:none"><span style="font-family:{FONT};font-size:16px;font-weight:700;color:#141413;line-height:22px">{title(s)}</span></a>'
                 f'<p style="Margin:6px 0 0;font-family:{FONT};font-size:12px;color:{GREY};direction:rtl">מאת {author(s)}</p>'
                 f'</td></tr></tbody></table></td></tr>')
     return out
@@ -269,28 +283,28 @@ def reads_block():
     for i, r in enumerate(reads):
         if i: body += f'<div style="height:18px;border-bottom:1px solid #3a3a3a;margin:0 0 18px;font-size:0">&nbsp;</div>'
         body += (f'<p style="Margin:0 0 3px;font-family:{FONT};font-size:12px;font-weight:800;letter-spacing:2px;color:{AMBER};direction:rtl">{r.get("outlet","")}</p>'
-                 f'<p style="Margin:0 0 6px;font-family:{FONT};font-size:18px;font-weight:800;line-height:25px;color:#fff;direction:rtl;text-align:right"><a target="_blank" href="{r.get("url","#")}" style="text-decoration:none;color:#fff">{r["headline"]}</a></p>'
-                 + P(r.get('dek', '') + ' ' + A(r.get('url', '#'), 'לכתבה ⟵', AMBER), '#CFCFCF', 14, 0))
+                 f'<p style="Margin:0 0 6px;font-family:{FONT};font-size:18px;font-weight:800;line-height:25px;color:#faf9f5;direction:rtl;text-align:right"><a target="_blank" href="{r.get("url","#")}" style="text-decoration:none;color:#faf9f5">{r["headline"]}</a></p>'
+                 + P(r.get('dek', '') + ' ' + A(r.get('url', '#'), 'לכתבה', AMBER), '#CFCFCF', 14, 0))
     return strip('המלצות קריאה', body)
 
 def legal_block():
     lg = cfg.get('legal', 'default')
     lg = {} if (lg == 'default' or not isinstance(lg, dict)) else lg
     title_t = lg.get('title', 'שמים סוף לתביעות ההשתקה')
-    body = (f'<tr><td dir="rtl" align="right" style="padding:26px 28px;Margin:0;border-top:3px solid {GOLD};background:#FBF7EF">'
+    body = (f'<tr><td dir="rtl" align="right" style="padding:26px 28px;Margin:0;border-top:3px solid {GOLD};background:#f4efe6">'
             f'<p style="Margin:0 0 6px;font-family:{FONT};font-size:13px;font-weight:800;letter-spacing:3px;color:{GOLD};direction:rtl">קרן ההגנה המשפטית</p>'
-            f'<p style="Margin:0 0 16px;font-family:{FONT};font-size:25px;font-weight:900;line-height:31px;color:#111;direction:rtl">{title_t}</p>')
+            f'<p style="Margin:0 0 16px;font-family:{FONT_HEAD};font-size:25px;font-weight:900;line-height:31px;color:#141413;direction:rtl">{title_t}</p>')
     if not _is_ph(lg.get('video_url', '')) and not _is_ph(lg.get('poster', '')):
         body += (f'<a target="_blank" href="{lg["video_url"]}"><img src="{enc(lg["poster"])}" alt="" width="300" style="display:block;border:0;width:300px;max-width:100%;margin:0 auto 12px;border-radius:8px"></a>')
         if lg.get('hook'):
-            body += f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:18px;font-weight:800;line-height:25px;color:#111;direction:rtl;text-align:center">{lg["hook"]}</p>'
-        body += (f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 18px"><tbody><tr><td bgcolor="{GOLD}" style="border-radius:6px"><a target="_blank" href="{lg["video_url"]}" style="display:inline-block;padding:12px 30px;font-family:{FONT};font-size:15px;font-weight:700;color:#fff;text-decoration:none">▶&nbsp;&nbsp;צפו בסרטון</a></td></tr></tbody></table>')
+            body += f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:18px;font-weight:800;line-height:25px;color:#141413;direction:rtl;text-align:center">{lg["hook"]}</p>'
+        body += (f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 18px"><tbody><tr><td bgcolor="{GOLD}" style="border-radius:6px"><a target="_blank" href="{lg["video_url"]}" style="display:inline-block;padding:12px 30px;font-family:{FONT};font-size:15px;font-weight:700;color:#faf9f5;text-decoration:none">צפו בסרטון</a></td></tr></tbody></table>')
     default_body = ('על תחקירים שלנו הוגשו חמש תביעות השתקה — נגד המערכת, העיתונאיות והמרואיינות. '
                     'הקמנו קרן הגנה כדי שאף אחת לא תילחם לבד. אם אתם מאמינים בעיתונות עצמאית '
                     'שלא חייבת דבר לבעלי הון, למפרסמים או לפוליטיקאים — אנחנו צריכים אתכם איתנו. '
                     'ואם אין באפשרותכם, פשוט שתפו. זה שווה לא פחות.')
     body += P(lg.get('body', default_body), '#333', 15, 14)
-    body += (f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 12px"><tbody><tr><td bgcolor="{GOLD}" style="border-radius:6px"><a target="_blank" href="{SLAPP_URL}" style="display:inline-block;padding:13px 34px;font-family:{FONT};font-size:16px;font-weight:800;color:#fff;text-decoration:none">לתמיכה בקרן ההגנה המשפטית ⟵</a></td></tr></tbody></table></td></tr>')
+    body += (f'<table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 12px"><tbody><tr><td bgcolor="{GOLD}" style="border-radius:6px"><a target="_blank" href="{SLAPP_URL}" style="display:inline-block;padding:13px 34px;font-family:{FONT};font-size:16px;font-weight:800;color:#faf9f5;text-decoration:none">לתמיכה בקרן ההגנה המשפטית</a></td></tr></tbody></table></td></tr>')
     return body
 
 def banner_block():
@@ -301,7 +315,7 @@ def banner_block():
 
 def footer():
     links = '&nbsp;&nbsp;·&nbsp;&nbsp;'.join(
-        f'<a href="{u}" target="_blank" style="color:#fff;text-decoration:none;font-weight:700">{n}</a>' for n, u in SOCIALS)
+        f'<a href="{u}" target="_blank" style="color:#faf9f5;text-decoration:none;font-weight:700">{n}</a>' for n, u in SOCIALS)
     return (f'<tr><td align="center" bgcolor="{INK}" dir="rtl" style="padding:30px 28px;Margin:0;background-color:{INK}">'
             f'<img src="{LOGO_WHITE}" height="56" alt="המקום הכי חם בגיהנום" style="display:block;border:0;height:56px;margin:0 auto 14px">'
             f'<p style="Margin:0 0 12px;font-family:{FONT};font-size:13px;direction:rtl;color:#bbb">{links}</p>'
@@ -312,7 +326,7 @@ def footer():
 
 # ---------- assemble ----------
 def build():
-    rows = [header(), note()]
+    rows = [sig_bar(), header(), note()]
     rows.append(project())
     if not _is_ph(cfg.get('lead', '')):
         rows.append(lead(cfg['lead'], cfg.get('lead_kicker', 'תחקיר השבוע')))
@@ -350,9 +364,10 @@ def build():
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>השבוע ב״המקום הכי חם בגיהנום״ · {cfg.get("week_date","")}</title>
 <style type="text/css">
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap');
-body,table,td,p,h1,h2,h3,a,span,div,strong{{font-family:'Heebo',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif !important;}}
-body{{margin:0;padding:0;background:#EDEDED;}}
+@import url('https://fonts.googleapis.com/css2?family=Suez+One&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=Heebo:wght@400;500;700;800;900&display=swap');
+body,table,td,p,a,span,div,strong{{font-family:'IBM Plex Sans Hebrew','Heebo',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;}}
+h1,h2,h3{{font-family:'Suez One','Heebo',Georgia,serif;}}
+body{{margin:0;padding:0;background:#e6e3da;}}
 img{{-ms-interpolation-mode:bicubic;}}
 @media only screen and (max-width:600px){{
  .ct{{width:100%!important;}}
@@ -362,10 +377,10 @@ img{{-ms-interpolation-mode:bicubic;}}
 }}
 </style>
 </head>
-<body style="margin:0;padding:0;background:#EDEDED">
+<body style="margin:0;padding:0;background:#e6e3da">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">{pre}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EDEDED"><tbody><tr><td align="center" style="padding:18px 0">
-<table role="presentation" class="ct" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:10px;overflow:hidden"><tbody>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e6e3da"><tbody><tr><td align="center" style="padding:18px 0">
+<table role="presentation" class="ct" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#faf9f5;border-radius:10px;overflow:hidden"><tbody>
 {inner}
 </tbody></table>
 </td></tr></tbody></table>
