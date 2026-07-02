@@ -59,8 +59,19 @@ gh auth status         # לוודא שמחובר
 הוסיפו ל־`~/.zshrc` (או `~/.bashrc`):
 
 ```bash
-export OSINT_DB_MCP_URL=https://<vm-host>/mcp
-export OSINT_DB_TOKEN=<הטוקן שקיבלתם מדור>
+# הנתיב הפרוס בפועל (nginx על ה-VM, מאחורי context.ha-makom.co.il).
+# האימות במפתח בתוך ה-URL — בקשו את <KEY> מדור. אין צורך ב-OSINT_DB_TOKEN.
+export OSINT_DB_MCP_URL="https://context.ha-makom.co.il/osint-mcp/mcp?key=<KEY>"
+export OSINT_DB_TOKEN=unused
+```
+
+בדיקת חיבור מהירה (מצפים ל-200; בלי מפתח יתקבל 401):
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST \
+  -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","method":"initialize","id":1,"params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"1.0"}}}' \
+  "$OSINT_DB_MCP_URL"
 ```
 
 ה־`.mcp.json` של הפלאגין קורא את שני המשתנים האלה אוטומטית בכל סשן.
