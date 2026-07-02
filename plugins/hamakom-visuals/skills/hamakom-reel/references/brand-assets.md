@@ -1,7 +1,9 @@
 # נכסי מותג — נתיבים ופתרון תקלות
 
-כל הנתיבים תחת תיקיית Documents של דור (לבקש גישה עם request_cowork_directory אם אין).
-בסיס: `Documents/המקום/שיווק/`
+**מקור האמת: הנכסים שבתוך הריפו** — `plugins/hamakom-visuals/skills/hamakom-carousel/assets/` (לוגו ריבועי SVG + וורדמארק PNG). הם מגיעים עם `git clone` ועובדים בכל מחשב.
+
+נתיבי `Documents/המקום/שיווק/` בהמשך הם fallback מקומי במק של דור בלבד — לא להסתמך עליהם בעבודה מרחוק.
+בסיס (fallback מקומי): `Documents/המקום/שיווק/`
 
 ## לוגואים
 

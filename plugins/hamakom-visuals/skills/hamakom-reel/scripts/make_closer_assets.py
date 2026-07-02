@@ -31,8 +31,8 @@ F_DISPLAY = _first(f"{WORKDIR}/SuezOne-Regular.ttf", f"{HOME_F}/SuezOne-Regular.
 F_UI      = _first(f"{WORKDIR}/IBMPlexSansHebrew-Regular.ttf", f"{HOME_F}/IBMPlexSansHebrew-Regular.ttf")
 F_UI_SB   = _first(f"{WORKDIR}/IBMPlexSansHebrew-SemiBold.ttf", f"{HOME_F}/IBMPlexSansHebrew-SemiBold.ttf", F_UI)
 LOGO_CANDS = [f"{WORKDIR}/logo-square.svg",
-              os.path.expanduser("~/Documents/המקום/שיווק/hamakom square black.svg"),
-              os.path.normpath(f"{HERE}/../../hamakom-carousel/assets/logo-square-black.svg")]
+              os.path.normpath(f"{HERE}/../../hamakom-carousel/assets/logo-square-black.svg"),
+              os.path.expanduser("~/Documents/המקום/שיווק/hamakom square black.svg")]
 
 # פלטת DS 2026
 INK    = (20, 20, 19)       # דיו #141413
