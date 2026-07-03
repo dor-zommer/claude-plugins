@@ -84,34 +84,37 @@ async function FOOT(f,dark){ const fg=dark?C.onDarkSoft:C.inkSoft;
 
 ## קאבר (image, full-bleed)
 
-בלי lede. הטקסט ממוקם **מלמטה למעלה** (byline → title → label) כך שהכותרת
-נמוכה ככל שניתן, והגרדיאנט מחושב לפי מיקום ה-label בפועל — כדי שלא יסתיר
+הטקסט ממוקם **מלמטה למעלה** (byline → title → kicker) כך שהכותרת
+נמוכה ככל שניתן, והגרדיאנט מחושב לפי מיקום הקיקר בפועל — כדי שלא יסתיר
 את התמונה (~65-70% העליונים נשארים גלויים לחלוטין).
+**הקיקר = ה-lede של הכתבה** (לא קטגוריה). **byline = שם הכותב/ת בלבד** ב-ink-soft.
 
 ```javascript
 const HERO = "<imageHash מה-upload>";
 const cover=NF("00-cover",C.ink); cover.x=0;
 const hImg=R({x:0,y:0,w:1080,h:1350,color:C.ink}); hImg.name="cover-hero-image";
 hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(hImg);
-// טקסט — מלמטה למעלה: byline קבוע, כותרת ~26px מעליו, label צמוד מעל הכותרת
-const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.onDarkSoft, x:80, y:1186, w:920, align:"RIGHT"});   // "טור דעה · אריאל שוורץ"
+// טקסט — מלמטה למעלה: byline קבוע, כותרת ~16px מעליו, קיקר-lede ~14px מעל הכותרת
+const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.inkSoft, x:80, y:1154, w:920, align:"RIGHT"});   // שם בלבד: "סיון תהל"
 cover.appendChild(byline);
 const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim (Suez One)
-title.y = byline.y - 26 - title.height;                                     // הכותרת נמוכה ככל שניתן — ממש מעל ה-byline
+title.y = byline.y - 16 - title.height;                                     // הכותרת נמוכה ככל שניתן — ממש מעל ה-byline
 cover.appendChild(title);
-const label=await T({chars:LABEL, family:BODY, style:"SemiBold", size:27, color:C.scTerra, x:80, y:0, w:920, align:"RIGHT", letterSpacing:2}); // קיקר טרקוטה "דעה · יהודה ושומרון"
-label.y = title.y - 12 - label.height;                                      // label צמוד מעל הכותרת
-cover.appendChild(label);
-// gradient דיו מצומצם — לפי מיקום ה-label בפועל; מוזרק מעל התמונה, מתחת לטקסט
-const lf = label.y / 1350;
+const kicker=await T({chars:LEDE, family:BODY, style:"SemiBold", size:28, color:C.scTerra, x:80, y:0, w:920, align:"RIGHT", letterSpacing:2}); // קיקר = ה-lede של הכתבה
+kicker.y = title.y - 14 - kicker.height;                                    // צמוד מעל הכותרת
+cover.appendChild(kicker);
+// gradient דיו מצומצם — לפי מיקום הקיקר בפועל; מוזרק מעל התמונה, מתחת לטקסט
+const lf = kicker.y / 1350;
 const grad=R({x:0,y:0,w:1080,h:1350,color:C.ink});
 grad.fills=[{type:"GRADIENT_LINEAR",gradientTransform:[[0,1,0],[-1,0,1]],gradientStops:[
-  {position:0,color:{...C.ink,a:0}},{position:Math.max(0.01,lf-0.07),color:{...C.ink,a:0}},   // שקוף לחלוטין עד ~7% מעל ה-label
+  {position:0,color:{...C.ink,a:0}},{position:Math.max(0.01,lf-0.07),color:{...C.ink,a:0}},   // שקוף לחלוטין עד ~7% מעל הקיקר
   {position:lf,color:{...C.ink,a:0.72}},{position:1,color:{...C.ink,a:1}}]}];                 // אלפא מלא רק בתחתית
 cover.insertChild(1,grad);
-const cr=await T({chars:CREDIT, family:BODY, style:"Regular", size:18, color:C.white, x:80, y:1266, w:400, align:"LEFT"}); cr.opacity=0.6; cover.appendChild(cr);
-cover.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:C.onDarkSoft,x:430,y:1262,w:490,align:"RIGHT",letterSpacing:3}));
-LOGO(cover,C.white,952,1244,50);
+// שורת תחתית צמודה לפס: credit שמאל + url ממורכז; לוגו קטן ממורכז מעליהם
+const cr=await T({chars:CREDIT, family:BODY, style:"Regular", size:18, color:C.white, x:18, y:1315, w:360, align:"LEFT"});
+cr.fills=[{type:"SOLID",color:C.white,opacity:0.53}]; cover.appendChild(cr);
+cover.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:C.onDarkSoft,x:295,y:1313,w:490,align:"CENTER",letterSpacing:3}));
+LOGO(cover,C.white,519,1244,50);  // לוגו קטן ממורכז — לא בפינה
 SIG(cover,1346,4);   // פס-חתימה תחתון יחיד — אין פס עליון
 figma.currentPage.appendChild(cover);
 // כותרת דינמית: ≤30 תווים→72 ; 30–50→64 ; 50+→56
