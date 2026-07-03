@@ -5,6 +5,6 @@
 > instagram 4:5, ig-story 9:16).
 
 הבילדר הקנוני: `../../hamakom-graphic/scripts/build_graphics_page.md`
-(פלטה: שנהב/דיו/טרקוטה · Suez One + IBM Plex · פסי-חתימה טריקולור).
+(פלטה: שנהב/דיו/טרקוטה · Suez One + IBM Plex · פס-חתימה טריקולור תחתון יחיד 4px).
 
 מקור-אמת לעיצוב: `../../../design-system/HAMAKOM-DS-2026.md`.

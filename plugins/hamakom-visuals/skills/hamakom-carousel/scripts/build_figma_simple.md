@@ -2,7 +2,8 @@
 
 > **תקן 2026** — הקוד הזה אומת חזותית מול דור (קרוסלת "בנט / הסכסוך הוא לא רסיס", יוני 2026).
 > **קרא קודם** את `design-system/HAMAKOM-DS-2026.md` (מקור-האמת) ואת SKILL.md.
-> פלטה: שנהב/דיו/טרקוטה. פונטים: Suez One + IBM Plex Sans Hebrew. פסי-חתימה טריקולור.
+> פלטה: שנהב/דיו/טרקוטה. פונטים: Suez One + IBM Plex Sans Hebrew.
+> פס-חתימה טריקולור **תחתון יחיד, 4px** בכל שקף (דרך `FOOT`) — אין פס עליון.
 > **הפלטה הישנה (שחור/אדום `#f70d28` + NextExit/Narkiss Tam) בוטלה.**
 
 ---
@@ -64,7 +65,8 @@ async function T(o){ const t=figma.createText();
   t.characters=o.chars; t.textAlignHorizontal=o.align; t.fills=[{type:"SOLID",color:o.color}];
   t.x=o.x; t.y=o.y; t.resize(o.w,t.height); return t; }
 
-// פס-חתימה טריקולור — ימין טרקוטה, מרכז מרווה, שמאל אברש
+// פס-חתימה טריקולור — ימין טרקוטה, מרכז מרווה, שמאל אברש.
+// נקרא פעם אחת בלבד לשקף: תחתון, h=4, בקצה התחתון (y=1346). אין פס עליון.
 function SIG(f,y,h){ f.appendChild(R({x:720,y,w:360,h,color:C.terra}));
   f.appendChild(R({x:360,y,w:360,h,color:C.sage})); f.appendChild(R({x:0,y,w:360,h,color:C.heather})); }
 
@@ -75,31 +77,42 @@ function LOGO(f,fill,x,y,size){ const n=figma.createNodeFromSvg(LOGO_SVG); if("f
 async function FOOT(f,dark){ const fg=dark?C.onDarkSoft:C.inkSoft;
   LOGO(f, dark?C.white:C.ink, 952, 1244, 50);
   f.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:fg,x:400,y:1262,w:520,align:"RIGHT",letterSpacing:3}));
-  SIG(f,1342,8); }
+  SIG(f,1346,4); }
 ```
 
 ---
 
 ## קאבר (image, full-bleed)
 
+בלי lede. הטקסט ממוקם **מלמטה למעלה** (byline → title → label) כך שהכותרת
+נמוכה ככל שניתן, והגרדיאנט מחושב לפי מיקום ה-label בפועל — כדי שלא יסתיר
+את התמונה (~65-70% העליונים נשארים גלויים לחלוטין).
+
 ```javascript
 const HERO = "<imageHash מה-upload>";
 const cover=NF("00-cover",C.ink); cover.x=0;
 const hImg=R({x:0,y:0,w:1080,h:1350,color:C.ink}); hImg.name="cover-hero-image";
 hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(hImg);
+// טקסט — מלמטה למעלה: byline קבוע, כותרת ~26px מעליו, label צמוד מעל הכותרת
+const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.onDarkSoft, x:80, y:1186, w:920, align:"RIGHT"});   // "טור דעה · אריאל שוורץ"
+cover.appendChild(byline);
+const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim (Suez One)
+title.y = byline.y - 26 - title.height;                                     // הכותרת נמוכה ככל שניתן — ממש מעל ה-byline
+cover.appendChild(title);
+const label=await T({chars:LABEL, family:BODY, style:"SemiBold", size:27, color:C.scTerra, x:80, y:0, w:920, align:"RIGHT", letterSpacing:2}); // קיקר טרקוטה "דעה · יהודה ושומרון"
+label.y = title.y - 12 - label.height;                                      // label צמוד מעל הכותרת
+cover.appendChild(label);
+// gradient דיו מצומצם — לפי מיקום ה-label בפועל; מוזרק מעל התמונה, מתחת לטקסט
+const lf = label.y / 1350;
 const grad=R({x:0,y:0,w:1080,h:1350,color:C.ink});
 grad.fills=[{type:"GRADIENT_LINEAR",gradientTransform:[[0,1,0],[-1,0,1]],gradientStops:[
-  {position:0,color:{...C.ink,a:0}},{position:0.4,color:{...C.ink,a:0.1}},
-  {position:0.58,color:{...C.ink,a:0.5}},{position:0.78,color:{...C.ink,a:0.92}},{position:1,color:{...C.ink,a:1}}]}];
-cover.appendChild(grad);
-SIG(cover,0,8);
-cover.appendChild(await T({chars:LABEL, family:BODY, style:"SemiBold", size:27, color:C.scTerra, x:80, y:884, w:920, align:"RIGHT", letterSpacing:2}));   // קיקר טרקוטה "דעה · יהודה ושומרון"
-cover.appendChild(await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:934, w:920, align:"RIGHT", lhPct:108}));            // h1 verbatim (Suez One)
-cover.appendChild(await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.onDarkSoft, x:80, y:1186, w:920, align:"RIGHT"}));                  // "טור דעה · אריאל שוורץ"
+  {position:0,color:{...C.ink,a:0}},{position:Math.max(0.01,lf-0.07),color:{...C.ink,a:0}},   // שקוף לחלוטין עד ~7% מעל ה-label
+  {position:lf,color:{...C.ink,a:0.72}},{position:1,color:{...C.ink,a:1}}]}];                 // אלפא מלא רק בתחתית
+cover.insertChild(1,grad);
 const cr=await T({chars:CREDIT, family:BODY, style:"Regular", size:18, color:C.white, x:80, y:1266, w:400, align:"LEFT"}); cr.opacity=0.6; cover.appendChild(cr);
 cover.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:C.onDarkSoft,x:430,y:1262,w:490,align:"RIGHT",letterSpacing:3}));
 LOGO(cover,C.white,952,1244,50);
-SIG(cover,1342,8);
+SIG(cover,1346,4);   // פס-חתימה תחתון יחיד — אין פס עליון
 figma.currentPage.appendChild(cover);
 // כותרת דינמית: ≤30 תווים→72 ; 30–50→64 ; 50+→56
 ```
@@ -111,8 +124,7 @@ figma.currentPage.appendChild(cover);
 ```javascript
 async function PS(idx, total, text, xPos, kicker){
   const num=String(idx).padStart(2,"0");
-  const f=NF(`${num}-paragraph`); f.x=xPos;
-  SIG(f,0,8);
+  const f=NF(`${num}-paragraph`); f.x=xPos;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
   f.appendChild(await T({chars:kicker||"דעה",family:BODY,style:"Bold",size:24,color:C.terraDeep,x:80,y:96,w:920,align:"RIGHT",letterSpacing:3}));
   f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
   f.appendChild(R({x:936,y:148,w:64,h:4,color:C.terra}));
@@ -133,8 +145,7 @@ async function PS(idx, total, text, xPos, kicker){
 ```javascript
 async function DSlide(idx, total, number, kicker, headline, detail, source, xPos){
   const num=String(idx).padStart(2,"0");
-  const f=NF(`${num}-data`); f.x=xPos;
-  SIG(f,0,8);
+  const f=NF(`${num}-data`); f.x=xPos;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
   f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
   f.appendChild(await T({chars:kicker,family:BODY,style:"Bold",size:26,color:C.terraDeep,x:80,y:330,w:920,align:"CENTER",letterSpacing:2}));
   f.appendChild(await T({chars:number,family:HEAD,style:"Regular",size:260,color:C.terra,x:40,y:380,w:1000,align:"CENTER",lhPct:100}));   // מספר ענק טרקוטה
@@ -153,8 +164,7 @@ async function DSlide(idx, total, number, kicker, headline, detail, source, xPos
 
 ```javascript
 const WM = "<imageHash וורדמרק לבן>";
-const cta=NF("NN-cta",C.ink); cta.x=ctaX;
-SIG(cta,0,8);
+const cta=NF("NN-cta",C.ink); cta.x=ctaX;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
 const wm=R({x:300,y:250,w:480,h:150,color:C.ink}); wm.name="wordmark-logo";
 wm.fills=[{type:"IMAGE",scaleMode:"FIT",imageHash:WM}]; cta.appendChild(wm);
 cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:HEAD,style:"Regular",size:48,color:C.white,x:72,y:560,w:936,align:"CENTER",lhPct:120}));
