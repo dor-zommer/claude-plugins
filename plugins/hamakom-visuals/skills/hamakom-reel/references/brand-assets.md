@@ -1,14 +1,27 @@
 # נכסי מותג — נתיבים ופתרון תקלות
 
-כל הנתיבים תחת תיקיית Documents של דור (לבקש גישה עם request_cowork_directory אם אין).
-בסיס: `Documents/המקום/שיווק/`
+## תיקיית החומרים הקבועה
+
+`/Users/dorzommer/Desktop/חומרים להכנת וידאו לרילז ` — **רווח בסוף שם התיקייה!**
+מכילה:
+- **closer_v3.mp4** — הסגיר הקנוני (1080×1920, 30fps, 6.00 שנ' = 180 פריימים,
+  כולל פס סאונד). משתמשים בו כמות שהוא.
+- **טראקים מוכנים** למוזיקת רקע (עדיפות ראשונה בשלב 7).
+
+(העותק שהיה ב-`Desktop/סגיר וידאו המקום/` כבר לא שם — הנתיב הישן לא קיים.)
+
+נכסי מותג נוספים תחת תיקיית Documents של דור (לבקש גישה עם
+request_cowork_directory אם אין). בסיס: `Documents/המקום/שיווק/`
 
 ## לוגואים
 
 | נכס | נתיב | שימוש |
 |---|---|---|
-| לוגו רוחבי לבן (PNG 600x178) | `שיווק/New-Logo White .png` (שים לב לרווח לפני הסיומת) | ווטרמרק עליון |
-| לוגו מרובע (SVG, שחור) | `שיווק/hamakom square black.svg` | סגיר — לרסטר ולצבוע |
+| לוגו מרובע טיפוגרפי (SVG, שחור) | `שיווק/hamakom square black.svg` או `hamakom-carousel/assets/logo-square-black.svg` בפלאגין | **ווטרמרק עליון** (לבן ~72px, y≈48) + סגיר — לרסטר ולצבוע |
+| לוגו רוחבי לבן (PNG 600x178) | `שיווק/New-Logo White .png` (שים לב לרווח לפני הסיומת) | לא בשימוש בריל (הווטרמרק הוא הריבועי) |
+
+**רסטור מ-SVG עם cairosvg — לשמור על ערוץ האלפא ולצבוע רק RGB.**
+המרה דרך לומיננס→אלפא שגויה: פיקסלים שקופים הם RGB=0 ולכן מתקבל ריבוע מלא.
 
 המרת ה-SVG המרובע ללבן-שנהב:
 ```python
@@ -25,9 +38,9 @@ Image.fromarray(a).save('sq_ivory.png')
 
 | פונט | נתיב | שימוש |
 |---|---|---|
-| **Suez One** (DS תצוגה) | Google Fonts — `ofl/suezone/SuezOne-Regular.ttf` | כותרות, ציטוטים (ברירת-מחדל DS) |
-| **IBM Plex Sans Hebrew** (DS גוף) | Google Fonts — `ofl/ibmplexsanshebrew/IBMPlexSansHebrew-*.ttf` | שורות משנה, "בתיעוד:", URL (יש גליפים לטיניים) |
-| Narkiss Shimshon Extended (אופציה) | `Desktop/NarkissShimshon-Extended.otf` | ציטוט עריכתי גדול — חתך הכותרות של המותג |
+| **Suez One** (DS תצוגה) | Google Fonts — `ofl/suezone/SuezOne-Regular.ttf` | **ציטוטים — בלבן #ffffff בלבד**, כותרות |
+| **IBM Plex Sans Hebrew** (DS גוף) | Google Fonts — `ofl/ibmplexsanshebrew/IBMPlexSansHebrew-*.ttf` | קיקר (Bold 30), "בתיעוד:" (Regular 34), URL (SemiBold — יש גליפים לטיניים) |
+| ~~Narkiss Shimshon Extended~~ | `Desktop/NarkissShimshon-Extended.otf` | **ירד — לא בשימוש לציטוטים** (החלטת דור 3.7.2026) |
 | DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני fallback |
 
 ברירת-המחדל היא **DS 2026**: Suez One + IBM Plex Sans Hebrew (ראה
@@ -58,5 +71,14 @@ IBM Plex Sans Hebrew מכסה גם לטינית — "ha-makom.co.il" ייצא ת
 - **הסביבה מתאפסת בין סשנים ולפעמים באמצע** — `/tmp` נמחק כולל סקריפטים וקבצי
   ביניים. אם `/tmp/vid` נעלם: להתקין מחדש pip packages, להעתיק מחדש פונטים ולוגואים,
   ולהריץ שוב את הסקריפטים מהסקיל. תוצרי ביניים ששמרת ב-outputs שורדים.
-- בדיקת PIL: `from PIL import features; features.check('raqm')` חייב True
-  (רינדור RTL). אם False — להשתמש ב-python-bidi עם get_display במקום direction='rtl'.
+- **רינדור RTL: אין libraqm במק של דור** (`from PIL import features;
+  features.check('raqm')` = False). בכל סקריפטי הטקסט משתמשים ב-python-bidi
+  (`bidi.algorithm.get_display`) ומסירים `direction='rtl'`/`'ltr'` —
+  אחרת ValueError. עברית עם גרש — גרש עברי ׳ (U+05F3), לא אפוסטרוף לטיני.
+
+## ElevenLabs (מוזיקה — עדיפות 2)
+
+- מפתח API: `ELEVENLABS_API_KEY` ב-`~/Developer/video-use/.env` (hex גולמי,
+  בלי `sk_`). אין קונקטור MCP — עובדים ב-curl.
+- מפתחות שמופיעים בהיסטוריית settings.local.json — **פגי תוקף**; התקף רק
+  ב-`video-use/.env`.
