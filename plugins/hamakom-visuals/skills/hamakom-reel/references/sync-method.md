@@ -43,16 +43,24 @@ ffmpeg -y -i body.mp4 -i music.wav -i a3.wav -i a5.wav ... -filter_complex "
 [d3][d5]...amix=inputs=N:duration=longest:normalize=0,\
 apad=whole_dur=TOTAL,atrim=0:TOTAL,\
 aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,asplit=2[nat1][nat2];
-[1:a]atrim=0:TOTAL,asetpts=PTS-STARTPTS,volume=0.95,\
+[1:a]apad=whole_dur=TOTAL,atrim=0:TOTAL,asetpts=PTS-STARTPTS,volume=0.95,\
 aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[m];
 [m][nat1]sidechaincompress=threshold=0.02:ratio=6:attack=80:release=600:makeup=1[duck];
-[duck][nat2]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]" \
+[duck][nat2]amix=inputs=2:duration=first:normalize=0,\
+alimiter=limit=0.85:level=false,apad=whole_dur=TOTAL,atrim=0:TOTAL[a]" \
 -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k reel.mp4
 ```
 הערות:
 - `aformat` לפני sidechaincompress חובה — בלעדיו: "could not choose their formats".
 - TOTAL = סך כל הפריימים ÷ 30. גם HIT_TIME של המוזיקה (אקורד הסיום) = אופסט הסגיר.
 - sidechain מנמיך את המוזיקה אוטומטית כשיש אודיו מקור ומעלה אותה בקטעים אילמים.
+
+### שתי מלכודות מיקס (קרו בפועל בריל א-טוואיל)
+- **loudnorm מקצר לפעמים את קובץ המוזיקה בכ-0.1 שנ'** — חובה
+  `apad=whole_dur=TOTAL,atrim=0:TOTAL` גם על קובץ המוזיקה (`[1:a]` למעלה)
+  וגם **בסוף שרשרת ה-[a], אחרי ה-alimiter** (כמו בדוגמה).
+- **ל-alimiter ברירת מחדל `level=true` שמנרמלת כלפי מעלה (מגבירה!).**
+  תמיד `alimiter=limit=0.85:level=false`. יעד שיא: -1 עד -3dB (volumedetect).
 
 ### 5. בדיקה
 ```bash
