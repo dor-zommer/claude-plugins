@@ -26,10 +26,16 @@
 2. **אינסטגרם = 1080×1350** (4:5 פיד — לא ריבוע. וואטסאפ נשאר ריבוע.)
 3. **תמונה אחת לכולם** — אותה תמונת og/featured של הכתבה, full-bleed.
 4. **לוגו לבן במרכז התחתון** (חלק מ-chrome התחתון, מעל פס-החתימה).
-5. **Lede חובה** — משפט סיכום אחד מהכתבה.
-6. **Gradient דיו שקוף למעלה** — מתחיל להחשיך רק מ-textStart.
-7. **כותרת = h1 verbatim** (Suez One) — לא `og:title`, לא קיצור.
-8. **פס-חתימה טריקולור** למעלה ולמטה (טרקוטה·מרווה·אברש).
+5. **הקיקר מעל הכותרת = ה-lede של הכתבה** (משפט תקציר, טרקוטה-בהיר) — **לא תגית קטגוריה.**
+6. **הכותרת נמוכה ככל שניתן** — ממוקמת מלמטה למעלה: byline → כותרת ~16px
+   מעליו → קיקר ~14px מעל הכותרת. לא באמצע הפריים.
+7. **byline = שם הכותב/ת בלבד** (בלי "מאת:"), ink-soft `#6b6a63`.
+8. **Gradient דיו מצומצם** — שקוף לחלוטין עד ~7% מעל הקיקר, אלפא מלא רק
+   בתחתית. ~65-70% העליונים של התמונה גלויים לחלוטין.
+9. **כותרת = h1 verbatim** (Suez One) — לא `og:title`, לא קיצור.
+10. **פס-חתימה טריקולור תחתון יחיד** — 4px בקצה התחתון (טרקוטה·מרווה·אברש). אין פס עליון.
+11. **שורת תחתית צמודה לפס**: credit צילום שמאל (x≈18, לבן opacity 0.53) +
+    `HA-MAKOM.CO.IL` ממורכז (on-dark-soft).
 
 ---
 
@@ -49,14 +55,15 @@ const C = {
   bg:{r:0.9804,g:0.9765,b:0.9608},      // שנהב (לא בשימוש בגרפיקה — היא cover-style)
   ink:{r:0.0784,g:0.0784,b:0.0745},     // דיו — gradient + רקע
   terra:{r:0.851,g:0.4667,b:0.3412}, sage:{r:0.4706,g:0.549,b:0.3647}, heather:{r:0.5569,g:0.4353,b:0.6588},
-  scTerra:{r:0.9098,g:0.5647,b:0.4353}, // טרקוטה-בהיר ל-label על כהה
+  scTerra:{r:0.9098,g:0.5647,b:0.4353}, // טרקוטה-בהיר לקיקר-lede על כהה
+  inkSoft:{r:0.4196,g:0.4157,b:0.3882}, // byline
   onDarkSoft:{r:0.7176,g:0.7098,b:0.6745}, white:{r:1,g:1,b:1},
 };
 const CONTENT = {
   title:  "הכותרת המלאה של הכתבה מילה במילה",
-  lede:   "משפט הסיכום של הכתבה — מה זה ולמה זה חשוב",
-  label:  "תחקיר · צבא",          // קטגוריות מהכתבה
-  byline: "תחקיר · שם הכותב/ת",
+  kicker: "משפט ה-lede של הכתבה — התקציר שמושך פנימה",  // לא קטגוריה!
+  byline: "שם הכותב/ת",                                    // שם בלבד, בלי "מאת:"
+  credit: "צילום: שם הצלם / פלאש 90",
 };
 
 // ============================ FONTS ============================
@@ -93,23 +100,28 @@ function makeLogo(fillColor, w, h) {
   const rec=(n)=>{ if(["VECTOR","BOOLEAN_OPERATION","POLYGON","RECTANGLE"].includes(n.type)){ if("fills" in n) n.fills=[{type:"SOLID",color:fillColor}]; } if("children" in n) n.children.forEach(rec); };
   rec(node); node.resize(w,h); node.name="logo"; return node;
 }
-// פס-חתימה טריקולור ברוחב מלא (כל הפורמטים W=1080)
+// פס-חתימה טריקולור ברוחב מלא (כל הפורמטים W=1080).
+// נקרא פעם אחת בלבד לפריים — תחתון, h=4, בקצה התחתון (y=H-4). אין פס עליון.
 function sig(frame, W, y, h){
   const t=Math.round(W/3);
   frame.appendChild(rect({x:2*t,y,w:W-2*t,h,color:C.terra}));
   frame.appendChild(rect({x:t,y,w:t,h,color:C.sage}));
   frame.appendChild(rect({x:0,y,w:t,h,color:C.heather}));
 }
-function gradientFor(textStart) {
+// גרדיאנט מצומצם — מבוסס מיקום ה-label בפועל (labelFrac = labelTxt.y / H)
+function gradientFor(labelFrac) {
   return { type:"GRADIENT_LINEAR", gradientTransform:[[0,1,0],[-1,0,1]], gradientStops:[
     { position:0.0, color:{...C.ink,a:0.0} },
-    { position:Math.max(0.01,textStart-0.15), color:{...C.ink,a:0.0} },
-    { position:textStart, color:{...C.ink,a:0.8} },
-    { position:1.0, color:{...C.ink,a:1.0} },
+    { position:Math.max(0.01,labelFrac-0.07), color:{...C.ink,a:0.0} },  // שקוף לחלוטין עד ~7% מעל ה-label
+    { position:labelFrac, color:{...C.ink,a:0.72} },                     // מתחיל להחשיך רק סמוך לטקסט
+    { position:1.0, color:{...C.ink,a:1.0} },                            // אלפא מלא רק בתחתית
   ]};
 }
 
 // ============================ BUILD FRAME ============================
+// הטקסט ממוקם מלמטה למעלה: פס-חתימה (קצה תחתון) → שורת credit+url → לוגו →
+// byline → כותרת (~16px מעל ה-byline) → קיקר-lede (~14px מעל הכותרת).
+// הגרדיאנט מחושב לפי מיקום הקיקר בפועל ומוזרק מעל התמונה, מתחת לטקסט.
 async function buildGraphic(name, posX, posY, W, H, o) {
   const frame = figma.createFrame(); frame.name=name; frame.resize(W,H);
   frame.x=posX; frame.y=posY; frame.fills=[{type:"SOLID",color:C.ink}]; frame.clipsContent=true;
@@ -117,54 +129,57 @@ async function buildGraphic(name, posX, posY, W, H, o) {
   // 1. תמונה full-bleed
   const photo = rect({ x:0, y:0, w:W, h:H, color:C.ink }); photo.name="photo";
   photo.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO_IMAGE_HASH}]; frame.appendChild(photo);
-  // 2. gradient דיו
-  frame.appendChild(rect({ x:0, y:0, w:W, h:H, fills:[gradientFor(o.textStart)] }));
-  // 3. פס-חתימה עליון
-  sig(frame, W, 0, 8);
 
   const padX=o.padX, contentW=W-padX*2;
-  // 4. label טרקוטה (IBM Plex SemiBold)
-  const labelTxt = await txt({ chars:CONTENT.label, family:BODY, style:"SemiBold", size:o.labelSize,
-    color:C.scTerra, x:padX, y:Math.floor(H*o.textStart)+o.labelOffsetTop, w:contentW, align:"RIGHT", letterSpacing:2 });
-  frame.appendChild(labelTxt);
-  // 5. כותרת Suez One verbatim
+
+  // 2. chrome תחתון — פס-חתימה תחתון יחיד (4px) → שורת credit+url → לוגו
+  const sigH=4, sigY=H-sigH;
+  sig(frame, W, sigY, sigH);  // הפס היחיד בפריים — אין פס עליון
+  const url = await txt({ chars:"HA-MAKOM.CO.IL", family:BODY, style:"SemiBold", size:o.urlSize,
+    color:C.onDarkSoft, x:0, y:sigY-o.urlSize-12, w:W, align:"CENTER", letterSpacing:3 });
+  frame.appendChild(url);
+  const credit = await txt({ chars:CONTENT.credit, family:BODY, style:"Regular", size:18,
+    color:C.white, x:18, y:0, w:360, align:"LEFT" });
+  credit.fills=[{type:"SOLID",color:C.white,opacity:0.53}];
+  credit.y = sigY - credit.height - 10; frame.appendChild(credit);
+  const logoH=o.logoH, logoW=Math.round(logoH*(826.779/981.533));
+  const logo=makeLogo(C.white, logoW, logoH);
+  logo.x=Math.floor((W-logoW)/2); logo.y=url.y-logoH-o.logoGap; frame.appendChild(logo);
+
+  // 3. byline — שם הכותב/ת בלבד, ink-soft
+  const byline = await txt({ chars:CONTENT.byline, family:BODY, style:"Medium", size:o.bylineSize,
+    color:C.inkSoft, x:padX, y:0, w:contentW, align:"RIGHT" });
+  byline.y = logo.y - o.bylineGap - byline.height; frame.appendChild(byline);
+
+  // 4. כותרת Suez One verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline
   const title = await txt({ chars:CONTENT.title, family:HEAD, style:"Regular", size:o.titleSize,
-    color:C.white, x:padX, y:labelTxt.y+labelTxt.height+o.labelToTitleGap, w:contentW, align:"RIGHT", lhPct:108 });
-  frame.appendChild(title);
-  // 6. lede (IBM Plex)
-  if (o.showLede) {
-    const ledeW=Math.floor(contentW*o.ledeWidthPct), ledeX=W-padX-ledeW;
-    frame.appendChild(await txt({ chars:CONTENT.lede, family:BODY, style:"Regular", size:o.ledeSize,
-      color:C.onDarkSoft, x:ledeX, y:title.y+title.height+o.titleToLedeGap, w:ledeW, align:"RIGHT", lhPct:150 }));
-  }
-  // 7. chrome תחתון: byline → לוגו לבן מרכזי → פס-חתימה תחתון + url
-  const sigH=o.stripeH, logoH=o.logoH, logoW=Math.round(logoH*(826.779/981.533));
-  const sigY=H-sigH, logoY=sigY-logoH-o.logoBottomGap;
-  frame.appendChild(await txt({ chars:CONTENT.byline, family:BODY, style:"Medium", size:o.bylineSize,
-    color:C.onDarkSoft, x:padX, y:logoY-o.logoTopGap-o.bylineSize-6, w:contentW, align:"RIGHT" }));
-  const logo=makeLogo(C.white, logoW, logoH); logo.x=Math.floor((W-logoW)/2); logo.y=logoY; frame.appendChild(logo);
-  sig(frame, W, sigY, sigH);  // פס-חתימה תחתון (במקום פס אדום)
-  frame.appendChild(await txt({ chars:"HA-MAKOM.CO.IL", family:BODY, style:"SemiBold", size:o.urlSize,
-    color:C.white, x:0, y:sigY+sigH+6, w:W, align:"CENTER", letterSpacing:3 }));
+    color:C.white, x:padX, y:0, w:contentW, align:"RIGHT", lhPct:108 });
+  title.y = byline.y - o.titleGap - title.height; frame.appendChild(title);
+
+  // 5. קיקר-lede טרקוטה-בהיר — צמוד ~14px מעל הכותרת
+  const kicker = await txt({ chars:CONTENT.kicker, family:BODY, style:"SemiBold", size:o.kickerSize,
+    color:C.scTerra, x:padX, y:0, w:contentW, align:"RIGHT", letterSpacing:2 });
+  kicker.y = title.y - o.kickerGap - kicker.height; frame.appendChild(kicker);
+
+  // 6. gradient דיו מצומצם — לפי מיקום הקיקר בפועל; מוזרק מעל התמונה, מתחת לטקסט
+  const grad = rect({ x:0, y:0, w:W, h:H, fills:[gradientFor(kicker.y / H)] });
+  frame.insertChild(1, grad);
 
   graphicsPage.appendChild(frame); return frame.id;
 }
 
 // ============================ 3 FORMATS (W=1080) ============================
 await buildGraphic("whatsapp-1080x1080", 0, 0, 1080, 1080, {
-  textStart:0.45, padX:64, labelSize:24, labelOffsetTop:30, labelToTitleGap:10,
-  titleSize:56, titleToLedeGap:20, showLede:true, ledeSize:22, ledeWidthPct:0.68,
-  stripeH:8, logoH:60, logoBottomGap:34, logoTopGap:14, bylineSize:22, urlSize:21 });
+  padX:64, kickerSize:24, kickerGap:14, titleSize:56, titleGap:16,
+  bylineSize:22, bylineGap:22, logoH:60, logoGap:16, urlSize:21 });
 
 await buildGraphic("instagram-1080x1350", 1260, 0, 1080, 1350, {
-  textStart:0.50, padX:64, labelSize:25, labelOffsetTop:8, labelToTitleGap:10,
-  titleSize:56, titleToLedeGap:22, showLede:true, ledeSize:24, ledeWidthPct:0.70,
-  stripeH:8, logoH:64, logoBottomGap:36, logoTopGap:16, bylineSize:23, urlSize:21 });
+  padX:64, kickerSize:28, kickerGap:14, titleSize:56, titleGap:16,
+  bylineSize:23, bylineGap:24, logoH:64, logoGap:18, urlSize:21 });
 
 await buildGraphic("ig-story-1080x1920", 2520, 0, 1080, 1920, {
-  textStart:0.55, padX:72, labelSize:28, labelOffsetTop:24, labelToTitleGap:12,
-  titleSize:80, titleToLedeGap:24, showLede:true, ledeSize:32, ledeWidthPct:0.68,
-  stripeH:8, logoH:84, logoBottomGap:40, logoTopGap:18, bylineSize:28, urlSize:23 });
+  padX:72, kickerSize:30, kickerGap:14, titleSize:80, titleGap:16,
+  bylineSize:28, bylineGap:28, logoH:84, logoGap:20, urlSize:23 });
 
 return { status:"ok", pageId:graphicsPage.id, head:HEAD, body:BODY };
 ```
@@ -188,13 +203,21 @@ for (const id of ["1:4","1:36","1:67"]) {          // 3 פלייסהולדרים
 
 ## עיצוב — כן/לא
 
-✓ תמונה full-bleed, gradient דיו, label טרקוטה, כותרת Suez One לבנה, לוגו מרכזי-תחתון, פס-חתימה טריקולור.
+✓ תמונה full-bleed, gradient דיו מצומצם (שקוף עד סמוך לקיקר), קיקר-lede
+טרקוטה-בהיר, כותרת Suez One לבנה נמוכה (ממש מעל ה-byline), byline שם-בלבד
+ink-soft, לוגו מרכזי-תחתון, שורת credit+url צמודה לפס, פס-חתימה טריקולור
+תחתון יחיד 4px בקצה התחתון.
 
-✗ אסור: אדום `#f70d28` / פס אדום / NextExit; אינסטגרם ריבוע (פיד=4:5); gradient מ-alpha 0.2+ למעלה; פורמט רביעי.
+✗ אסור: אדום `#f70d28` / פס אדום / NextExit; פס-חתימה עליון (הפס תחתון בלבד);
+תגית קטגוריה כקיקר (הקיקר = lede); "מאת:" ב-byline; כותרת באמצע הפריים;
+אינסטגרם ריבוע (פיד=4:5); gradient שמחשיך מעל אזור הטקסט (~65-70% העליונים
+חייבים להישאר גלויים); פורמט רביעי.
 
 ---
 
 ## פלט QA
 
-screenshot של 3 הפריימים — לוודא: תמונה נראית (לא דיו מלא), כותרת Suez One verbatim,
-פס-חתימה טריקולור למעלה+למטה, לוגו לבן מרכזי, label טרקוטה.
+screenshot של 3 הפריימים — לוודא: תמונה נראית (לא דיו מלא — הגרדיאנט לא מסתיר
+את ~65-70% העליונים), כותרת Suez One verbatim צמודה לתחתית (~16px מעל
+ה-byline), הקיקר = lede (לא קטגוריה), byline שם-בלבד ב-ink-soft, פס-חתימה
+טריקולור תחתון יחיד 4px (אין פס עליון), לוגו לבן מרכזי, שורת credit+url צמודה לפס.

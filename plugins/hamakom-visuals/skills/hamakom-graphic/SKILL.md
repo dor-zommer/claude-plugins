@@ -9,8 +9,9 @@ description: >
   הפלט: עמוד Figma אחד עם 3 פריימים ממותגים של אותה כתבה —
   whatsapp-1080x1080 (ריבוע 1:1), instagram-1080x1350 (פיד 4:5),
   ig-story-1080x1920 (סטורי 9:16).
-  כל פריים: תמונה full-bleed + gradient דיו + label/title/lede/byline + לוגו
-  לבן במרכז התחתון + פס-חתימה טריקולור. הכותרת = h1 verbatim של הכתבה.
+  כל פריים: תמונה full-bleed + gradient דיו מצומצם + label/title/byline (בלי
+  lede) + לוגו לבן במרכז התחתון + פס-חתימה טריקולור תחתון יחיד (4px).
+  הכותרת = h1 verbatim של הכתבה, נמוכה ככל שניתן — ממש מעל ה-byline.
 
   פלטה: HaMakom DS 2026 — שנהב/דיו/טרקוטה (טריו +מרווה +אברש). פונטים
   Suez One + IBM Plex Sans Hebrew. עיצוב זהה לקאבר של hamakom-carousel.
@@ -78,7 +79,7 @@ fontSize מותרת; שינוי הטקסט אסור.
 | שכבה | פונט | משקלים | שימוש |
 |------|------|---------|--------|
 | **תצוגה** | **Suez One** | Regular | title (h1 verbatim), ציטוטים |
-| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | label, lede, byline, credit, url |
+| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | label, byline, credit, url |
 
 שני הפונטים ב-Google Fonts. התקנה חד-פעמית (אין צורך ב-restart):
 ```bash
@@ -102,9 +103,10 @@ Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `f
 |-------|-----|--------|
 | דיו `--ink` | `#141413` | gradient + רקע |
 | לבן | `#ffffff` | כותרת (Suez One), לוגו |
-| טרקוטה-בהיר | `#E8906F` | label קטגוריה (על כהה) |
-| `--on-dark-soft` | `#b7b5ac` | lede + byline |
-| חתימה | טרקוטה `#D97757` · מרווה `#788C5D` · אברש `#8E6FA8` | פס-חתימה למעלה+למטה |
+| טרקוטה-בהיר | `#E8906F` | קיקר = ה-lede של הכתבה (על כהה) |
+| `--ink-soft` | `#6b6a63` | byline (שם הכותב/ת בלבד) |
+| `--on-dark-soft` | `#b7b5ac` | url בשורת התחתית |
+| חתימה | טרקוטה `#D97757` · מרווה `#788C5D` · אברש `#8E6FA8` | פס-חתימה תחתון יחיד (4px) |
 
 **אסור:** אדום `#f70d28` / ענבר `#d4a13a` (פלטה ישנה — בוטלה), pastel,
 corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
@@ -115,43 +117,53 @@ corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 
 ## Layout pattern (זהה לכל 3 הפורמטים)
 
+הטקסט ממוקם **מלמטה למעלה** — מחשבים מהפוטר כלפי מעלה, כך שהכותרת יושבת
+נמוך ככל שניתן. (עדכון 3.7.2026 — לפי ההירו שדור קיבע בקובץ הארגזים.)
+
 ```
-y=0       פס-חתימה טריקולור 8px (טרקוטה·מרווה·אברש)
-y=0..H    תמונה (full-bleed, scaleMode FILL) + gradient דיו overlay
-y=textStart*H  אזור טקסט מתחיל (textStart ~0.45-0.55 לפי פורמט)
-          label (IBM Plex SemiBold, טרקוטה-בהיר #E8906F, letter-spacing 2)
-          title (Suez One, גדול, line-height 108%) — h1 verbatim
-          lede  (IBM Plex Regular, רוחב ~68% מהמסגרת, RTL right-aligned)
-          byline (IBM Plex Medium, on-dark-soft)
+y=0..H    תמונה (full-bleed, scaleMode FILL) + gradient דיו מצומצם overlay
+          --- מחושב מלמטה למעלה: ---
+          kicker = ה-lede של הכתבה (IBM Plex SemiBold, טרקוטה-בהיר #E8906F, ls 2) — צמוד ~14px מעל הכותרת
+          title (Suez One, גדול, line-height 108%) — h1 verbatim, ~16px מעל ה-byline
+          byline = שם הכותב/ת בלבד, בלי "מאת:" (IBM Plex Medium, ink-soft #6b6a63)
           logo  (SVG ריבועי, ממורכז במרכז התחתון, לבן)
-y=H-sigH  פס-חתימה טריקולור תחתון + "HA-MAKOM.CO.IL" (IBM Plex SemiBold) מתחתיו
+          שורת תחתית צמודה לפס: credit שמאל (x≈18, לבן opacity 0.53) + "HA-MAKOM.CO.IL" ממורכז (on-dark-soft)
+y=H-4     פס-חתימה טריקולור תחתון יחיד (4px, טרקוטה·מרווה·אברש) — אין פס עליון
 ```
 
-**שני מאפיינים קריטיים של הפורמט הזה:**
-1. **לוגו במרכז התחתון** — לא בפינה ימין-עליון. הוא חלק מה-chrome התחתון, יחד עם פס ה-URL.
-2. **Lede חובה** — משפט אחד שמסכם את הכתבה. רוחב צר מימין (~65%) שמשאיר נשימה משמאל.
+**ארבעה מאפיינים קריטיים של הפורמט הזה:**
+1. **הקיקר מעל הכותרת הוא ה-lede** (משפט תקציר הכתבה) — **לא תגית קטגוריה.**
+2. **לוגו במרכז התחתון** — לא בפינה. חלק מה-chrome התחתון.
+3. **הכותרת נמוכה ככל שניתן** — ממש מעל ה-byline (~16px), לא באמצע הפריים. הקיקר צמוד מעליה.
+4. **הגרדיאנט לא מסתיר את התמונה** — ~65-70% העליונים של התמונה גלויים לחלוטין.
 
 ---
 
-## Gradient — קריטי שיהיה שקוף למעלה
+## Gradient — מצומצם, לא מסתיר את התמונה
+
+הגרדיאנט מבוסס על **מיקום ה-label בפועל** (אחרי שהטקסט מוקם מלמטה למעלה),
+לא על ערך textStart קבוע:
 
 ```javascript
-function gradientFor(textStart) {
+// labelFrac = labelTxt.y / H — מחושב אחרי מיקום הטקסט בפועל
+function gradientFor(labelFrac) {
   return {
     type: "GRADIENT_LINEAR",
     gradientTransform: [[0, 1, 0], [-1, 0, 1]],
     gradientStops: [
-      { position: 0.00, color: { ...C.ink, a: 0.0 } },                    // שקוף
-      { position: Math.max(0.01, textStart - 0.15), color: { ...C.ink, a: 0.0 } },  // שקוף
-      { position: textStart, color: { ...C.ink, a: 0.8 } },               // מתחיל להחשיך
-      { position: 1.00, color: { ...C.ink, a: 1.0 } },                    // דיו מלא
+      { position: 0.00, color: { ...C.ink, a: 0.0 } },                                // שקוף
+      { position: Math.max(0.01, labelFrac - 0.07), color: { ...C.ink, a: 0.0 } },    // שקוף לחלוטין עד ~7% מעל ה-label
+      { position: labelFrac, color: { ...C.ink, a: 0.72 } },                          // מתחיל להחשיך רק סמוך לטקסט
+      { position: 1.00, color: { ...C.ink, a: 1.0 } },                                // אלפא מלא רק בתחתית
     ],
   };
 }
 ```
 
-הסיבה: התמונה צריכה להיראות בחצי העליון. אם הגרדיאנט מתחיל מ-0.2-0.5
-alpha למעלה — התמונה נעלמת (במיוחד תמונות שכבר כהות מטבען).
+הסיבה: הגרדיאנט הכהה מסתיר את החלק החשוב של התמונה. מכיוון שאזור הטקסט
+עכשיו נמוך (הכותרת ממש מעל ה-byline), הגרדיאנט נשאר שקוף לגמרי עד סמוך
+לאזור הטקסט, מתחיל להחשיך רק ~6-8% מעל ה-label, ומגיע לאלפא מלא רק
+בתחתית. **~65-70% העליונים של התמונה חייבים להישאר גלויים לחלוטין.**
 
 ---
 
@@ -179,13 +191,15 @@ for (const id of photoNodeIds) {
 הפריים (כפי שדור אישר על דוגמת דרעי/ביקורי משפחות). **לכותרת h1 ארוכה —
 הקטן titleSize בלבד, לא את שאר היחסים.**
 
-| frame | מידות | textStart | padX | labelSize | titleSize (Suez One) | ledeSize | bylineSize | sigH | logoH |
-|-------|-------|-----------|------|-----------|-----------|----------|-----------|------|-------|
-| whatsapp-1080x1080  | 1080×1080 | 0.45 | 64 | 24 | 56 | 22 | 22 | 8 | 60 |
-| instagram-1080x1350 | 1080×1350 | 0.50 | 64 | 25 | 56 | 24 | 23 | 8 | 64 |
-| ig-story-1080x1920  | 1080×1920 | 0.55 | 72 | 28 | 80 | 32 | 28 | 8 | 84 |
+| frame | מידות | padX | kickerSize (lede) | titleSize (Suez One) | titleGap | bylineSize | sigH | logoH |
+|-------|-------|------|-----------|-----------|----------|-----------|------|-------|
+| whatsapp-1080x1080  | 1080×1080 | 64 | 24 | 56 | 16 | 22 | 4 | 60 |
+| instagram-1080x1350 | 1080×1350 | 64 | 28 | 56 | 16 | 23 | 4 | 64 |
+| ig-story-1080x1920  | 1080×1920 | 72 | 30 | 80 | 16 | 28 | 4 | 84 |
 
-(`sigH` = גובה פס-החתימה התחתון; ה-url יושב מתחתיו.)
+(`sigH` = גובה פס-החתימה התחתון היחיד — 4px בקצה התחתון; ה-url וה-credit יושבים
+מעליו באותה שורה. `kickerSize` = גודל הקיקר-lede. `titleGap` = הרווח בין תחתית
+הכותרת ל-byline — ~16px; הקיקר ~14px מעל הכותרת.)
 
 ראה `scripts/build_graphics_page.md` לתבנית JS מלאה.
 
@@ -202,7 +216,8 @@ for (const id of photoNodeIds) {
 5. **Adobe Firefly** — fallback להמחשה (אם אין תמונה אמיתית). פרומפט קבוע:
    `dark cinematic Hebrew journalism aesthetic, no text, no faces, atmospheric`.
 
-**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt, לבן opacity 0.6.
+**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt,
+לבן opacity ~0.53, בשורת התחתית משמאל (x≈18) לצד ה-url הממורכז.
 
 ---
 
@@ -238,9 +253,8 @@ recurse(node);
 3. שולף את הכתבה (WebFetch / defuddle) ומחלץ:
    - **h1 verbatim** (הכותרת — לא og:title!)
    - og:image (התמונה)
-   - byline
-   - קטגוריה (label)
-   - משפט lede אחד שמסכם את הכתבה
+   - byline (שם הכותב/ת בלבד)
+   - **lede — משפט תקציר הכתבה** (meta description לרוב) → זה הקיקר מעל הכותרת
 4. בוחר/מאתר את התמונה (ראה "איסוף תמונות").
 5. פלטה קבועה — HaMakom DS 2026 (שנהב/דיו/טרקוטה). אין בחירת פלטה.
 6. קורא ל-MCP figma `create_new_file` editorType=design + planKey.
@@ -263,11 +277,14 @@ recurse(node);
 - ☐ **הכותרת בכל 3 הגרפיקות = h1 verbatim** (לא ה-`og:title`, לא קיצור, לא המצאה)
 - ☐ כל 3 הפריימים קיימים: whatsapp-1080x1080, instagram-1080x1350, ig-story-1080x1920
 - ☐ **התמונה מופיעה בכל 3 הפריימים** (לא שחור — בדוק אם `upload_assets` לא הפעיל; אם כן, החל ידנית עם imageHash)
-- ☐ **גרדיאנט שקוף למעלה** בכל הפריימים (התמונה נראית, לא מוסתרת)
+- ☐ **הגרדיאנט לא מסתיר את התמונה** — ~65-70% העליונים גלויים לחלוטין; ההחשכה מתחילה רק ~6-8% מעל הקיקר
+- ☐ **הכותרת צמודה לתחתית** — ~16px מעל ה-byline, לא באמצע הפריים; הקיקר צמוד מעליה
+- ☐ **הקיקר = ה-lede של הכתבה** (טרקוטה-בהיר) — לא תגית קטגוריה
+- ☐ **byline = שם הכותב/ת בלבד** (בלי "מאת:"), ink-soft
 - ☐ **לוגו לבן במרכז התחתון** של כל פריים (לא בפינה)
 - ☐ אינסטגרם הוא 4:5 (1080×1350), לא ריבוע
-- ☐ label טרקוטה + lede + byline במקום; כותרת Suez One (לא NextExit)
-- ☐ פס-חתימה טריקולור למעלה+למטה (לא פס אדום); url מתחת לפס התחתון
+- ☐ כותרת Suez One (לא NextExit)
+- ☐ **פס-חתימה טריקולור תחתון יחיד, 4px, בקצה התחתון** (אין פס עליון, לא פס אדום); שורת credit+url מעליו
 
 ---
 

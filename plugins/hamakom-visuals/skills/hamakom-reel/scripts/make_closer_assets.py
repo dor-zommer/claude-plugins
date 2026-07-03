@@ -1,19 +1,35 @@
 # -*- coding: utf-8 -*-
-"""נכסי הסגיר הדרמטי (HaMakom DS 2026) — קונספט "המניפסט".
+"""נכסי סגיר מותאם (HaMakom DS 2026) — קונספט "המניפסט".
+
+**הסגיר הקנוני הוא closer_v3.mp4 מתיקיית החומרים הקבועה
+(`/Users/dorzommer/Desktop/חומרים להכנת וידאו לרילז ` — רווח בסוף!) —
+משתמשים בו כמות שהוא. את הסקריפט הזה מריצים רק כשצריך טקסט CTA אחר
+מזה שצרוב ב-closer_v3.**
+
+טקסט ה-CTA לפי סוג הכתבה: "התחקיר המלא באתר" רק לתחקיר אמיתי; לדיווח —
+"הסיפור המלא באתר" (או "הדיווח של [כתב/ת] באתר" / "כל הפרטים באתר").
+מגדירים במשתנה סביבה REEL_CTA.
 
 מייצר ל-$REEL_WORKDIR:
   fA.png fB.png fC.png  — פריימי מכות המניפסט (טקסט אטום על דיו, מצטבר):
       "בלי בעלי הון" → +"בלי פרסומות" → +"בלי בולשיט" (השלישית בטרקוטה)
   fD.png               — פריים הנעילה: לוגו מרובע (שנהב) + פס-חתימה טריקולור +
-                         CTA ("התחקיר המלא באתר" Suez One) + סלוגן + URL טרקוטה
+                         CTA (Suez One) + סלוגן + URL טרקוטה
   sting.wav            — פס-קול מסונתז (drone עולה + 3 מכות מתגברות + boom נעילה)
 
 ffmpeg מרכיב מהם את הסגיר ב-make_closer.sh (cut+shake+flash+grain+vignette).
 
-דורש: PIL עם libraqm (רינדור RTL — כמו make_cards.py), cairosvg, numpy.
+**מלכודת קואורדינטות:** פריים הנעילה fD נבנה בקואורדינטות המקור של lock()
+(לוגו 470px ב-y=640, פס 560×12, CTA 60 ב-cy=1530, סלוגן 1625, URL 1710).
+אסור למדוד קואורדינטות מפריים פלט — שרשרת הרעד ב-make_closer.sh מגדילה פי 1.12
+וחותכת (crop 65,115); מדידה מהפלט מחילה את הטרנספורם פעמיים וה-URL נחתך.
+
+דורש: PIL + python-bidi (אין libraqm במק של דור — get_display, לא direction='rtl'),
+cairosvg, numpy. גרש בעברית — גרש עברי ׳ (U+05F3), לא אפוסטרוף לטיני.
 הלוגו: SVG מרובע — מחפש ב-WORKDIR ואז בנכסי הפלאגין (ראה LOGO_CANDS).
 """
 from PIL import Image, ImageDraw, ImageFont
+from bidi.algorithm import get_display
 import os, wave
 
 WORKDIR = os.environ.get("REEL_WORKDIR", "/tmp/vid")
@@ -45,12 +61,13 @@ TERRA_S = (217, 119, 87)    # טרקוטה חתימה #D97757
 
 
 def _center(d, img, text, font, cy, fill):
-    """שורה ממורכזת אופקית, cy = מרכז אנכי. RTL."""
-    bbox = d.textbbox((0, 0), text, font=font, direction='rtl')
+    """שורה ממורכזת אופקית, cy = מרכז אנכי. RTL דרך bidi (אין libraqm)."""
+    vis = get_display(text)
+    bbox = d.textbbox((0, 0), vis, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     x = (W - tw) // 2 - bbox[0]
     y = cy - th // 2 - bbox[1]
-    d.text((x, y), text, font=font, fill=fill, direction='rtl')
+    d.text((x, y), vis, font=font, fill=fill)
 
 
 def manifesto(name, lines):
@@ -66,21 +83,18 @@ def manifesto(name, lines):
 
 
 def logo_ivory(width=470):
-    """רסטר הלוגו המרובע → שנהב עם אלפא (מתוך כהות)."""
+    """רסטר הלוגו המרובע → שנהב. **אלפא נשמר כמות שהוא, צובעים רק RGB.**
+    (ההמרה הישנה לומיננס→אלפא שגויה: פיקסלים שקופים הם RGB=0 ומתקבל ריבוע מלא.)"""
     import cairosvg, numpy as np
     src = _first(*LOGO_CANDS)
     png = f"{WORKDIR}/_logo_raw.png"
     cairosvg.svg2png(url=src, write_to=png, output_width=width * 2)   # x2 לחדות
-    a = np.array(Image.open(png).convert("RGBA")).astype("int16")
-    lum = 0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]
-    alpha = np.clip(255 - lum, 0, 255).astype("uint8")               # דיו → אטום
-    ys, xs = np.where(alpha > 20)
-    alpha = alpha[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
-    hh, ww = alpha.shape
-    out = np.zeros((hh, ww, 4), "uint8")
-    out[..., 0], out[..., 1], out[..., 2], out[..., 3] = 250, 249, 245, alpha
-    im = Image.fromarray(out, "RGBA")
-    im = im.resize((width, int(width * hh / ww)), Image.LANCZOS)
+    a = np.array(Image.open(png).convert("RGBA"))
+    a[..., 0], a[..., 1], a[..., 2] = 250, 249, 245                  # שנהב, אלפא לא נגעים
+    ys, xs = np.where(a[..., 3] > 20)
+    a = a[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    im = Image.fromarray(a, "RGBA")
+    im = im.resize((width, int(width * im.height / im.width)), Image.LANCZOS)
     return im
 
 
@@ -98,8 +112,9 @@ def lock(name="fD"):
     seg = sw // 3
     for i, col in enumerate((HEATHER, SAGE, TERRA_S)):
         d.rectangle([sx + i * seg, sy, sx + (i + 1) * seg, sy + sh], fill=col)
-    # CTA
-    _center(d, img, "התחקיר המלא באתר", ImageFont.truetype(F_DISPLAY, 60), 1530, IVORY)
+    # CTA — לפי סוג הכתבה: "התחקיר המלא באתר" רק לתחקיר; לדיווח "הסיפור המלא באתר"
+    cta = os.environ.get("REEL_CTA", "הסיפור המלא באתר")
+    _center(d, img, cta, ImageFont.truetype(F_DISPLAY, 60), 1530, IVORY)
     _center(d, img, "בלי בעלי הון · בלי פרסומות · בלי בולשיט",
             ImageFont.truetype(F_UI, 38), 1625, MUTED)
     # URL — לטיני, LTR
