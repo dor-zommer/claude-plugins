@@ -16,7 +16,7 @@
 [ ] התקן Suez One + IBM Plex Sans Hebrew אם חסרים (ראה DS §2)
 [ ] צור Figma file: create_new_file editorType=design
 [ ] use_figma → בנה Carousel (קוד למטה): cover + פסקאות + CTA
-[ ] upload_assets: hero → cover-hero-image ; wordmark → wordmark-logo (CTA)
+[ ] upload_assets: hero → cover-hero-image (הלוגו ב-CTA הוא הריבועי מ-SVG — לא צריך upload)
 [ ] get_screenshot ל-QA (cover + פסקה + CTA)
 [ ] הצע קאפשיין לפוסט
 ```
@@ -160,21 +160,28 @@ async function DSlide(idx, total, number, kicker, headline, detail, source, xPos
 
 ---
 
-## CTA — dark, pill שנהב
+## CTA — dark, pill טרקוטה (הפריים הקנוני שדור קיבע, 3.7.2026 — "12-cta" בקובץ הארגזים)
 
 ```javascript
-const WM = "<imageHash וורדמרק לבן>";
-const cta=NF("NN-cta",C.ink); cta.x=ctaX;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
-const wm=R({x:300,y:250,w:480,h:150,color:C.ink}); wm.name="wordmark-logo";
-wm.fills=[{type:"IMAGE",scaleMode:"FIT",imageHash:WM}]; cta.appendChild(wm);
-cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:HEAD,style:"Regular",size:48,color:C.white,x:72,y:560,w:936,align:"CENTER",lhPct:120}));
-cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Regular",size:112,color:C.white,x:72,y:650,w:936,align:"CENTER",lhPct:110}));
-const btn=R({x:330,y:920,w:420,h:108,color:C.bg,cornerRadius:54}); btn.name="btn-pill"; cta.appendChild(btn);
-cta.appendChild(await T({chars:"לכתבה המלאה",family:BODY,style:"Bold",size:36,color:C.ink,x:330,y:952,w:420,align:"CENTER"}));
-await FOOT(cta,true);
+const cta=NF("NN-cta",C.ink); cta.x=ctaX;
+// פס-חתימה עליון 4px (בשקף הזה בלבד): טרקוטה משמאל · מרווה במרכז · אברש מימין
+cta.appendChild(R({x:0,y:0,w:360,h:4,color:C.terra}));
+cta.appendChild(R({x:360,y:0,w:360,h:4,color:C.sage}));
+cta.appendChild(R({x:720,y:0,w:360,h:4,color:C.heather}));
+// הלוגו הריבועי הטיפוגרפי בשנהב — גדול, ממורכז (לא וורדמרק!)
+const logoBig=LOGO_SQUARE(C.bg, 320, 380); logoBig.x=380; logoBig.y=240; cta.appendChild(logoBig);
+cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:BODY,style:"Medium",size:42,color:C.bg,x:72,y:720,w:936,align:"CENTER"}));
+cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Regular",size:76,color:C.bg,x:72,y:790,w:936,align:"CENTER",lhPct:110}));
+const btn=R({x:340,y:970,w:400,h:108,color:C.terra,cornerRadius:54}); btn.name="btn-pill"; cta.appendChild(btn);
+cta.appendChild(await T({chars:"לכתבה המלאה",family:BODY,style:"Bold",size:34,color:C.bg,x:340,y:1004,w:400,align:"CENTER"}));
+// פוטר: רצועת שנהב ברוחב מלא עם url בדיו — בלי FOOT הכהה ובלי פס תחתון
+cta.appendChild(R({x:0,y:1294,w:1080,h:56,color:C.bg}));
+cta.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"Bold",size:24,color:C.ink,x:0,y:1308,w:1080,align:"CENTER",letterSpacing:4}));
 figma.currentPage.appendChild(cta);
 // לעולם לא "כשציבור מממן, ציבור קובע".
 ```
+
+`LOGO_SQUARE` = אותה פונקציית makeLogo של הלוגו הריבועי (SVG → vectors בצבע שנהב), בגודל 320×380.
 
 ---
 
@@ -202,7 +209,7 @@ for (const c of [...figma.currentPage.children]) {
 1. `upload_assets fileKey count=1 nodeId=<rect>` → מחזיר submitUrl.
 2. POST הקובץ ל-submitUrl (multipart `file=@...`) → מחזיר `imageHash`.
 3. אפשר להחיל ידנית: `node.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HASH}]`
-   (cover hero = FILL ; wordmark = FIT).
+   (cover hero = FILL ; קאטאאוט PNG = FILL על rect ביחס הנכון).
 
 ---
 
