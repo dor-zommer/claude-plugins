@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.3.0"
+    "version": "2.4.0"
   },
   "plugins": [
     {
@@ -43,6 +43,11 @@
       "name": "hamakom-data-page",
       "source": "./plugins/hamakom-data-page",
       "description": "עמוד דאטה-ז'ורנליזם סקרולי-טלינג + אריזה כתוסף WordPress מבודד. סיקור-מקדים מ-WP REST API, טמפלייט, ספריית קומפוננטות, וכללי מותג/קול."
+    },
+    {
+      "name": "dor-edit",
+      "source": "./plugins/dor-edit",
+      "description": "עורך רוח (/dor-edit) — עריכה עיתונאית מלאה בסגנון דור זומר; פלט Google Doc עם הצעות מיוחסות לדור, אימות עובדות, כותרות, SEO ותמונות פלאש 90"
     }
   ]
 }
