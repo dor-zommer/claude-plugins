@@ -26,9 +26,10 @@
 2. **אינסטגרם = 1080×1350** (4:5 פיד — לא ריבוע. וואטסאפ נשאר ריבוע.)
 3. **תמונה אחת לכולם** — אותה תמונת og/featured של הכתבה, full-bleed.
 4. **לוגו לבן במרכז התחתון** (חלק מ-chrome התחתון, מעל פס-החתימה).
-5. **הקיקר מעל הכותרת = ה-lede של הכתבה** (משפט תקציר, טרקוטה-בהיר) — **לא תגית קטגוריה.**
-6. **הכותרת נמוכה ככל שניתן** — ממוקמת מלמטה למעלה: byline → כותרת ~16px
-   מעליו → קיקר ~14px מעל הכותרת. לא באמצע הפריים.
+5. **כותרת + byline בלבד** — אין קיקר, אין lede, אין משנה, אין תגית קטגוריה (19.07.2026,
+   מיושר לקאבר של hamakom-carousel).
+6. **הכותרת נמוכה ככל שניתן** — ממוקמת מלמטה למעלה: byline → כותרת ~16px מעליו.
+   הכותרת היא האלמנט העליון. לא באמצע הפריים.
 7. **byline = שם הכותב/ת בלבד** (בלי "מאת:"), ink-soft `#6b6a63`.
 8. **Gradient דיו מצומצם** — שקוף לחלוטין עד ~7% מעל הקיקר, אלפא מלא רק
    בתחתית. ~65-70% העליונים של התמונה גלויים לחלוטין.
@@ -55,16 +56,15 @@ const C = {
   bg:{r:0.9804,g:0.9765,b:0.9608},      // שנהב (לא בשימוש בגרפיקה — היא cover-style)
   ink:{r:0.0784,g:0.0784,b:0.0745},     // דיו — gradient + רקע
   terra:{r:0.851,g:0.4667,b:0.3412}, sage:{r:0.4706,g:0.549,b:0.3647}, heather:{r:0.5569,g:0.4353,b:0.6588},
-  scTerra:{r:0.9098,g:0.5647,b:0.4353}, // טרקוטה-בהיר לקיקר-lede על כהה
+  scTerra:{r:0.9098,g:0.5647,b:0.4353}, // טרקוטה-בהיר על כהה — לא בשימוש מאז ביטול הקיקר
   inkSoft:{r:0.4196,g:0.4157,b:0.3882}, // byline
   onDarkSoft:{r:0.7176,g:0.7098,b:0.6745}, white:{r:1,g:1,b:1},
 };
 const CONTENT = {
-  title:  "הכותרת המלאה של הכתבה מילה במילה",
-  kicker: "משפט ה-lede של הכתבה — התקציר שמושך פנימה",  // לא קטגוריה!
-  byline: "שם הכותב/ת",                                    // שם בלבד, בלי "מאת:"
+  title:  "הכותרת המלאה של הכתבה מילה במילה",   // h1 verbatim — האלמנט העליון
+  byline: "שם הכותב/ת",                          // שם בלבד, בלי "מאת:"
   credit: "צילום: שם הצלם / פלאש 90",
-};
+};   // אין kicker/lede — בוטל 19.07.2026
 
 // ============================ FONTS ============================
 let HEAD="Inter", BODY="Inter";
@@ -108,20 +108,20 @@ function sig(frame, W, y, h){
   frame.appendChild(rect({x:t,y,w:t,h,color:C.sage}));
   frame.appendChild(rect({x:0,y,w:t,h,color:C.heather}));
 }
-// גרדיאנט מצומצם — מבוסס מיקום ה-label בפועל (labelFrac = labelTxt.y / H)
-function gradientFor(labelFrac) {
+// גרדיאנט מצומצם — מבוסס מיקום הכותרת בפועל (titleFrac = title.y / H)
+function gradientFor(titleFrac) {
   return { type:"GRADIENT_LINEAR", gradientTransform:[[0,1,0],[-1,0,1]], gradientStops:[
     { position:0.0, color:{...C.ink,a:0.0} },
-    { position:Math.max(0.01,labelFrac-0.07), color:{...C.ink,a:0.0} },  // שקוף לחלוטין עד ~7% מעל ה-label
-    { position:labelFrac, color:{...C.ink,a:0.72} },                     // מתחיל להחשיך רק סמוך לטקסט
+    { position:Math.max(0.01,titleFrac-0.07), color:{...C.ink,a:0.0} },  // שקוף לחלוטין עד ~7% מעל הכותרת
+    { position:titleFrac, color:{...C.ink,a:0.72} },                     // מתחיל להחשיך רק סמוך לטקסט
     { position:1.0, color:{...C.ink,a:1.0} },                            // אלפא מלא רק בתחתית
   ]};
 }
 
 // ============================ BUILD FRAME ============================
 // הטקסט ממוקם מלמטה למעלה: פס-חתימה (קצה תחתון) → שורת credit+url → לוגו →
-// byline → כותרת (~16px מעל ה-byline) → קיקר-lede (~14px מעל הכותרת).
-// הגרדיאנט מחושב לפי מיקום הקיקר בפועל ומוזרק מעל התמונה, מתחת לטקסט.
+// byline → כותרת (~16px מעל ה-byline). הכותרת היא האלמנט העליון — אין קיקר.
+// הגרדיאנט מחושב לפי מיקום הכותרת בפועל ומוזרק מעל התמונה, מתחת לטקסט.
 async function buildGraphic(name, posX, posY, W, H, o) {
   const frame = figma.createFrame(); frame.name=name; frame.resize(W,H);
   frame.x=posX; frame.y=posY; frame.fills=[{type:"SOLID",color:C.ink}]; frame.clipsContent=true;
@@ -151,18 +151,14 @@ async function buildGraphic(name, posX, posY, W, H, o) {
     color:C.inkSoft, x:padX, y:0, w:contentW, align:"RIGHT" });
   byline.y = logo.y - o.bylineGap - byline.height; frame.appendChild(byline);
 
-  // 4. כותרת Suez One verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline
+  // 4. כותרת Suez One verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline.
+  //    זה האלמנט העליון בפריים: אין קיקר, אין lede, אין משנה (19.07.2026).
   const title = await txt({ chars:CONTENT.title, family:HEAD, style:"Regular", size:o.titleSize,
     color:C.white, x:padX, y:0, w:contentW, align:"RIGHT", lhPct:108 });
   title.y = byline.y - o.titleGap - title.height; frame.appendChild(title);
 
-  // 5. קיקר-lede טרקוטה-בהיר — צמוד ~14px מעל הכותרת
-  const kicker = await txt({ chars:CONTENT.kicker, family:BODY, style:"SemiBold", size:o.kickerSize,
-    color:C.scTerra, x:padX, y:0, w:contentW, align:"RIGHT", letterSpacing:2 });
-  kicker.y = title.y - o.kickerGap - kicker.height; frame.appendChild(kicker);
-
-  // 6. gradient דיו מצומצם — לפי מיקום הקיקר בפועל; מוזרק מעל התמונה, מתחת לטקסט
-  const grad = rect({ x:0, y:0, w:W, h:H, fills:[gradientFor(kicker.y / H)] });
+  // 5. gradient דיו מצומצם — לפי מיקום הכותרת בפועל; מוזרק מעל התמונה, מתחת לטקסט
+  const grad = rect({ x:0, y:0, w:W, h:H, fills:[gradientFor(title.y / H)] });
   frame.insertChild(1, grad);
 
   graphicsPage.appendChild(frame); return frame.id;
@@ -170,15 +166,15 @@ async function buildGraphic(name, posX, posY, W, H, o) {
 
 // ============================ 3 FORMATS (W=1080) ============================
 await buildGraphic("whatsapp-1080x1080", 0, 0, 1080, 1080, {
-  padX:64, kickerSize:24, kickerGap:14, titleSize:56, titleGap:16,
+  padX:64, titleSize:56, titleGap:16,
   bylineSize:22, bylineGap:22, logoH:60, logoGap:16, urlSize:21 });
 
 await buildGraphic("instagram-1080x1350", 1260, 0, 1080, 1350, {
-  padX:64, kickerSize:28, kickerGap:14, titleSize:56, titleGap:16,
+  padX:64, titleSize:56, titleGap:16,
   bylineSize:23, bylineGap:24, logoH:64, logoGap:18, urlSize:21 });
 
 await buildGraphic("ig-story-1080x1920", 2520, 0, 1080, 1920, {
-  padX:72, kickerSize:30, kickerGap:14, titleSize:80, titleGap:16,
+  padX:72, titleSize:80, titleGap:16,
   bylineSize:28, bylineGap:28, logoH:84, logoGap:20, urlSize:23 });
 
 return { status:"ok", pageId:graphicsPage.id, head:HEAD, body:BODY };
@@ -203,15 +199,15 @@ for (const id of ["1:4","1:36","1:67"]) {          // 3 פלייסהולדרים
 
 ## עיצוב — כן/לא
 
-✓ תמונה full-bleed, gradient דיו מצומצם (שקוף עד סמוך לקיקר), קיקר-lede
-טרקוטה-בהיר, כותרת Suez One לבנה נמוכה (ממש מעל ה-byline), byline שם-בלבד
-ink-soft, לוגו מרכזי-תחתון, שורת credit+url צמודה לפס, פס-חתימה טריקולור
-תחתון יחיד 4px בקצה התחתון.
+✓ תמונה full-bleed, gradient דיו מצומצם (שקוף עד סמוך לכותרת), כותרת Suez One
+לבנה נמוכה (ממש מעל ה-byline) כאלמנט העליון, byline שם-בלבד ink-soft, לוגו
+מרכזי-תחתון, שורת credit+url צמודה לפס, פס-חתימה טריקולור תחתון יחיד 4px
+בקצה התחתון.
 
 ✗ אסור: אדום `#f70d28` / פס אדום / NextExit; פס-חתימה עליון (הפס תחתון בלבד);
-תגית קטגוריה כקיקר (הקיקר = lede); "מאת:" ב-byline; כותרת באמצע הפריים;
-אינסטגרם ריבוע (פיד=4:5); gradient שמחשיך מעל אזור הטקסט (~65-70% העליונים
-חייבים להישאר גלויים); פורמט רביעי.
+**כל שכבת טקסט מעל הכותרת — קיקר, lede, משנה או תגית קטגוריה** (בוטלו 19.07.2026);
+"מאת:" ב-byline; כותרת באמצע הפריים; אינסטגרם ריבוע (פיד=4:5); gradient שמחשיך
+מעל אזור הטקסט (~65-70% העליונים חייבים להישאר גלויים); פורמט רביעי.
 
 ---
 
@@ -219,5 +215,5 @@ ink-soft, לוגו מרכזי-תחתון, שורת credit+url צמודה לפס,
 
 screenshot של 3 הפריימים — לוודא: תמונה נראית (לא דיו מלא — הגרדיאנט לא מסתיר
 את ~65-70% העליונים), כותרת Suez One verbatim צמודה לתחתית (~16px מעל
-ה-byline), הקיקר = lede (לא קטגוריה), byline שם-בלבד ב-ink-soft, פס-חתימה
+ה-byline), **אין שום טקסט מעל הכותרת**, byline שם-בלבד ב-ink-soft, פס-חתימה
 טריקולור תחתון יחיד 4px (אין פס עליון), לוגו לבן מרכזי, שורת credit+url צמודה לפס.
