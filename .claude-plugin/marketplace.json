@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.6.0"
+    "version": "2.7.0"
   },
   "plugins": [
     {
@@ -47,7 +47,7 @@
     {
       "name": "dor-edit",
       "source": "./plugins/dor-edit",
-      "description": "עורך רוח (/dor-edit) — עריכה עיתונאית מלאה בסגנון דור זומר, לפי מצפן שנגזר מהכתבות שפורסמו; פלט Google Doc בפונט Alef 14 עם הצעות אמיתיות של Docs (accept/reject כירורגי פר-שינוי), דוח עורך בלשונית ייעודית, אימות עובדות, כותרות, SEO ותמונות פלאש 90"
+      "description": "עורך רוח (/dor-edit) — עריכה עיתונאית מלאה בסגנון דור זומר, לפי מצפן שנגזר מהכתבות שפורסמו; פלט Google Doc עם הצעות Docs אמיתיות (writeMode SUGGEST) מיוחסות לדור, בלי תגית, accept/reject כירורגי פר-שינוי; דוח עורך בלשונית ייעודית, פונט Alef 14, אימות עובדות, כותרות, SEO ותמונות פלאש 90"
     }
   ]
 }
