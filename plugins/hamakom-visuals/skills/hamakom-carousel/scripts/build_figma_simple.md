@@ -12,14 +12,27 @@
 
 ```
 [ ] שלוף את הכתבה (WP REST: /wp-json/wp/v2/posts?slug=<slug>&_embed)
-[ ] חלץ: h1 verbatim, byline, קטגוריה (label), פסקאות גוף, og/featured image
+[ ] חלץ: h1 verbatim, byline, פסקאות גוף, og/featured image, מספרים חזקים לשקפי דאטה
+[ ] *** חוסם *** בדוק תמונות מקומיות לפני כל הורדה מהרשת:
+      ls -t ~/Downloads | head -25          ← קבצי F<YYMMDD><XX><NNN>.jpg = פלאש 90 של דור
+      ls -d ~/Downloads/*<שם-הכתבה>*        ← תיקייה על שם הכתבה = ייצוא קודם, לא מקור
+      ls ~/Documents/המקום/
+[ ] הקטן מקורות גדולים: sips -Z 2560 <file>  (מגבלת upload 10MB)
 [ ] התקן Suez One + IBM Plex Sans Hebrew אם חסרים (ראה DS §2)
 [ ] צור Figma file: create_new_file editorType=design
-[ ] use_figma → בנה Carousel (קוד למטה): cover + פסקאות + CTA
+[ ] use_figma → בנה Carousel: cover + פסקאות + שקפי דאטה + שקפי תמונה + CTA
 [ ] upload_assets: hero → cover-hero-image (הלוגו ב-CTA הוא הריבועי מ-SVG — לא צריך upload)
-[ ] get_screenshot ל-QA (cover + פסקה + CTA)
+[ ] get_screenshot ל-QA (cover + פסקה + דאטה + CTA)
 [ ] הצע קאפשיין לפוסט
 ```
+
+**קרדיטים לפי ראשי התיבות בשם קובץ פלאש 90** (`F<YYMMDD><XX><NNN>.jpg`):
+
+| קוד | צלם | קרדיט מלא |
+|-----|-----|-----------|
+| `CG` | חיים גולדברג | צילום: חיים גולדברג/פלאש 90 |
+| `YS` | יונתן סינדל | צילום: יונתן סינדל/פלאש 90 |
+| `TN` | תומר נויברג | צילום: תומר נויברג/פלאש 90 |
 
 ---
 
@@ -124,13 +137,15 @@ figma.currentPage.appendChild(cover);
 
 ## שקף-פסקה — שנהב, IBM Plex, מיושר-לעליון
 
+**בלי קיקר קטגוריה ובלי אינדקס `NN / TOTAL`** (בוטלו 19.07.2026 — דור הסיר אותם מקרוסלת
+מח"ש–מכת"ז). הסימן היחיד בראש השקף הוא **קו הטרקוטה הקצר**. אין `total` ואין `kicker`
+בחתימת הפונקציה — הם לא מתקבלים ולא נוצרים.
+
 ```javascript
-async function PS(idx, total, text, xPos, kicker){
+async function PS(idx, text, xPos){
   const num=String(idx).padStart(2,"0");
   const f=NF(`${num}-paragraph`); f.x=xPos;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
-  f.appendChild(await T({chars:kicker||"דעה",family:BODY,style:"Bold",size:24,color:C.terraDeep,x:80,y:96,w:920,align:"RIGHT",letterSpacing:3}));
-  f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
-  f.appendChild(R({x:936,y:148,w:64,h:4,color:C.terra}));
+  f.appendChild(R({x:936,y:148,w:64,h:4,color:C.terra}));   // קו טרקוטה קצר — הסימן היחיד בראש
   const body=await T({chars:text,family:BODY,style:"Regular",size:40,color:C.ink,x:80,y:212,w:920,align:"RIGHT",lhPct:160});
   body.textAutoResize="HEIGHT"; body.resize(920,body.height);
   let s=40; while(body.height>990 && s>26){ s-=2; body.fontSize=s; body.resize(920,body.height); }
@@ -141,21 +156,71 @@ async function PS(idx, total, text, xPos, kicker){
 }
 ```
 
+**מילוי השקף (חוק 19.07.2026):** אזור התוכן הוא ~990px. פסקה של 250-450 תווים ב-40pt
+משאירה שקף חצי-ריק — דור פסל את זה. **יעד: ~600-900 תווים לשקף.** פסקה מתחת ל~450 תווים
+מאוחדת עם הבאה (`\n\n` ביניהן), כל עוד נשמר סדר הכתיבה verbatim.
+
 ---
 
 ## שקף-נתון (data) — מספר ענק בטרקוטה
 
+**חלק מהמבנה הקנוני, לא אופציה** (19.07.2026). אם יש בכתבה מספר חזק — חדות ראייה `6/45`,
+תאריך כניסה לתוקף, סכום — בונים 1-2 שקפי `DSlide` **צמודים לפסקה שמדברת עליהם**.
+המספר **verbatim מהכתבה**, ותמיד עם שורת מקור. בלי אינדקס ובלי קיקר קטגוריה.
+
 ```javascript
-async function DSlide(idx, total, number, kicker, headline, detail, source, xPos){
+// גודל המספר מותאם לאורכו: מספר קצר ("6/45") ענק; תאריך ארוך ("1.1.2027") קטן יותר.
+function numSize(s){ const n=String(s).length; return n<=4?230 : n<=6?190 : n<=9?150 : 120; }
+
+async function DSlide(idx, number, headline, detail, source, xPos){
   const num=String(idx).padStart(2,"0");
   const f=NF(`${num}-data`); f.x=xPos;   // פס-חתימה תחתון בלבד — מגיע מ-FOOT
-  f.appendChild(await T({chars:`${num} / ${String(total).padStart(2,"0")}`,family:BODY,style:"Medium",size:22,color:C.inkSoft,x:80,y:100,w:300,align:"LEFT",letterSpacing:1}));
-  f.appendChild(await T({chars:kicker,family:BODY,style:"Bold",size:26,color:C.terraDeep,x:80,y:330,w:920,align:"CENTER",letterSpacing:2}));
-  f.appendChild(await T({chars:number,family:HEAD,style:"Regular",size:260,color:C.terra,x:40,y:380,w:1000,align:"CENTER",lhPct:100}));   // מספר ענק טרקוטה
-  f.appendChild(await T({chars:headline,family:BODY,style:"Bold",size:42,color:C.ink,x:80,y:760,w:920,align:"CENTER",lhPct:130}));
-  f.appendChild(await T({chars:detail,family:BODY,style:"Regular",size:28,color:C.ink2,x:80,y:880,w:920,align:"CENTER",lhPct:150}));
-  f.appendChild(await T({chars:source,family:BODY,style:"Regular",size:20,color:C.inkSoft,x:80,y:1080,w:920,align:"CENTER"}));
+  f.appendChild(R({x:936,y:148,w:64,h:4,color:C.terra}));   // אותו קו טרקוטה כמו בשקף-פסקה
+  const big=await T({chars:number,family:HEAD,style:"Regular",size:numSize(number),color:C.terra,x:40,y:0,w:1000,align:"CENTER",lhPct:100});
+  big.y = 420 - big.height/2;   // ממורכז אופטית סביב y≈420
+  f.appendChild(big);           // מספר ענק טרקוטה — verbatim מהכתבה
+  f.appendChild(await T({chars:headline,family:BODY,style:"Bold",size:42,color:C.ink,x:80,y:600,w:920,align:"CENTER",lhPct:130}));
+  f.appendChild(await T({chars:detail,family:BODY,style:"Regular",size:28,color:C.ink2,x:80,y:740,w:920,align:"CENTER",lhPct:150}));
+  f.appendChild(await T({chars:source,family:BODY,style:"Regular",size:20,color:C.inkSoft,x:80,y:1080,w:920,align:"CENTER"}));  // שורת מקור — חובה
   await FOOT(f,false);
+  figma.currentPage.appendChild(f);
+  return f.id;
+}
+```
+
+---
+
+## שקף-תמונה (photo) — full-bleed לתמונות רגילות
+
+**נוסף 19.07.2026.** לתמונות עיתונאיות רגילות (פלאש 90, פורטרטים, תמונות הקשר) —
+full-bleed FILL עם כיתוב. **זה לא שקף ראיה:** `ISlide` נשאר **לצילומי מסך בלבד**
+(FIT ללא קרופ, "שימוש לפי סעיף 27א׳"). שקפי `IMG` **לא נספרים כראיה**.
+
+שקפי התמונה **משתלבים בין הפסקאות במיקום ההגיוני בנרטיב** — ליד הפסקה שמדברת על
+מה שרואים — ולא נערמים בסוף. **חוק אי-הכפילות חל:** אותה תמונה לא מופיעה בשני שקפים.
+
+```javascript
+async function IMG(idx, imageHash, caption, credit, xPos){
+  const num=String(idx).padStart(2,"0");
+  const f=NF(`${num}-photo`,C.ink); f.x=xPos;
+  const img=R({x:0,y:0,w:1080,h:1350,color:C.ink}); img.name=`photo-${num}`;
+  img.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash}]; f.appendChild(img);
+  // כיתוב מעל שורת התחתית; הגרדיאנט מחושב לפי מיקומו בפועל
+  const cap=await T({chars:caption,family:BODY,style:"SemiBold",size:26,color:C.white,x:80,y:0,w:920,align:"RIGHT",lhPct:140});
+  cap.y = 1244 - 28 - cap.height;
+  f.appendChild(cap);
+  // גרדיאנט דיו תחתון בלבד — שקוף לחלוטין עד ~7% מעל הכיתוב, 0.72 בגובהו, מלא בתחתית
+  const lf = cap.y / 1350;
+  const grad=R({x:0,y:0,w:1080,h:1350,color:C.ink});
+  grad.fills=[{type:"GRADIENT_LINEAR",gradientTransform:[[0,1,0],[-1,0,1]],gradientStops:[
+    {position:0,color:{...C.ink,a:0}},{position:Math.max(0.01,lf-0.07),color:{...C.ink,a:0}},
+    {position:lf,color:{...C.ink,a:0.72}},{position:1,color:{...C.ink,a:1}}]}];
+  f.insertChild(1,grad);
+  const cr=await T({chars:credit,family:BODY,style:"Regular",size:18,color:C.white,x:18,y:1315,w:360,align:"LEFT"});
+  cr.fills=[{type:"SOLID",color:C.white,opacity:0.53}]; f.appendChild(cr);   // credit שמאל
+  f.appendChild(await T({chars:"HA-MAKOM.CO.IL",family:BODY,style:"SemiBold",size:21,color:C.onDarkSoft,x:295,y:1313,w:490,align:"CENTER",letterSpacing:3}));
+  LOGO(f,C.white,519,1244,50);   // לוגו לבן ממורכז
+  SIG(f,1346,4);                 // פס-חתימה תחתון
   figma.currentPage.appendChild(f);
   return f.id;
 }
@@ -191,7 +256,14 @@ figma.currentPage.appendChild(cta);
 ## פריסת frames
 
 כל שקף ברוחב 1080 עם מרווח 100 → `x = i * 1180`. cover ב-0, CTA אחרון.
-טקסט verbatim מהכתבה, בסדר הכתיבה; פסקה ארוכה מ-~520 תווים — אפשר לפצל בגבול משפט.
+טקסט verbatim מהכתבה, **בסדר הכתיבה**.
+
+**חלוקה לשקפים (עודכן 19.07.2026):**
+- **יעד מילוי: ~600-900 תווים לשקף.**
+- פסקה **מתחת ל~450 תווים** → מאחדים עם הבאה, מופרדות ב-`\n\n`. (הסף הישן, 200, הותיר
+  שקפים חצי-ריקים ב-40pt — דור פסל.)
+- פסקה מעל ~900 תווים → מפצלים בגבול משפט.
+- האיחוד/הפיצול **לא משנה מילים ולא סדר** — verbatim בלבד.
 
 ---
 
@@ -200,7 +272,8 @@ figma.currentPage.appendChild(cta);
 ```javascript
 for (const c of [...figma.currentPage.children]) {
   const n=c.name||"";
-  if (n==="00-cover" || /^\d{2}-paragraph$/.test(n) || /^\d{2}-data$/.test(n) || n==="NN-cta") c.remove();
+  if (n==="00-cover" || /^\d{2}-paragraph$/.test(n) || /^\d{2}-data$/.test(n)
+      || /^\d{2}-photo$/.test(n) || /^evidence-/.test(n) || n==="NN-cta") c.remove();
 }
 // frames של דור (שם בעברית / "unnamed N") — לא נוגעים. אם דור ערך ידנית — עורכים פריים-פריים.
 ```
