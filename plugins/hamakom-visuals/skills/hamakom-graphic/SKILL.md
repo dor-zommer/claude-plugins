@@ -88,11 +88,10 @@ fontSize מותרת; שינוי הטקסט אסור.
 
 שני הפונטים ב-Google Fonts. התקנה חד-פעמית (אין צורך ב-restart):
 ```bash
-mkdir -p /tmp/hmfonts && cd /tmp/hmfonts
-curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o SuezOne-Regular.ttf
-B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
-for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "IBMPlexSansHebrew-$w.ttf"; done
-cp *.ttf ~/Library/Fonts/
+# הפונטים בריפו — לא צריך להוריד מהרשת (עודכן 19.07.2026)
+DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
+DS=${DS:-plugins/hamakom-visuals/design-system}
+cp "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
 
 **Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם
@@ -238,8 +237,8 @@ for (const id of photoNodeIds) {
 
 | נכס | נתיב | שימוש |
 |-----|------|--------|
-| לוגו ריבועי שחור (SVG) | `assets/logo-square-black.svg` | לוגו במרכז התחתון (לבן), כחלק מ-chrome התחתון |
-| לוגו wordmark לבן (PNG) | `assets/logo-wordmark-white.png` | אופציונלי — אם פורמט דורש wordmark במקום ריבוע |
+| לוגו ריבועי שחור (SVG) | `../../design-system/assets/logo/logo-square-black.svg` | לוגו במרכז התחתון (לבן), כחלק מ-chrome התחתון |
+| לוגו wordmark לבן (PNG) | `../../design-system/assets/logo/logo-wordmark-white.png` | אופציונלי — אם פורמט דורש wordmark במקום ריבוע |
 
 **חוק ברזל:** לעולם **לא** ליצור `figma.createText("המקום\nהכי חם\nבגיהנום")`
 לבניית לוגו. תמיד `figma.createNodeFromSvg()` ל-SVG או `upload_assets()` ל-PNG.

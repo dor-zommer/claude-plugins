@@ -75,14 +75,19 @@ description: בונה ריל ממותג לאינסטגרם/טיקטוק (9:16, 4
 - **כתבה:** קישור ha-makom.co.il → web_fetch. גוגל דוקס → דרך Google Drive MCP
   (search_files / read_file_content). אין כתבה? לבקש מדור.
 - **חומרי גלם:** קבצים שהועלו לצ'אט (תיקיית uploads) או נתיב בתיקיות שלו.
-- **תיקיית חומרים קבועה** — מכילה את closer_v3.mp4 (הסגיר הקנוני) וטראקים מוכנים
-  למוזיקת רקע. אתר אותה כך, בלי לקודד נתיב אישי:
+- **הסגיר הקנוני — בריפו, לא בדסקטופ.** `design-system/assets/video/closer_v3.mp4`
+  (1080×1920, 30fps, **6.000 שניות בדיוק** = 180 פריימים). זמין לכל מי שהתקין את
+  הפלאגין:
 ```bash
-REEL_ASSETS="${HAMAKOM_REEL_ASSETS:-$HOME/Desktop/חומרים להכנת וידאו לרילז }"
-ls "$REEL_ASSETS" || echo "לא נמצא — בקש מדור את נתיב תיקיית החומרים"
+DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
+DS=${DS:-plugins/hamakom-visuals/design-system}
+CLOSER="$DS/assets/video/closer_v3.mp4"
 ```
-  **שימו לב: רווח בסוף שם התיקייה!** מי שהתיקייה אצלו במקום אחר — מגדיר
-  `HAMAKOM_REEL_ASSETS` ב-`~/.zshrc`. (הנתיב הישן `Desktop/סגיר וידאו המקום/` לא קיים.)
+- **מוזיקת רקע** — טראקי ה-WAV **אינם בריפו** (50MB). הם אצל דור ב-
+  `~/Documents/המקום/שיווק/חומרים להכנת וידאו לרילז/`. אין טראק? לייצר עם
+  `scripts/make_music.py` או לבקש מדור.
+  (תיקון 19.07.2026: הנתיב שהיה מתועד כאן — `Desktop/חומרים להכנת וידאו לרילז `
+  עם רווח בסוף — **לא קיים**. התיקייה יושבת ב-Documents/המקום/שיווק, בלי רווח.)
 - ודא גישה לתיקיית Documents (נכסי מותג). חסר משהו — request_cowork_directory.
 
 ### שלב 1 — היכרות עם הפוטג'

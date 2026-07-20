@@ -264,11 +264,10 @@ corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 
 **התקנה חד-פעמית (אין צורך ב-restart ל-Figma):**
 ```bash
-mkdir -p /tmp/hmfonts && cd /tmp/hmfonts
-curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o SuezOne-Regular.ttf
-B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
-for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "IBMPlexSansHebrew-$w.ttf"; done
-cp *.ttf ~/Library/Fonts/
+# הפונטים בריפו — לא צריך להוריד מהרשת (עודכן 19.07.2026)
+DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
+DS=${DS:-plugins/hamakom-visuals/design-system}
+cp "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
 
 Figma רואה אותם **מיד אחרי `cp`** (בדקנו — אין צורך ב-Cmd+Q).
@@ -382,8 +381,8 @@ ls ~/Documents/המקום/                         # 3. תיקיות עבודה
 
 | נכס | נתיב | שימוש |
 |-----|------|--------|
-| לוגו ריבועי (SVG) | `assets/logo-square-black.svg` | פוטר ימין-תחתון ~50px בכל שקף; **וגם ה-CTA — גדול ~320×380 בשנהב, ממורכז** |
-| לוגו wordmark לבן (PNG) | `assets/logo-wordmark-white.png` | לא בשימוש ב-CTA (הוחלף בריבועי, 3.7.2026) — שמור לצרכים אחרים |
+| לוגו ריבועי (SVG) | `../../design-system/assets/logo/logo-square-black.svg` | פוטר ימין-תחתון ~50px בכל שקף; **וגם ה-CTA — גדול ~320×380 בשנהב, ממורכז** |
+| לוגו wordmark לבן (PNG) | `../../design-system/assets/logo/logo-wordmark-white.png` | לא בשימוש ב-CTA (הוחלף בריבועי, 3.7.2026) — שמור לצרכים אחרים |
 
 **חוק ברזל:** לעולם **לא** ליצור `figma.createText("המקום\nהכי חם\nבגיהנום")`
 לבניית לוגו. תמיד `figma.createNodeFromSvg()` ל-SVG או `upload_assets()` ל-PNG.

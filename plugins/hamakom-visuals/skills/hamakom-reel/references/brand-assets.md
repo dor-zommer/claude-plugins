@@ -2,11 +2,18 @@
 
 ## תיקיית החומרים הקבועה
 
+**עודכן 19.07.2026 — הנכסים בריפו.** הלוגו, הפונטים והסגיר יושבים ב-
+`design-system/assets/` של הפלאגין (ראה ה-README שם). אין יותר תלות בתיקייה
+אישית בדסקטופ.
+
 ```bash
-REEL_ASSETS="${HAMAKOM_REEL_ASSETS:-$HOME/Desktop/חומרים להכנת וידאו לרילז }"
+DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
+DS=${DS:-plugins/hamakom-visuals/design-system}
+# $DS/assets/video/closer_v3.mp4 · $DS/assets/logo/ · $DS/assets/fonts/
 ```
-**רווח בסוף שם התיקייה!** ברירת המחדל היא ה-Desktop של המשתמש הנוכחי; מי שהתיקייה
-אצלו במקום אחר מגדיר `HAMAKOM_REEL_ASSETS`. מכילה:
+
+**מה שנשאר מחוץ לריפו:** טראקי המוזיקה (WAV, 50MB) — אצל דור ב-
+`~/Documents/המקום/שיווק/חומרים להכנת וידאו לרילז/`. התיקייה הזו מכילה:
 - **closer_v3.mp4** — הסגיר הקנוני (1080×1920, 30fps, 6.00 שנ' = 180 פריימים,
   כולל פס סאונד). משתמשים בו כמות שהוא.
 - **טראקים מוכנים** למוזיקת רקע (עדיפות ראשונה בשלב 7).

@@ -64,7 +64,7 @@ const fontFallback = (HEAD==="Inter" || BODY==="Inter");
 ## Helpers — תמיד אותם
 
 ```javascript
-const LOGO_SVG = `<svg ...>`; // קופי מלא מ-assets/logo-square-black.svg (single-line) — ראה build_figma.md
+const LOGO_SVG = `<svg ...>`; // קופי מלא מ-../../design-system/assets/logo/logo-square-black.svg (single-line)
 
 function NF(name, bg){ const f=figma.createFrame(); f.name=name; f.resize(1080,1350); f.y=0;
   f.fills=[{type:"SOLID",color:bg||C.bg}]; f.clipsContent=true; return f; }
@@ -112,7 +112,7 @@ const HERO = "<imageHash מה-upload>";
 const cover=NF("00-cover",C.ink); cover.x=0;
 const hImg=R({x:0,y:0,w:1080,h:1350,color:C.ink}); hImg.name="cover-hero-image";
 hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(hImg);
-// טקסט — מלמטה למעלה: byline קבוע, כותרת ~16px מעליו, קיקר-lede ~14px מעל הכותרת
+// טקסט — מלמטה למעלה: byline קבוע, כותרת ~16px מעליו. אין קיקר.
 const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.inkSoft, x:80, y:1154, w:920, align:"RIGHT"});   // שם בלבד: "סיון תהל"
 cover.appendChild(byline);
 const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim (Suez One)
