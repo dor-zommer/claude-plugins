@@ -28,7 +28,8 @@ servers/osint-db/                 ← קוד שרת ה-MCP (FastMCP/Python) + Do
 זה החוט שמחבר בין הפלאגינים, ולא ברור מקריאת פלאגין בודד:
 
 - **`hamakom-osint`** הוא הבעלים של החיבור. ה-`.mcp.json` שלו מגדיר שרת HTTP MCP בשם `osint-db` שקורא שני משתני סביבה: `${OSINT_DB_MCP_URL}` ו-`${OSINT_DB_TOKEN}` (Bearer). הסקילים שלו קוראים ל-5 כלים: `list_tables`, `describe_table`, `query_db`, `search_entity`, `new_since` (מופיעים ב-frontmatter כ-`mcp__osint-db__*`).
-- **`hamakom-leads`** ו-**`hamakom-factcheck`** (סקילי הנתונים/ציטוטים) **תלויים באותו שרת** אבל לא מגדירים אותו — הם מסתמכים על כך ש-`hamakom-osint` מותקן וה-MCP חי. בלי השרת שאר הסקילים עובדים; רק אלה שתלויים ב-DB מחזירים ריק.
+- **ארבעה פלאגינים נוספים תלויים באותו שרת ולא מגדירים אותו:** `hamakom-factcheck` (6 סקילים), `hamakom-desk` (4), `hamakom-leads` (1), `dor-edit` (1) — סה"כ 12 סקילים שקוראים ל-`mcp__osint-db__*`. **שרתי MCP הם per-plugin ועולים רק כשהפלאגין שלהם מופעל** (מתועד), ולכן התקנה של אחד מהם לבדו לא מביאה את השרת. **הפתרון (19.07.2026): כל ארבעתם מכריזים `"dependencies": ["hamakom-osint"]` ב-`plugin.json`**, כדי שההתקנה תגרור את השרת אוטומטית. בלי השרת שאר הסקילים עובדים; רק אלה שתלויים ב-DB מחזירים ריק.
+- **אין דרך להכריז MCP ברמת המרקטפלייס.** שורש `marketplace.json` לא תומך ב-`mcpServers` (רק רשומת פלאגין בודדת יכולה). **לא לשכפל את אותו `.mcp.json` לכמה פלאגינים** — התנהגות ה-dedupe לפי שם שרת אינה מתועדת.
 - השרת עצמו (`servers/osint-db/server.py`) הוא FastMCP קריא-בלבד מעל SQLite (`mode=ro`), עם תקרות קשיחות: `MAX_LIMIT=500`, `MAX_OUTPUT_CHARS=50_000`, `QUERY_TIMEOUT_SEC=10`. טבלאות: `exemptions`, `knesset_bills`, `knesset_votes`, `mavat_plans`, `legislation`, `mevaker_reports`, `police_announcements` ועוד. אימות נעשה **לפני** השרת (nginx Bearer או Tailscale), לא בתוכו.
 
 ### מוסכמת SKILL.md
