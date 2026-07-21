@@ -48,7 +48,8 @@ Image.fromarray(a).save('sq_ivory.png')
 
 | פונט | נתיב | שימוש |
 |---|---|---|
-| **Publico Headline Hebrew** (DS תצוגה) | `design-system/assets/fonts/publicoheadlinehebrew-*.otf` | **ציטוטים — Roman בלבן #ffffff בלבד**, מחץ CTA (Extrabold) |
+| **HaMakom** (DS תצוגה — מותג) | `design-system/assets/fonts/HaMakom-5.ttf` | **ציטוטים עבריים בלבן #ffffff**, מחץ CTA. אין לטינית/em-dash |
+| **Publico Headline Hebrew** (תצוגה-fallback) | `design-system/assets/fonts/publicoheadlinehebrew-*.otf` | ציטוט עם לטינית/`—`, כותרות ארוכות |
 | **Graphik HLAR** (DS גוף) | `design-system/assets/fonts/graphikhlar-*.otf` | קיקר (Medium 30), "בתיעוד:" (Regular 34), URL (Medium — יש גליפים לטיניים) |
 | ~~Narkiss Shimshon Extended~~ | `Desktop/NarkissShimshon-Extended.otf` | **ירד — לא בשימוש לציטוטים** (החלטת דור 3.7.2026) |
 | DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני fallback |
@@ -58,8 +59,9 @@ Image.fromarray(a).save('sq_ivory.png')
 ```bash
 DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
 DS=${DS:-plugins/hamakom-visuals/design-system}
-cp "$DS"/assets/fonts/*.otf ~/Library/Fonts/
+cp "$DS"/assets/fonts/*.otf "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
+(ה-`.ttf` = HaMakom פונט התצוגה; ה-`.otf` = Publico + Graphik.)
 **Graphik מגיע רק עד Medium** — אין Bold/SemiBold; מה שהיה Bold ממופה ל-Medium.
 Graphik HLAR מכסה גם לטינית — "ha-makom.co.il" ייצא תקין.
 

@@ -81,6 +81,11 @@ const ROLE = {
   reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
   med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Inter",style:"Medium"},FB]),
 };
+// HaMakom — פונט תצוגת המותג (משקל יחיד, 53 גליפים: עברית+ספרות+פיסוק, בלי לטינית/em-dash).
+const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
+const HAMAKOM_GLYPHS = /^[ -"'-),-;?־א-ת׳-״]*$/;  // בדיוק 53 הגליפים של HaMakom (עברית+ספרות+פיסוק)
+const hamakomOK = s => HAMAKOM.family==="HaMakom" && HAMAKOM_GLYPHS.test(s);  // whitelist — HaMakom רק אם כל תו נתמך
+function dispFont(text, heavy){ return hamakomOK(text) ? HAMAKOM : (heavy ? ROLE.dispXB : ROLE.disp); }
 function roleFor(fam, style){
   if (fam==="HEAD") return style==="Extrabold" ? ROLE.dispXB : ROLE.disp;
   if (style==="Light") return ROLE.light;
@@ -88,7 +93,7 @@ function roleFor(fam, style){
   return ROLE.reg;
 }
 const HEAD="HEAD", BODY="BODY";
-for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med]) { try{ await figma.loadFontAsync(r);}catch(e){} }
+for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med,HAMAKOM]) { try{ await figma.loadFontAsync(r);}catch(e){} }
 const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");
 console.log("HaMakom fonts resolved:", JSON.stringify(ROLE), "fallback:", fontFallback);
 
@@ -106,7 +111,7 @@ function rect({ x, y, w, h, color, fills, opacity = 1 }) {
 }
 async function txt(o) {
   const t = figma.createText();
-  const fn = roleFor(o.family, o.style);   // פותר לזוג (family,style) אמיתי + קלמפ משקל
+  const fn = o.font || roleFor(o.family, o.style);   // o.font = זוג פותר מראש (dispFont); אחרת לפי (family,style)
   try { t.fontName=fn; } catch(e){ t.fontName={family:"Inter",style:"Regular"}; }
   t.fontSize=o.size; if(o.lhPct) t.lineHeight={unit:"PERCENT",value:o.lhPct};
   if(o.letterSpacing!=null) t.letterSpacing={unit:"PIXELS",value:o.letterSpacing};
@@ -171,8 +176,8 @@ async function buildGraphic(name, posX, posY, W, H, o) {
 
   // 4. כותרת Publico Headline Roman verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline.
   //    זה האלמנט העליון בפריים: אין קיקר, אין lede, אין משנה (19.07.2026).
-  const title = await txt({ chars:CONTENT.title, family:HEAD, style:"Regular", size:o.titleSize,
-    color:C.white, x:padX, y:0, w:contentW, align:"RIGHT", lhPct:108 });
+  const title = await txt({ chars:CONTENT.title, font:dispFont(CONTENT.title,false), size:o.titleSize,
+    color:C.white, x:padX, y:0, w:contentW, align:"RIGHT", lhPct:108 });   // HaMakom אם עברי, אחרת Publico Roman
   title.y = byline.y - o.titleGap - title.height; frame.appendChild(title);
 
   // 5. gradient דיו מצומצם — לפי מיקום הכותרת בפועל; מוזרק מעל התמונה, מתחת לטקסט

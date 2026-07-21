@@ -6,10 +6,10 @@
 >
 > **בסתירה בין קובץ זה לבין כל מסמך אחר בסקיל — קובץ זה גובר.**
 > בעבר הסקילים השתמשו בפלטה ישנה (שחור/אדום `#f70d28` + NextExit/Narkiss Tam).
-> זה **בוטל**. ה-DS האקטואלי הוא שנהב/דיו/טרקוטה + Publico Headline Hebrew + Graphik HLAR.
+> זה **בוטל**. ה-DS האקטואלי הוא שנהב/דיו/טרקוטה + HaMakom (תצוגה) + Publico Headline + Graphik HLAR.
 >
 > **הנכסים עצמם — `assets/` שליד הקובץ הזה (נוסף 19.07.2026):** לוגו (SVG+PNG),
-> הפונטים המסחריים (Publico Headline Hebrew + Graphik HLAR, רישיון Fontef), והסגיר הקנוני
+> הפונטים (HaMakom של המותג + Publico Headline + Graphik HLAR מ-Fontef), והסגיר הקנוני
 > (`closer_v3.mp4`). שלושת הסקילים מושכים משם — **אין יותר עותקים פר-סקיל.**
 > פירוט, התקנת פונטים ורישיונות: `assets/README.md`.
 
@@ -56,37 +56,42 @@ WhatsApp), אדום `#f70d28` / ענבר `#d4a13a` (אלה הפלטה הישנה
 
 ---
 
-## 2. טיפוגרפיה — שתי פנים, שני תפקידים
+## 2. טיפוגרפיה — שלוש פנים, שלושה תפקידים
 
-**עדכון 20.07.2026 — הפונטים המסחריים של המותג נכנסו** (רישיון Fontef #03515, חברה עד
-10 עובדים). החליפו את Suez One + IBM Plex Sans Hebrew, שהיו placeholder פתוח.
+**עדכון 20.07.2026 — שלושה פונטים, שלושה תפקידים.** HaMakom (פונט המותג) לתצוגה
+חתימתית, Publico Headline לכותרות ארוכות, Graphik HLAR לגוף. Publico+Graphik מורשים
+(Fontef #03515, חברה עד 10 עובדים); HaMakom הוא הפונט של המותג עצמו (נבנה מהלוגו).
 
 | תפקיד | פונט | משקלים | שימוש |
 |-------|------|---------|--------|
-| **תצוגה** | **Publico Headline Hebrew** | Roman (רגיל) · Extrabold (מחץ) | כותרות, ציטוטים, מספרי-נתון, מחץ CTA |
+| **תצוגה-חתימה** | **HaMakom** | Regular (יחיד) | כותרת קאבר, מספר-מחץ, מחץ CTA "בלי בולשיט" — **כשהמחרוזת עברית** |
+| **תצוגה-fallback** | **Publico Headline Hebrew** | Roman · Extrabold | אותם מקומות **כשיש לטינית/em-dash** (HaMakom לא מכסה) |
 | **גוף / UI** | **Graphik HLAR** | Light · Regular · Medium | פסקאות, byline, credit, url, כפתור |
 
-> פונט הלוגו ("HaMakom") הוא artwork קנייני (SVG/PNG בלבד) — **לעולם לא live type**.
-> **Graphik מגיע רק עד Medium** — אין SemiBold ואין Bold. כל מקום שהיה IBM Plex
-> SemiBold/Bold עבר ל-**Graphik Medium** (זו התקרה). זו פשרה כפויה של הפונט, לא בחירה.
+> **HaMakom = פונט התצוגה של המותג** — מודולרי, נגזר מהלוגו (עוצב מתן שליטא, קומפל דור).
+> ב-brand-identity הוא ה-`--f-display` הראשי. **אילוץ קשה: 53 גליפים בלבד** — עברית,
+> ספרות, ופיסוק (`! " ' ( ) , - . / : ; ? ׳ ״`), **אבל אין לטינית ואין em-dash `—`.** לכן
+> משתמשים בו לתצוגה **רק אם המחרוזת נתמכת**; אחרת נופלים ל-Publico. הבחירה אוטומטית
+> (`dispFont` בבילדרים בודק `/[A-Za-z—]/`). ה-url `HA-MAKOM.CO.IL` (לטיני) — תמיד Graphik.
+> **Graphik מגיע רק עד Medium** — אין SemiBold/Bold; מה שהיה IBM Plex Bold/SemiBold → Graphik Medium.
 
 ### גדלים סטנדרטיים (@ 1080×1350)
 
 | שימוש | פונט | Weight | Size | Line-height |
 |-------|------|--------|------|-------------|
-| כותרת קאבר | Publico Headline | **Roman** | 56–72 (דינמי לפי אורך) | 108% |
+| כותרת קאבר | HaMakom → Publico Roman | Regular / Roman | 56–72 (דינמי) | 108% |
 | byline קאבר (שם בלבד) | Graphik HLAR | Medium | 25 | — (ink-soft) |
 | גוף פסקה | Graphik HLAR | Regular | 45–50 (auto-shrink בחריגה) | 160% |
-| מספר-נתון ענק | Publico Headline | **Extrabold** | 110–200 (לפי אורך) | 100% |
+| מספר-נתון ענק | HaMakom → Publico Extrabold | Regular / Extrabold | 110–200 | 100% |
 | שורת פירוט נתון | Graphik HLAR | Medium | 32 | — (ink) |
 | CTA שורה 1 | Graphik HLAR | Medium | 42 | — |
-| CTA שורה 2 ("בלי בולשיט") | Publico Headline | **Extrabold** | 76 | 110% |
+| CTA שורה 2 ("בלי בולשיט") | **HaMakom** (סלוגן המותג) | Regular | 76 | 110% |
 | כפתור CTA ("לכתבה המלאה") | Graphik HLAR | Medium | 34 | — (היה Bold) |
 | ציטוט עדות על תמונה | Graphik HLAR | Medium | 45 | — (לבן) |
 | url בפוטר / קאפשן | Graphik HLAR | Medium | 21–26 | — (letter-spacing 3) |
 
-**מיפוי המשקלים (כפוי ע"י Graphik):** Roman=כותרת · Extrabold=מספר-מחץ ומחץ CTA ·
-Medium=כל מה שהיה Bold/SemiBold/Medium · Regular=גוף פסקה · Light=זמין, לא בשימוש כרגע.
+**מיפוי:** תצוגה עברית → HaMakom (נופל ל-Publico Roman/Extrabold על לטינית/em-dash) ·
+גוף → Graphik Regular · Bold/SemiBold לשעבר → Graphik Medium (תקרה) · Light זמין, לא בשימוש.
 
 ### גודל דינמי לכותרת קאבר (verbatim — לא לקצר)
 
@@ -103,8 +108,9 @@ Medium=כל מה שהיה Bold/SemiBold/Medium · Regular=גוף פסקה · Lig
 ```bash
 DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
 DS=${DS:-plugins/hamakom-visuals/design-system}
-cp "$DS"/assets/fonts/*.otf ~/Library/Fonts/
+cp "$DS"/assets/fonts/*.otf "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
+(ה-`.ttf` הוא HaMakom; ה-`.otf` הם Publico+Graphik.)
 
 **Figma רואה אותם מיד אחרי `cp` — אין צורך ב-restart.** אם מותקנים גם קבצי TRIAL
 (שם משפחה `... TRIAL`) — לא מזיק; ה-resolver מכוון לשמות הנקיים בלבד.
@@ -118,6 +124,9 @@ const fonts = await figma.listAvailableFontsAsync();
 const AV = new Set(fonts.map(f => f.fontName.family + "||" + f.fontName.style));
 const FB = {family:"Inter", style:"Regular"};
 const pick = c => c.find(x => AV.has(x.family+"||"+x.style)) || c[c.length-1] || FB;
+const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
+const hamakomOK = s => HAMAKOM.family==="HaMakom" && !/[A-Za-z—]/.test(s);  // תצוגה עברית → HaMakom
+const dispFont = (text,heavy) => hamakomOK(text) ? HAMAKOM : (heavy ? ROLE.dispXB : ROLE.disp);
 const ROLE = {
   disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},FB]),
   dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},FB]),

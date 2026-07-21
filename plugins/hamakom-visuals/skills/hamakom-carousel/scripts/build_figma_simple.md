@@ -65,8 +65,14 @@ const ROLE = {
   reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
   med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Inter",style:"Medium"},FB]),
 };
-// (HEAD/BODY, style לוגי) → תפקיד. HEAD+Extrabold=מחץ; אחרת HEAD=תצוגה רגילה.
-// BODY: Light→light ; Medium/SemiBold/Bold→med (תקרת Graphik) ; אחרת reg.
+// --- HaMakom: פונט התצוגה של המותג (בנוי מהלוגו). משקל יחיד. 53 גליפים בלבד —
+// עברית+ספרות+פיסוק, אבל **בלי לטינית ובלי em-dash "—"**. לכן משתמשים בו לתצוגה
+// רק אם המחרוזת נתמכת; אחרת נופלים ל-Publico (dispFont למטה). מקור: brand-identity.
+const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
+const HAMAKOM_GLYPHS = /^[ -"'-),-;?־א-ת׳-״]*$/;  // בדיוק 53 הגליפים של HaMakom (עברית+ספרות+פיסוק)
+const hamakomOK = s => HAMAKOM.family==="HaMakom" && HAMAKOM_GLYPHS.test(s);  // whitelist — HaMakom רק אם כל תו נתמך
+// בוחר פונט תצוגה למחרוזת: HaMakom אם נתמך, אחרת Publico (Roman/Extrabold).
+function dispFont(text, heavy){ return hamakomOK(text) ? HAMAKOM : (heavy ? ROLE.dispXB : ROLE.disp); }
 function roleFor(fam, style){
   if (fam==="HEAD") return style==="Extrabold" ? ROLE.dispXB : ROLE.disp;
   if (style==="Light") return ROLE.light;
@@ -74,7 +80,7 @@ function roleFor(fam, style){
   return ROLE.reg;
 }
 const HEAD="HEAD", BODY="BODY";
-for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med]) { try{ await figma.loadFontAsync(r);}catch(e){} }
+for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med,HAMAKOM]) { try{ await figma.loadFontAsync(r);}catch(e){} }
 const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");
 // לוג לריצה הראשונה — מראה איזה זוג (family,style) נפתר בפועל, במקום לנחש את שמות Figma:
 console.log("HaMakom fonts resolved:", JSON.stringify(ROLE), "fallback:", fontFallback);
@@ -95,7 +101,9 @@ function R(o){ const r=figma.createRectangle(); r.x=o.x; r.y=o.y; r.resize(o.w,o
   if(o.cornerRadius!=null) r.cornerRadius=o.cornerRadius; return r; }
 
 async function T(o){ const t=figma.createText();
-  const fn = roleFor(o.family, o.style);   // פותר לזוג (family,style) אמיתי + קלמפ משקל
+  // o.font = זוג פותר מראש (למשל dispFont שבוחר HaMakom/Publico לפי המחרוזת);
+  // אחרת פותרים לפי (family,style) הלוגי + קלמפ משקל.
+  const fn = o.font || roleFor(o.family, o.style);
   try{t.fontName=fn;}catch(e){t.fontName={family:"Inter",style:"Regular"};}
   t.fontSize=o.size; if(o.lhPct) t.lineHeight={unit:"PERCENT",value:o.lhPct};
   if(o.letterSpacing!=null) t.letterSpacing={unit:"PIXELS",value:o.letterSpacing};
@@ -137,7 +145,7 @@ hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(h
 // טקסט — מלמטה למעלה: byline קבוע, כותרת ~16px מעליו. אין קיקר.
 const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.inkSoft, x:80, y:1154, w:920, align:"RIGHT"});   // שם בלבד: "סיון תהל"
 cover.appendChild(byline);
-const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim — Publico Headline Roman
+const title=await T({chars:TITLE, font:dispFont(TITLE,false), size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim — HaMakom אם עברי, אחרת Publico Roman
 title.y = byline.y - 16 - title.height;                                     // הכותרת נמוכה ככל שניתן — ממש מעל ה-byline
 cover.appendChild(title);
 // אין קיקר/lede/משנה — הקאבר נושא כותרת + byline בלבד (19.07.2026)
@@ -211,7 +219,7 @@ async function PSData(idx, text, number, detail, xPos){
   let s=BODY_PT; while(body.height>560 && s>30){ s-=2; body.fontSize=s; body.resize(920,body.height); }
   f.appendChild(body);
   // הנתון יושב מתחת לפסקה, לא בשקף משלו
-  const big=await T({chars:number,family:HEAD,style:"Extrabold",size:numSize(number),color:C.terra,x:40,y:0,w:1000,align:"CENTER",lhPct:100});  // מספר-מחץ → Publico Extrabold
+  const big=await T({chars:number,font:dispFont(number,true),size:numSize(number),color:C.terra,x:40,y:0,w:1000,align:"CENTER",lhPct:100});  // מספר-מחץ → HaMakom אם נתמך, אחרת Publico Extrabold
   big.y = body.y + body.height + 60;
   f.appendChild(big);
   f.appendChild(await T({chars:detail,family:BODY,style:"Bold",size:32,color:C.ink,x:80,y:big.y+big.height+24,w:920,align:"CENTER",lhPct:140}));
@@ -287,7 +295,7 @@ cta.appendChild(R({x:720,y:0,w:360,h:4,color:C.heather}));
 // הלוגו הריבועי הטיפוגרפי בשנהב — גדול, ממורכז (לא וורדמרק!)
 const logoBig=LOGO_SQUARE(C.bg, 320, 380); logoBig.x=380; logoBig.y=240; cta.appendChild(logoBig);
 cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:BODY,style:"Medium",size:42,color:C.bg,x:72,y:720,w:936,align:"CENTER"}));
-cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Extrabold",size:76,color:C.bg,x:72,y:790,w:936,align:"CENTER",lhPct:110}));  // מחץ ה-CTA → Publico Extrabold
+cta.appendChild(await T({chars:"בלי בולשיט",font:dispFont("בלי בולשיט",true),size:76,color:C.bg,x:72,y:790,w:936,align:"CENTER",lhPct:110}));  // מחץ ה-CTA (סלוגן המותג) → HaMakom
 const btn=R({x:340,y:970,w:400,h:108,color:C.terra,cornerRadius:54}); btn.name="btn-pill"; cta.appendChild(btn);
 cta.appendChild(await T({chars:"לכתבה המלאה",family:BODY,style:"Bold",size:34,color:C.bg,x:340,y:1004,w:400,align:"CENTER"}));
 // פוטר: רצועת שנהב ברוחב מלא עם url בדיו — בלי FOOT הכהה ובלי פס תחתון

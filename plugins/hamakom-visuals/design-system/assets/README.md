@@ -15,15 +15,19 @@
 |------|-------|--------|
 | `logo/logo-square-black.svg` | הלוגו הריבועי הטיפוגרפי, וקטורי | פוטר בכל שקף (~50px) · CTA גדול בשנהב (~320×380) · ווטרמרק בריל |
 | `logo/logo-wordmark-white.png` | wordmark לבן | לא בשימוש ב-CTA מאז 3.7.2026 — שמור לצרכים אחרים |
-| `fonts/publicoheadlinehebrew-{roman,extrabold}.otf` | פונט התצוגה | כותרות קאבר, ציטוטים, מספרי-נתון, מחץ CTA |
+| `fonts/HaMakom-5.ttf` | **פונט התצוגה של המותג** | כותרת קאבר, מספר-מחץ, מחץ CTA — כשעברי |
+| `fonts/publicoheadlinehebrew-{roman,extrabold}.otf` | תצוגה-fallback | אותם מקומות כשיש לטינית/em-dash |
 | `fonts/graphikhlar-{light,regular,medium}.otf` | פונט הגוף/UI | פסקאות, byline, credit, url, כפתורים |
-| `fonts/fontef-license-03515.pdf` | רישיון הפונטים | חברה עד 10 עובדים, מונפק ל"המקום הכי חם בגיהנום" |
+| `fonts/fontef-license-03515.pdf` | רישיון Publico+Graphik | חברה עד 10 עובדים, מונפק ל"המקום הכי חם בגיהנום" |
 | `video/closer_v3.mp4` | **הסגיר הקנוני של הרילים** | 1080×1920 · 30fps · **6.000 שניות בדיוק** (180 פריימים) |
 
-**משקלים — שים לב:** Publico Headline מגיע ב-**Roman** (רגיל) ו-**Extrabold** (מחץ).
-Graphik HLAR מגיע ב-**Light / Regular / Medium בלבד — אין SemiBold ואין Bold.** לכן
-כל מה שהיה IBM Plex SemiBold/Bold ממופה עכשיו ל-Graphik Medium (התקרה). ה-resolver
-בבילדרים עושה את הקלמפ אוטומטית.
+**HaMakom = פונט התצוגה של המותג** (נבנה מהלוגו, עוצב מתן שליטא, קומפל דור). משקל יחיד,
+**53 גליפים בלבד:** עברית + ספרות + פיסוק, אבל **בלי לטינית ובלי em-dash `—`**. לכן הבילדרים
+(`dispFont`) בוחרים HaMakom לתצוגה רק כשהמחרוזת עברית, ונופלים ל-Publico על לטינית/מקף-ארוך.
+ה-url `HA-MAKOM.CO.IL` — תמיד Graphik.
+
+**משקלים:** Publico = Roman + Extrabold. Graphik = **Light/Regular/Medium בלבד — אין
+SemiBold/Bold** (מה שהיה IBM Plex Bold/SemiBold → Graphik Medium; ה-resolver מקלמפ אוטומטית).
 
 **חוק ברזל:** לעולם לא לבנות את הלוגו מטקסט (`figma.createText`). תמיד
 `figma.createNodeFromSvg()` על ה-SVG, או `upload_assets()` על ה-PNG.
@@ -35,7 +39,7 @@ Graphik HLAR מגיע ב-**Light / Regular / Medium בלבד — אין SemiBold
 Figma צריך את הפונטים **מותקנים במערכת**. מהריפו:
 
 ```bash
-cp plugins/hamakom-visuals/design-system/assets/fonts/*.otf ~/Library/Fonts/
+cp plugins/hamakom-visuals/design-system/assets/fonts/*.otf plugins/hamakom-visuals/design-system/assets/fonts/*.ttf ~/Library/Fonts/
 ```
 
 Figma רואה אותם **מיד אחרי ה-cp** — אין צורך ב-restart. אם הם חסרים, הסקילים
@@ -47,6 +51,9 @@ Medium` / Regular), כי לא ידוע מראש איזו מהן Figma חושף.
 
 ## רישיונות — לקרוא לפני הפצה
 
+- **HaMakom**: פונט **המותג עצמו** — נבנה מהזהות החזותית של "המקום", עוצב ע"י מתן
+  שליטא וקומפל ע"י דור זומר (2026). קניין של האתר, אין בעיית רישוי צד-שלישי; חופשי
+  להפצה בריפו ולשימוש הצוות.
 - **Publico Headline Hebrew** ו-**Graphik HLAR**: פונטים **מסחריים** של Fontef,
   **רישיון End-Use #03515** (מצורף כ-`fonts/fontef-license-03515.pdf`). הרישיון הוא
   **"חברה עד 10 עובדים"** מונפק ל"המקום הכי חם בגיהנום", ומכסה בדיוק את 5 המשקלים
