@@ -48,20 +48,20 @@ Image.fromarray(a).save('sq_ivory.png')
 
 | פונט | נתיב | שימוש |
 |---|---|---|
-| **Suez One** (DS תצוגה) | Google Fonts — `ofl/suezone/SuezOne-Regular.ttf` | **ציטוטים — בלבן #ffffff בלבד**, כותרות |
-| **IBM Plex Sans Hebrew** (DS גוף) | Google Fonts — `ofl/ibmplexsanshebrew/IBMPlexSansHebrew-*.ttf` | קיקר (Bold 30), "בתיעוד:" (Regular 34), URL (SemiBold — יש גליפים לטיניים) |
+| **Publico Headline Hebrew** (DS תצוגה) | `design-system/assets/fonts/publicoheadlinehebrew-*.otf` | **ציטוטים — Roman בלבן #ffffff בלבד**, מחץ CTA (Extrabold) |
+| **Graphik HLAR** (DS גוף) | `design-system/assets/fonts/graphikhlar-*.otf` | קיקר (Medium 30), "בתיעוד:" (Regular 34), URL (Medium — יש גליפים לטיניים) |
 | ~~Narkiss Shimshon Extended~~ | `Desktop/NarkissShimshon-Extended.otf` | **ירד — לא בשימוש לציטוטים** (החלטת דור 3.7.2026) |
 | DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני fallback |
 
-ברירת-המחדל היא **DS 2026**: Suez One + IBM Plex Sans Hebrew (ראה
-`../../design-system/HAMAKOM-DS-2026.md`). התקנה:
+ברירת-המחדל היא **DS 2026**: Publico Headline Hebrew + Graphik HLAR (רישיון Fontef #03515;
+ראה `../../design-system/HAMAKOM-DS-2026.md`). **הפונטים בריפו** — לא צריך להוריד:
 ```bash
-curl -sL "https://github.com/google/fonts/raw/main/ofl/suezone/SuezOne-Regular.ttf" -o /tmp/SuezOne-Regular.ttf
-B="https://github.com/google/fonts/raw/main/ofl/ibmplexsanshebrew"
-for w in Regular Medium SemiBold Bold; do curl -sL "$B/IBMPlexSansHebrew-$w.ttf" -o "/tmp/IBMPlexSansHebrew-$w.ttf"; done
-cp /tmp/SuezOne-Regular.ttf /tmp/IBMPlexSansHebrew-*.ttf ~/Library/Fonts/
+DS=$(ls -d ~/.claude/plugins/cache/hamakom-plugins/hamakom-visuals/*/design-system 2>/dev/null | sort -V | tail -1)
+DS=${DS:-plugins/hamakom-visuals/design-system}
+cp "$DS"/assets/fonts/*.otf ~/Library/Fonts/
 ```
-IBM Plex Sans Hebrew מכסה גם לטינית — "ha-makom.co.il" ייצא תקין.
+**Graphik מגיע רק עד Medium** — אין Bold/SemiBold; מה שהיה Bold ממופה ל-Medium.
+Graphik HLAR מכסה גם לטינית — "ha-makom.co.il" ייצא תקין.
 
 ## בעיית iCloud — קבצים ריקים / Resource deadlock
 

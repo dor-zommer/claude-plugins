@@ -15,7 +15,7 @@ description: >
   הכותרת = h1 verbatim של הכתבה, נמוכה ככל שניתן — ממש מעל ה-byline.
 
   פלטה: HaMakom DS 2026 — שנהב/דיו/טרקוטה (טריו +מרווה +אברש). פונטים
-  Suez One + IBM Plex Sans Hebrew. עיצוב זהה לקאבר של hamakom-carousel.
+  Publico Headline + Graphik HLAR. עיצוב זהה לקאבר של hamakom-carousel.
   מקור-אמת: `../../design-system/HAMAKOM-DS-2026.md`.
 
   הפעל כשדור מבקש:
@@ -36,7 +36,7 @@ description: >
 כאן — גרפיקה בודדת ל-3 פלטפורמות. אם דור ביקש קרוסלה — זה הסקיל הלא נכון.
 
 **הקאבר של שניהם זהה ויזואלית** (מיושר 19.07.2026): תמונה full-bleed, גרדיאנט מעוגן
-בכותרת, כותרת Suez One נמוכה + byline, לוגו מרכזי-תחתון, פס-חתימה תחתון. אין קיקר
+בכותרת, כותרת Publico Headline נמוכה + byline, לוגו מרכזי-תחתון, פס-חתימה תחתון. אין קיקר
 באף אחד מהם.
 
 ---
@@ -83,8 +83,8 @@ fontSize מותרת; שינוי הטקסט אסור.
 
 | שכבה | פונט | משקלים | שימוש |
 |------|------|---------|--------|
-| **תצוגה** | **Suez One** | Regular | title (h1 verbatim), ציטוטים |
-| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | label, byline, credit, url |
+| **תצוגה** | **Publico Headline Hebrew** | Roman | title (h1 verbatim) |
+| **גוף / UI** | **Graphik HLAR** | Light · Regular · Medium | byline, credit, url |
 
 שני הפונטים ב-Google Fonts. התקנה חד-פעמית (אין צורך ב-restart):
 ```bash
@@ -95,7 +95,7 @@ cp "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
 
 **Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם
-Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
+Publico Headline / Graphik HLAR חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
 
 ---
 
@@ -106,7 +106,7 @@ Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `f
 | Token | Hex | תפקיד |
 |-------|-----|--------|
 | דיו `--ink` | `#141413` | gradient + רקע |
-| לבן | `#ffffff` | כותרת (Suez One), לוגו |
+| לבן | `#ffffff` | כותרת (Publico Headline Roman), לוגו |
 | טרקוטה-בהיר | `#E8906F` | (לא בשימוש בגרפיקה מאז ביטול הקיקר, 19.07.2026) |
 | `--ink-soft` | `#6b6a63` | byline (שם הכותב/ת בלבד) |
 | `--on-dark-soft` | `#b7b5ac` | url בשורת התחתית |
@@ -131,9 +131,9 @@ corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 ```
 y=0..H    תמונה (full-bleed, scaleMode FILL) + gradient דיו מצומצם overlay
           --- מחושב מלמטה למעלה: ---
-          title (Suez One, גדול, line-height 108%) — h1 verbatim, ~16px מעל ה-byline.
+          title (Publico Headline Roman, גדול, line-height 108%) — h1 verbatim, ~16px מעל ה-byline.
                 **האלמנט העליון בפריים — אין מעליו כלום.**
-          byline = שם הכותב/ת בלבד, בלי "מאת:" (IBM Plex Medium, ink-soft #6b6a63)
+          byline = שם הכותב/ת בלבד, בלי "מאת:" (Graphik HLAR Medium, ink-soft #6b6a63)
           logo  (SVG ריבועי, ממורכז במרכז התחתון, לבן)
           שורת תחתית צמודה לפס: credit שמאל (x≈18, לבן opacity 0.53) + "HA-MAKOM.CO.IL" ממורכז (on-dark-soft)
 y=H-4     פס-חתימה טריקולור תחתון יחיד (4px, טרקוטה·מרווה·אברש) — אין פס עליון
@@ -203,7 +203,7 @@ for (const id of photoNodeIds) {
 הפריים (כפי שדור אישר על דוגמת דרעי/ביקורי משפחות). **לכותרת h1 ארוכה —
 הקטן titleSize בלבד, לא את שאר היחסים.**
 
-| frame | מידות | padX | titleSize (Suez One) | titleGap | bylineSize | sigH | logoH |
+| frame | מידות | padX | titleSize (Publico Headline) | titleGap | bylineSize | sigH | logoH |
 |-------|-------|------|-----------|----------|-----------|------|-------|
 | whatsapp-1080x1080  | 1080×1080 | 64 | 56 | 16 | 22 | 4 | 60 |
 | instagram-1080x1350 | 1080×1350 | 64 | 56 | 16 | 23 | 4 | 64 |
@@ -228,7 +228,7 @@ for (const id of photoNodeIds) {
 5. **Adobe Firefly** — fallback להמחשה (אם אין תמונה אמיתית). פרומפט קבוע:
    `dark cinematic Hebrew journalism aesthetic, no text, no faces, atmospheric`.
 
-**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt,
+**credit חובה לכל תמונה** — text node קטן Graphik HLAR Regular 18pt,
 לבן opacity ~0.53, בשורת התחתית משמאל (x≈18) לצד ה-url הממורכז.
 
 ---
@@ -295,7 +295,7 @@ recurse(node);
 - ☐ **byline = שם הכותב/ת בלבד** (בלי "מאת:"), ink-soft
 - ☐ **לוגו לבן במרכז התחתון** של כל פריים (לא בפינה)
 - ☐ אינסטגרם הוא 4:5 (1080×1350), לא ריבוע
-- ☐ כותרת Suez One (לא NextExit)
+- ☐ כותרת Publico Headline (לא NextExit)
 - ☐ **פס-חתימה טריקולור תחתון יחיד, 4px, בקצה התחתון** (אין פס עליון, לא פס אדום); שורת credit+url מעליו
 
 ---
@@ -328,7 +328,7 @@ recurse(node);
 
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
-פלטה: שנהב/דיו/טרקוטה · פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
+פלטה: שנהב/דיו/טרקוטה · פונטים: Publico Headline + Graphik HLAR (font_fallback_used: false)
 
 Graphics — פורמטים (3 פריימים)
   whatsapp-1080x1080     (ריבוע 1:1)

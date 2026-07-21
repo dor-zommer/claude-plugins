@@ -16,7 +16,7 @@ description: >
   פלט: קובץ Figma חדש לכל כתבה, עם Frames של 1080×1350 מוכנים לעריכה ו-export.
   פלטה: **HaMakom DS 2026 (קבועה) — שנהב #faf9f5 / דיו #141413 / טרקוטה #D97757**
   (טריו: +מרווה +אברש לפי תפקיד). ראה `design-system/HAMAKOM-DS-2026.md` (מקור-אמת).
-  פונטים: **Suez One** (תצוגה) + **IBM Plex Sans Hebrew** (גוף/UI).
+  פונטים: **Publico Headline** (תצוגה) + **Graphik HLAR** (גוף/UI).
 
   הפעל את הסקיל בכל פעם שדור מבקש:
   - "תעשה קרוסלה לכתבה" / "carousel" / "אינסטגרם רב-שקפי"
@@ -75,7 +75,7 @@ description: >
 
 ### 3. טיפוגרפיה של שקף טקסט
 
-- **45-50pt IBM Plex Sans Hebrew Regular** (fallback: Inter Regular). לא 40.
+- **45-50pt Graphik HLAR Regular** (fallback: Inter Regular). לא 40.
 - line-height 160%.
 - גוף מתחיל ב-**y≈182**, x=80, w=920, RIGHT — מיושר-לעליון, לא ממורכז אנכית.
 - **auto-shrink רק אם חורג** מאזור התוכן. פסקה מתומצתת נכון נכנסת בגודל המלא.
@@ -153,14 +153,14 @@ ls ~/Documents/המקום/                   # תיקיות עבודה
 ```
 [פס-חתימה עליון 4px]
 [הלוגו הריבועי בשנהב — גדול, ~320×380, ממורכז]
-בלי בעלי הון.  בלי פרסומות.   ← IBM Plex Medium 42
-בלי בולשיט                     ← Suez One 76
+בלי בעלי הון.  בלי פרסומות.   ← Graphik HLAR Medium 42
+בלי בולשיט                     ← Publico Headline Extrabold 76
 [לכתבה המלאה]                  ← pill טרקוטה, טקסט שנהב
 [רצועת שנהב 56px עם HA-MAKOM.CO.IL בדיו]
 ```
 רקע **דיו** `#141413`. הלוגו הוא **הריבועי הטיפוגרפי** (לא וורדמרק). כפתור pill
-**טרקוטה** `#D97757` (400×108, radius 54) עם "לכתבה המלאה" IBM Plex Bold 34 בשנהב.
-פוטר: רצועת **שנהב** ברוחב מלא בתחתית עם url בדיו (IBM Plex Bold 24, ls 4) —
+**טרקוטה** `#D97757` (400×108, radius 54) עם "לכתבה המלאה" Graphik HLAR Medium 34 בשנהב.
+פוטר: רצועת **שנהב** ברוחב מלא בתחתית עם url בדיו (Graphik HLAR Medium 24, ls 4) —
 בלי לוגו קטן ובלי פס תחתון בשקף הזה.
 **לעולם לא "כשציבור מממן, ציבור קובע".**
 
@@ -177,9 +177,9 @@ ls ~/Documents/המקום/                   # תיקיות עבודה
 ```javascript
 async function ISlide(idx, imageHash, imgW, imgH, label, credit, xPos){
   // Full-bleed FIT image, no crop
-  // - small label top-right: "ראיה · [תיאור]" (IBM Plex Bold 22pt, terra-deep)
+  // - small label top-right: "ראיה · [תיאור]" (Graphik HLAR Medium 22pt, terra-deep)
   // - image FIT centered in area y=200 to y=1180 (רקע שנהב סביב)
-  // - credit bottom-center (IBM Plex Regular 18pt, ink-soft): "שימוש לפי סעיף 27א׳"
+  // - credit bottom-center (Graphik HLAR Regular 18pt, ink-soft): "שימוש לפי סעיף 27א׳"
   // - FOOT(false): logo + url + פס-חתימה טריקולור תחתון יחיד (4px) — אין פס עליון
 }
 ```
@@ -206,12 +206,12 @@ async function IMG(idx, imageHash, caption, credit, xPos, quote){
 ### 12ג. נתון-מחץ — משולב בשקף הטקסט, לא שקף נפרד
 
 **`DSlide` כשקף עצמאי בוטל (19.07.2026).** בקרוסלה שפורסמה הנתון לא עמד לבדו — הוא ישב
-**בתוך** שקף הטקסט שמדבר עליו. התבנית: `PSData` — פסקה, ומתחתיה **מספר ענק ב-Suez One
-בטרקוטה** ושורת פירוט ב-**IBM Plex Bold**.
+**בתוך** שקף הטקסט שמדבר עליו. התבנית: `PSData` — פסקה, ומתחתיה **מספר ענק ב-Publico Headline Extrabold
+בטרקוטה** ושורת פירוט ב-**Graphik HLAR Medium**.
 
 ```javascript
 async function PSData(idx, text, number, detail, xPos){
-  // פסקה (45pt) → מספר ענק Suez One טרקוטה → שורת פירוט IBM Plex Bold
+  // פסקה (45pt) → מספר ענק Publico Headline Extrabold טרקוטה → שורת פירוט Graphik HLAR Medium
 }
 ```
 
@@ -257,8 +257,8 @@ corporate-tech (turquoise-OpenAI), צבעי-ספונסר (ירוק WhatsApp).
 
 | שכבה | פונט | משקלים | שימוש |
 |------|------|---------|--------|
-| **תצוגה** | **Suez One** | Regular (כבד מטבעו) | כותרת קאבר, ציטוטים, מספרי-נתון ענקיים, שורות CTA |
-| **גוף / UI** | **IBM Plex Sans Hebrew** | Regular / Medium / SemiBold / Bold | פסקאות, קיקרים, byline, credit, url, כפתור |
+| **תצוגה** | **Publico Headline Hebrew** | Roman · Extrabold | כותרת קאבר (Roman), ציטוטים, מספרי-נתון + מחץ CTA (Extrabold) |
+| **גוף / UI** | **Graphik HLAR** | Light · Regular · Medium (אין Bold/SemiBold) | פסקאות, byline, credit, url, כפתור |
 
 שני הפונטים ב-Google Fonts (פתוחים). **לא מותקנים מקומית כברירת מחדל** — Figma צריך אותם.
 
@@ -272,7 +272,7 @@ cp "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 
 Figma רואה אותם **מיד אחרי `cp`** (בדקנו — אין צורך ב-Cmd+Q).
 
-**Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם Suez One / IBM Plex Sans Hebrew חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
+**Fallback בזמן ריצה:** הסקיל בודק `figma.listAvailableFontsAsync()` ואם Publico Headline / Graphik HLAR חסרים — נופל ל-Inter ומחזיר `font_fallback_used: true`.
 
 ---
 
@@ -289,9 +289,9 @@ Figma רואה אותם **מיד אחרי `cp`** (בדקנו — אין צורך
 y=0      תמונה full-bleed מקצה לקצה (1080×1350, FILL)
          - gradient דיו מצומצם: שקוף לחלוטין (a=0) עד ~7% מעל הכותרת,
            a≈0.72 בגובה הכותרת, a=1 רק בתחתית. ~65-70% העליונים גלויים לחלוטין.
-y≈1154   byline — **שם הכותב/ת בלבד** (בלי "כתבה ·"/"מאת:") — IBM Plex Medium 25pt,
+y≈1154   byline — **שם הכותב/ת בלבד** (בלי "כתבה ·"/"מאת:") — Graphik HLAR Medium 25pt,
          **ink-soft `#6b6a63`**
-         title — Suez One (גודל דינמי 56-72pt) לבן, ~16px מעל ה-byline
+         title — Publico Headline Roman (גודל דינמי 56-72pt) לבן, ~16px מעל ה-byline
          (title.y = byline.y − 16 − title.height — מחושב אחרי מדידת הגובה)
          **הכותרת המלאה — מילה במילה, גם כשהיא ציטוט.** לא קיצור, לא "ידית".
          **אין קיקר, אין lede, אין משנה, אין תגית קטגוריה.**
@@ -301,7 +301,7 @@ footer:  לוגו לבן קטן **ממורכז** (~42×50, y≈1244) · שורת
 ```
 
 **הכותרת מילה במילה (חוק 0a):** הקאבר מחזיק את הכותרת המלאה של הכתבה.
-לא לגזור, לא לקצר, לא להמציא "ידית". הגודל הדינמי (Suez One):
+לא לגזור, לא לקצר, לא להמציא "ידית". הגודל הדינמי (Publico Headline Roman):
 
 | אורך הכותרת | fontSize |
 |--------------|----------|
@@ -317,7 +317,7 @@ footer:  לוגו לבן קטן **ממורכז** (~42×50, y≈1244) · שורת
 
 ראה סעיף 3 ב"מודל הפשוט" + הקוד המלא ב-`scripts/build_figma_simple.md` (`PS`).
 
-תקציר: רקע שנהב → **קו טרקוטה קצר בלבד** בראש השקף → טקסט IBM Plex **45-50pt Regular** **מיושר-לעליון** (y≈182) → פוטר (לוגו + url + פס-חתימה תחתון יחיד 4px — אין פס עליון).
+תקציר: רקע שנהב → **קו טרקוטה קצר בלבד** בראש השקף → טקסט Graphik HLAR **45-50pt Regular** **מיושר-לעליון** (y≈182) → פוטר (לוגו + url + פס-חתימה תחתון יחיד 4px — אין פס עליון).
 
 **בוטלו 19.07.2026:** קיקר הקטגוריה ("חדשות"/"דעה") ואינדקס `NN / TOTAL`. הם **לא נוצרים
 בכלל** — הוסרו מחתימת `PS` ומהקוד, לא רק מוסתרים.
@@ -334,7 +334,7 @@ footer:  לוגו לבן קטן **ממורכז** (~42×50, y≈1244) · שורת
 
 ## מבנה ה-CTA (שקף N — אחרון תמיד)
 
-ראה סעיף 10 ב"מודל הפשוט" (הפריים הקנוני שדור קיבע). רקע **דיו**, פס-חתימה **עליון** 4px, **הלוגו הריבועי הגדול בשנהב** ממורכז (~320×380), שורה 1 ב-IBM Plex Medium 42, "בלי בולשיט" ב-Suez One 76, כפתור pill **טרקוטה** עם טקסט שנהב, ופוטר **רצועת שנהב** עם url בדיו (בלי FOOT הכהה הרגיל). **לעולם לא "כשציבור מממן".**
+ראה סעיף 10 ב"מודל הפשוט" (הפריים הקנוני שדור קיבע). רקע **דיו**, פס-חתימה **עליון** 4px, **הלוגו הריבועי הגדול בשנהב** ממורכז (~320×380), שורה 1 ב-Graphik HLAR Medium 42, "בלי בולשיט" ב-Publico Headline Extrabold 76, כפתור pill **טרקוטה** עם טקסט שנהב, ופוטר **רצועת שנהב** עם url בדיו (בלי FOOT הכהה הרגיל). **לעולם לא "כשציבור מממן".**
 
 ---
 
@@ -372,7 +372,7 @@ ls ~/Documents/המקום/                         # 3. תיקיות עבודה
 **קאטאוטים (background-removed)** — תמיד דרך MCP
 `image_remove_background` של Adobe לפני הצבה בפיגמה.
 
-**credit חובה לכל תמונה** — text node קטן IBM Plex Sans Hebrew Regular 18pt
+**credit חובה לכל תמונה** — text node קטן Graphik HLAR Regular 18pt
 בתחתית התמונה (ink-soft, או לבן opacity 0.6 על תמונה).
 
 ---
@@ -456,7 +456,7 @@ h1 verbatim).
 ולוודא:
 - ☐ אין "כשציבור מממן" באף מקום
 - ☐ פלטה DS: שנהב רקע / דיו טקסט / טרקוטה אקסנט (לא שחור-אדום)
-- ☐ פונטים: Suez One (תצוגה) + IBM Plex Sans Hebrew (גוף) — לא NextExit/Narkiss
+- ☐ פונטים: Publico Headline (תצוגה) + Graphik HLAR (גוף) — לא NextExit/Narkiss
 - ☐ פס-חתימה טריקולור (טרקוטה·מרווה·אברש) **תחתון יחיד, 4px, בקצה התחתון** בכל שקף — אין פס עליון
 - ☐ פונט **45-50pt** Regular בשקפי הטקסט, **מיושר-לעליון** (y≈182, לא ממורכז)
 - ☐ קאבר full-bleed (לא קארד ממורכז), CTA רקע דיו + pill שנהב "לכתבה המלאה"
@@ -501,12 +501,12 @@ h1 verbatim).
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
 פלטה: שנהב #faf9f5 + דיו #141413 + טרקוטה #D97757 (טריו +מרווה +אברש)
-פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
+פונטים: Publico Headline + Graphik HLAR (font_fallback_used: false)
 
 עמוד 1 — Carousel (9 שקפים: cover + 6 תוכן + 2 photo + cta)
   00 cover         hero full-bleed + h1 verbatim + byline (בלי משנה/קיקר)
   01 paragraph     סצנה/רקע — מתומצת, 45-50pt
-  02 psdata        עדות + נתון רפואי (מספר Suez One טרקוטה משולב + שורת פירוט Bold)
+  02 psdata        עדות + נתון רפואי (מספר Publico Headline Extrabold טרקוטה משולב + שורת פירוט Medium)
   03 paragraph     התלונה והסגירה
   04 photo         פלאש 90 full-bleed + כיתוב + קרדיט
   05 paragraph     הקשר חקיקתי

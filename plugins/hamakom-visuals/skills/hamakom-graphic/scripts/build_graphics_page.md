@@ -3,7 +3,7 @@
 > עמוד Figma אחד עם 3 פריימים ממותגים לכתבה: whatsapp-1080x1080,
 > instagram-1080x1350, ig-story-1080x1920. ראה גם SKILL.md + מקור-האמת
 > `../../../design-system/HAMAKOM-DS-2026.md`.
-> פלטה: שנהב/דיו/טרקוטה. פונטים: Suez One + IBM Plex Sans Hebrew.
+> פלטה: שנהב/דיו/טרקוטה. פונטים: Publico Headline Hebrew (תצוגה) + Graphik HLAR (גוף).
 > הגרפיקה היא **cover-style**: תמונה full-bleed + gradient דיו + טקסט לבן.
 
 ---
@@ -33,7 +33,7 @@
 7. **byline = שם הכותב/ת בלבד** (בלי "מאת:"), ink-soft `#6b6a63`.
 8. **Gradient דיו מצומצם** — שקוף לחלוטין עד ~7% מעל הקיקר, אלפא מלא רק
    בתחתית. ~65-70% העליונים של התמונה גלויים לחלוטין.
-9. **כותרת = h1 verbatim** (Suez One) — לא `og:title`, לא קיצור.
+9. **כותרת = h1 verbatim** (Publico Headline Roman) — לא `og:title`, לא קיצור.
 10. **פס-חתימה טריקולור תחתון יחיד** — 4px בקצה התחתון (טרקוטה·מרווה·אברש). אין פס עליון.
 11. **שורת תחתית צמודה לפס**: credit צילום שמאל (x≈18, לבן opacity 0.53) +
     `HA-MAKOM.CO.IL` ממורכז (on-dark-soft).
@@ -67,13 +67,30 @@ const CONTENT = {
 };   // אין kicker/lede — בוטל 19.07.2026
 
 // ============================ FONTS ============================
-let HEAD="Inter", BODY="Inter";
+// HaMakom DS 2026 — Publico Headline Hebrew (תצוגה) + Graphik HLAR (גוף).
+// resolver זהה לבילדר הקרוסלה: הפונטים המסחריים נרשמים פר-משקל *וגם* בקיבוץ
+// טיפוגרפי; פותרים בזמן ריצה. Graphik עד Medium — Bold/SemiBold נקלמפים ל-Medium.
 const fonts = await figma.listAvailableFontsAsync();
-if (fonts.some(f => f.fontName.family === "Suez One")) HEAD = "Suez One";
-if (fonts.some(f => f.fontName.family === "IBM Plex Sans Hebrew")) BODY = "IBM Plex Sans Hebrew";
-for (const fn of [{family:HEAD,style:"Regular"},{family:BODY,style:"Regular"},
-  {family:BODY,style:"Medium"},{family:BODY,style:"SemiBold"},{family:BODY,style:"Bold"}])
-  { try{ await figma.loadFontAsync(fn);}catch(e){} }
+const AV = new Set(fonts.map(f => f.fontName.family + "||" + f.fontName.style));
+const FB = {family:"Inter", style:"Regular"};
+const pick = cands => cands.find(c => AV.has(c.family+"||"+c.style)) || cands[cands.length-1] || FB;
+const ROLE = {
+  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},FB]),
+  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},FB]),
+  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},FB]),
+  reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
+  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Inter",style:"Medium"},FB]),
+};
+function roleFor(fam, style){
+  if (fam==="HEAD") return style==="Extrabold" ? ROLE.dispXB : ROLE.disp;
+  if (style==="Light") return ROLE.light;
+  if (style==="Medium"||style==="SemiBold"||style==="Bold") return ROLE.med;
+  return ROLE.reg;
+}
+const HEAD="HEAD", BODY="BODY";
+for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med]) { try{ await figma.loadFontAsync(r);}catch(e){} }
+const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");
+console.log("HaMakom fonts resolved:", JSON.stringify(ROLE), "fallback:", fontFallback);
 
 // ============================ PAGE ============================
 const graphicsPage = figma.createPage();
@@ -89,7 +106,8 @@ function rect({ x, y, w, h, color, fills, opacity = 1 }) {
 }
 async function txt(o) {
   const t = figma.createText();
-  try { t.fontName={family:o.family,style:o.style}; } catch(e){ t.fontName={family:"Inter",style:"Regular"}; }
+  const fn = roleFor(o.family, o.style);   // פותר לזוג (family,style) אמיתי + קלמפ משקל
+  try { t.fontName=fn; } catch(e){ t.fontName={family:"Inter",style:"Regular"}; }
   t.fontSize=o.size; if(o.lhPct) t.lineHeight={unit:"PERCENT",value:o.lhPct};
   if(o.letterSpacing!=null) t.letterSpacing={unit:"PIXELS",value:o.letterSpacing};
   t.characters=o.chars; t.textAlignHorizontal=o.align; t.fills=[{type:"SOLID",color:o.color}];
@@ -151,7 +169,7 @@ async function buildGraphic(name, posX, posY, W, H, o) {
     color:C.inkSoft, x:padX, y:0, w:contentW, align:"RIGHT" });
   byline.y = logo.y - o.bylineGap - byline.height; frame.appendChild(byline);
 
-  // 4. כותרת Suez One verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline.
+  // 4. כותרת Publico Headline Roman verbatim — נמוכה ככל שניתן, ~16px מעל ה-byline.
   //    זה האלמנט העליון בפריים: אין קיקר, אין lede, אין משנה (19.07.2026).
   const title = await txt({ chars:CONTENT.title, family:HEAD, style:"Regular", size:o.titleSize,
     color:C.white, x:padX, y:0, w:contentW, align:"RIGHT", lhPct:108 });
@@ -199,7 +217,7 @@ for (const id of ["1:4","1:36","1:67"]) {          // 3 פלייסהולדרים
 
 ## עיצוב — כן/לא
 
-✓ תמונה full-bleed, gradient דיו מצומצם (שקוף עד סמוך לכותרת), כותרת Suez One
+✓ תמונה full-bleed, gradient דיו מצומצם (שקוף עד סמוך לכותרת), כותרת Publico Headline
 לבנה נמוכה (ממש מעל ה-byline) כאלמנט העליון, byline שם-בלבד ink-soft, לוגו
 מרכזי-תחתון, שורת credit+url צמודה לפס, פס-חתימה טריקולור תחתון יחיד 4px
 בקצה התחתון.
@@ -214,6 +232,6 @@ for (const id of ["1:4","1:36","1:67"]) {          // 3 פלייסהולדרים
 ## פלט QA
 
 screenshot של 3 הפריימים — לוודא: תמונה נראית (לא דיו מלא — הגרדיאנט לא מסתיר
-את ~65-70% העליונים), כותרת Suez One verbatim צמודה לתחתית (~16px מעל
+את ~65-70% העליונים), כותרת Publico Headline verbatim צמודה לתחתית (~16px מעל
 ה-byline), **אין שום טקסט מעל הכותרת**, byline שם-בלבד ב-ink-soft, פס-חתימה
 טריקולור תחתון יחיד 4px (אין פס עליון), לוגו לבן מרכזי, שורת credit+url צמודה לפס.

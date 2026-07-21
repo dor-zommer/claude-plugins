@@ -2,7 +2,7 @@
 
 > **תקן 2026** — הקוד הזה אומת חזותית מול דור (קרוסלת "בנט / הסכסוך הוא לא רסיס", יוני 2026).
 > **קרא קודם** את `design-system/HAMAKOM-DS-2026.md` (מקור-האמת) ואת SKILL.md.
-> פלטה: שנהב/דיו/טרקוטה. פונטים: Suez One + IBM Plex Sans Hebrew.
+> פלטה: שנהב/דיו/טרקוטה. פונטים: **Publico Headline Hebrew** (תצוגה) + **Graphik HLAR** (גוף).
 > פס-חתימה טריקולור **תחתון יחיד, 4px** בכל שקף (דרך `FOOT`) — אין פס עליון.
 > **הפלטה הישנה (שחור/אדום `#f70d28` + NextExit/Narkiss Tam) בוטלה.**
 
@@ -20,7 +20,7 @@
       ls -d ~/Downloads/*<שם-הכתבה>*        ← תיקייה על שם הכתבה = ייצוא קודם, לא מקור
       ls ~/Documents/המקום/
 [ ] הקטן מקורות גדולים: sips -Z 2560 <file>  (מגבלת upload 10MB)
-[ ] התקן Suez One + IBM Plex Sans Hebrew אם חסרים (ראה DS §2)
+[ ] התקן Publico Headline Hebrew + Graphik HLAR אם חסרים (cp מ-design-system/assets/fonts)
 [ ] צור Figma file: create_new_file editorType=design
 [ ] use_figma → בנה Carousel: cover + PS/PSData + IMG (עם quote בסיום) + CTA
 [ ] upload_assets: hero → cover-hero-image (הלוגו ב-CTA הוא הריבועי מ-SVG — לא צריך upload)
@@ -49,14 +49,35 @@ const C = {
   scTerra:{r:0.9098,g:0.5647,b:0.4353}, onDarkSoft:{r:0.7176,g:0.7098,b:0.6745}, white:{r:1,g:1,b:1},
 };
 
-let HEAD="Inter", BODY="Inter";
+// --- Font resolver (HaMakom DS 2026 — Publico Headline Hebrew + Graphik HLAR) ---
+// הפונטים המסחריים נרשמים פר-משקל (family נפרד לכל משקל) *וגם* בקיבוץ טיפוגרפי.
+// לא ידוע מראש איזו צורה Figma חושף, ולכן פותרים בזמן ריצה: מנסים קודם את הקיבוץ
+// הטיפוגרפי, ואז את הצורה המפוצלת. Graphik מגיע רק עד Medium — אין Bold/SemiBold,
+// ולכן כל בקשה כבדה יותר נקלמפת ל-Medium. Publico: Roman (רגיל) + Extrabold (מחץ).
 const fonts = await figma.listAvailableFontsAsync();
-if (fonts.some(f => f.fontName.family === "Suez One")) HEAD = "Suez One";
-if (fonts.some(f => f.fontName.family === "IBM Plex Sans Hebrew")) BODY = "IBM Plex Sans Hebrew";
-for (const fn of [{family:HEAD,style:"Regular"},{family:BODY,style:"Regular"},
-  {family:BODY,style:"Medium"},{family:BODY,style:"SemiBold"},{family:BODY,style:"Bold"}])
-  { try{ await figma.loadFontAsync(fn);}catch(e){} }
-const fontFallback = (HEAD==="Inter" || BODY==="Inter");
+const AV = new Set(fonts.map(f => f.fontName.family + "||" + f.fontName.style));
+const FB = {family:"Inter", style:"Regular"};
+const pick = cands => cands.find(c => AV.has(c.family+"||"+c.style)) || cands[cands.length-1] || FB;
+const ROLE = {
+  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},FB]),
+  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},FB]),
+  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},FB]),
+  reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
+  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Inter",style:"Medium"},FB]),
+};
+// (HEAD/BODY, style לוגי) → תפקיד. HEAD+Extrabold=מחץ; אחרת HEAD=תצוגה רגילה.
+// BODY: Light→light ; Medium/SemiBold/Bold→med (תקרת Graphik) ; אחרת reg.
+function roleFor(fam, style){
+  if (fam==="HEAD") return style==="Extrabold" ? ROLE.dispXB : ROLE.disp;
+  if (style==="Light") return ROLE.light;
+  if (style==="Medium"||style==="SemiBold"||style==="Bold") return ROLE.med;
+  return ROLE.reg;
+}
+const HEAD="HEAD", BODY="BODY";
+for (const r of [ROLE.disp,ROLE.dispXB,ROLE.light,ROLE.reg,ROLE.med]) { try{ await figma.loadFontAsync(r);}catch(e){} }
+const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");
+// לוג לריצה הראשונה — מראה איזה זוג (family,style) נפתר בפועל, במקום לנחש את שמות Figma:
+console.log("HaMakom fonts resolved:", JSON.stringify(ROLE), "fallback:", fontFallback);
 ```
 
 ---
@@ -74,7 +95,8 @@ function R(o){ const r=figma.createRectangle(); r.x=o.x; r.y=o.y; r.resize(o.w,o
   if(o.cornerRadius!=null) r.cornerRadius=o.cornerRadius; return r; }
 
 async function T(o){ const t=figma.createText();
-  try{t.fontName={family:o.family,style:o.style};}catch(e){t.fontName={family:BODY,style:"Regular"};}
+  const fn = roleFor(o.family, o.style);   // פותר לזוג (family,style) אמיתי + קלמפ משקל
+  try{t.fontName=fn;}catch(e){t.fontName={family:"Inter",style:"Regular"};}
   t.fontSize=o.size; if(o.lhPct) t.lineHeight={unit:"PERCENT",value:o.lhPct};
   if(o.letterSpacing!=null) t.letterSpacing={unit:"PIXELS",value:o.letterSpacing};
   t.characters=o.chars; t.textAlignHorizontal=o.align; t.fills=[{type:"SOLID",color:o.color}];
@@ -115,7 +137,7 @@ hImg.fills=[{type:"IMAGE",scaleMode:"FILL",imageHash:HERO}]; cover.appendChild(h
 // טקסט — מלמטה למעלה: byline קבוע, כותרת ~16px מעליו. אין קיקר.
 const byline=await T({chars:BYLINE, family:BODY, style:"Medium", size:25, color:C.inkSoft, x:80, y:1154, w:920, align:"RIGHT"});   // שם בלבד: "סיון תהל"
 cover.appendChild(byline);
-const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim (Suez One)
+const title=await T({chars:TITLE, family:HEAD, style:"Regular", size:64, color:C.white, x:80, y:0, w:920, align:"RIGHT", lhPct:108}); // h1 verbatim — Publico Headline Roman
 title.y = byline.y - 16 - title.height;                                     // הכותרת נמוכה ככל שניתן — ממש מעל ה-byline
 cover.appendChild(title);
 // אין קיקר/lede/משנה — הקאבר נושא כותרת + byline בלבד (19.07.2026)
@@ -138,7 +160,7 @@ figma.currentPage.appendChild(cover);
 
 ---
 
-## שקף-פסקה — שנהב, IBM Plex, מיושר-לעליון
+## שקף-פסקה — שנהב, Graphik HLAR, מיושר-לעליון
 
 **בלי קיקר קטגוריה ובלי אינדקס `NN / TOTAL`** (בוטלו 19.07.2026 — דור הסיר אותם מקרוסלת
 מח"ש–מכת"ז). הסימן היחיד בראש השקף הוא **קו הטרקוטה הקצר**. אין `total` ואין `kicker`
@@ -173,7 +195,7 @@ async function PS(idx, text, xPos){
 **`DSlide` כשקף עצמאי בוטל (19.07.2026).** בקרוסלה שדור פרסם הנתון לא עמד לבדו — הוא ישב
 **בתוך** שקף הטקסט שמדבר עליו. שקף נתון נפרד קטע את הקריאה והוסיף שקף שלא היה צריך.
 
-המבנה: פסקה מתומצתת → **מספר ענק Suez One בטרקוטה** → **שורת פירוט IBM Plex Bold**.
+המבנה: פסקה מתומצתת → **מספר ענק Publico Extrabold בטרקוטה** → **שורת פירוט Graphik Medium**.
 זה המקום היחיד (יחד עם שורות נתון) שבו Bold מותר.
 
 ```javascript
@@ -189,7 +211,7 @@ async function PSData(idx, text, number, detail, xPos){
   let s=BODY_PT; while(body.height>560 && s>30){ s-=2; body.fontSize=s; body.resize(920,body.height); }
   f.appendChild(body);
   // הנתון יושב מתחת לפסקה, לא בשקף משלו
-  const big=await T({chars:number,family:HEAD,style:"Regular",size:numSize(number),color:C.terra,x:40,y:0,w:1000,align:"CENTER",lhPct:100});
+  const big=await T({chars:number,family:HEAD,style:"Extrabold",size:numSize(number),color:C.terra,x:40,y:0,w:1000,align:"CENTER",lhPct:100});  // מספר-מחץ → Publico Extrabold
   big.y = body.y + body.height + 60;
   f.appendChild(big);
   f.appendChild(await T({chars:detail,family:BODY,style:"Bold",size:32,color:C.ink,x:80,y:big.y+big.height+24,w:920,align:"CENTER",lhPct:140}));
@@ -265,7 +287,7 @@ cta.appendChild(R({x:720,y:0,w:360,h:4,color:C.heather}));
 // הלוגו הריבועי הטיפוגרפי בשנהב — גדול, ממורכז (לא וורדמרק!)
 const logoBig=LOGO_SQUARE(C.bg, 320, 380); logoBig.x=380; logoBig.y=240; cta.appendChild(logoBig);
 cta.appendChild(await T({chars:"בלי בעלי הון.  בלי פרסומות.",family:BODY,style:"Medium",size:42,color:C.bg,x:72,y:720,w:936,align:"CENTER"}));
-cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Regular",size:76,color:C.bg,x:72,y:790,w:936,align:"CENTER",lhPct:110}));
+cta.appendChild(await T({chars:"בלי בולשיט",family:HEAD,style:"Extrabold",size:76,color:C.bg,x:72,y:790,w:936,align:"CENTER",lhPct:110}));  // מחץ ה-CTA → Publico Extrabold
 const btn=R({x:340,y:970,w:400,h:108,color:C.terra,cornerRadius:54}); btn.name="btn-pill"; cta.appendChild(btn);
 cta.appendChild(await T({chars:"לכתבה המלאה",family:BODY,style:"Bold",size:34,color:C.bg,x:340,y:1004,w:400,align:"CENTER"}));
 // פוטר: רצועת שנהב ברוחב מלא עם url בדיו — בלי FOOT הכהה ובלי פס תחתון
@@ -322,7 +344,7 @@ for (const c of [...figma.currentPage.children]) {
 ```
 קובץ Figma: https://www.figma.com/design/<KEY>
 פלטה: שנהב #faf9f5 + דיו #141413 + טרקוטה #D97757 (טריו +מרווה +אברש)
-פונטים: Suez One + IBM Plex Sans Hebrew (font_fallback_used: false)
+פונטים: Publico Headline Hebrew + Graphik HLAR (font_fallback_used: false)
 
 עמוד Carousel: 8-10 שקפים — cover (full-bleed) + פסקאות מתומצתות + PSData + IMG + CTA (dark)
 ```

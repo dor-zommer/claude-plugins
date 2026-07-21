@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.13.0"
+    "version": "2.14.0"
   },
   "plugins": [
     {
