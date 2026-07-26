@@ -48,8 +48,8 @@ Image.fromarray(a).save('sq_ivory.png')
 
 | פונט | נתיב | שימוש |
 |---|---|---|
-| **HaMakom** (DS תצוגה — מותג) | `design-system/assets/fonts/HaMakom-5.ttf` | **ציטוטים עבריים בלבן #ffffff**, מחץ CTA. אין לטינית/em-dash |
-| **Publico Headline Hebrew** (תצוגה-fallback) | `design-system/assets/fonts/publicoheadlinehebrew-*.otf` | ציטוט עם לטינית/`—`, כותרות ארוכות |
+| **HaMakom** (DS תצוגה — מותג) | `design-system/assets/fonts/HaMakom-5.ttf` | **תצוגה חתימתית קצרה בלבד**: קיקרים, תגיות, מחץ CTA. **אסור לטקסט רץ / ציטוטים.** אין לטינית/em-dash |
+| **Publico Headline Hebrew** (תצוגה) | `design-system/assets/fonts/publicoheadlinehebrew-*.otf` | **ציטוטים** (תמיד), כותרות ארוכות, מספרי-נתון |
 | **Graphik HLAR** (DS גוף) | `design-system/assets/fonts/graphikhlar-*.otf` | קיקר (Medium 30), "בתיעוד:" (Regular 34), URL (Medium — יש גליפים לטיניים) |
 | ~~Narkiss Shimshon Extended~~ | `Desktop/NarkissShimshon-Extended.otf` | **ירד — לא בשימוש לציטוטים** (החלטת דור 3.7.2026) |
 | DejaVu Sans (במערכת) | `/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf` | URL לטיני fallback |

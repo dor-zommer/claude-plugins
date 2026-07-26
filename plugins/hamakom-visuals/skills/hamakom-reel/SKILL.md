@@ -39,8 +39,10 @@ description: בונה ריל ממותג לאינסטגרם/טיקטוק (9:16, 4
 - **פס-חתימה טריקולור — חובה, אבל אחד בלבד:** תחתון, דק **4px**
   (ימין טרקוטה #D97757 · אמצע מרווה #788C5D · שמאל אברש #8E6FA8).
   לא למעלה+למטה, לא 12px.
-- **פונטים:** ציטוטים — **HaMakom בלבן #ffffff** (פונט התצוגה של המותג; אם הציטוט
-  מכיל לטינית/`—` — Publico Headline). Narkiss ירד. קיקר — **Graphik HLAR Medium 30, sc-terra #E8906F, letter-spacing ~3px**.
+- **פונטים:** ציטוטים — **Publico Headline בלבן #ffffff**. **לא HaMakom** — פונט המותג
+  מיועד לקיקרים, תגיות ותצוגה חתימתית קצרה בלבד, **לא לטקסט רץ** (החלטת דור 24.07.2026;
+  תואם ל-`hamakom-carousel` שכבר מגדיר ציטוטים כ-Publico Headline).
+  Narkiss ירד. קיקר — **Graphik HLAR Medium 30, sc-terra #E8906F, letter-spacing ~3px**.
   "בתיעוד:" — Graphik HLAR Regular 34, on-dark-soft **#b7b5ac**.
   URL לטיני — Graphik HLAR (יש גליפים לטיניים).
 - **טקסט ישירות על הווידאו** — בלי קוביות רקע ו**בלי צל בכלל**. הקריאות מגיעה
