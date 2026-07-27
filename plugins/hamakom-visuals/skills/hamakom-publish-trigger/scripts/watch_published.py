@@ -54,17 +54,48 @@ def to_article(p):
             "author": y.get("author", "") or ""}
 
 
-def local_images():
-    """**בדיקת ~/Downloads חוסמת** (חוק 5 ב-hamakom-carousel): דור מכין תמונות
-    פלאש 90 מראש — הן המקור. לא להוריד מהאתר לפני שבודקים כאן."""
+def article_images(slug, featured=""):
+    """**המקור העיקרי: התמונות של הכתבה עצמה.** לא תלוי בתיקיית ההורדות של דור.
+    שולף את ה-og/featured + כל התמונות בגוף הכתבה, עם הקרדיט שמופיע לצידן."""
+    out = []
+    if featured:
+        out.append({"src": "article", "url": featured, "role": "featured", "credit": ""})
+    try:
+        posts = _get(f"{BASE}/posts?slug={slug}&_fields=content")
+        html_body = (posts[0].get("content", {}) or {}).get("rendered", "") if posts else ""
+    except Exception as e:
+        print("  שליפת גוף הכתבה נכשלה:", e)
+        return out
+    seen = {featured}
+    for m in re.finditer(r'<img[^>]+src="([^"]+)"', html_body):
+        u = re.sub(r"-\d+x\d+(\.\w+)$", r"\1", m.group(1))
+        if "uploads" not in u or u in seen:
+            continue
+        seen.add(u)
+        # קרדיט: הטקסט שאחרי התמונה עד 400 תווים
+        tail = html_body[m.end():m.end() + 400]
+        cm = re.search(r"צילום[^<|]{0,60}", strip(tail))
+        out.append({"src": "article", "url": u, "role": "inline",
+                    "credit": cm.group(0).strip() if cm else ""})
+    return out
+
+
+def recent_downloads(hours=36):
+    """**משני**: קבצי פלאש 90 טריים ש דור הכין (`F<YYMMDD><XX><NNN>.jpg`).
+    מסונן לפי טריות — קבצים ישנים שייכים לכתבה קודמת ואסור להציג אותם כמקור."""
+    import time
+    cutoff = time.time() - hours * 3600
     found = []
     for pat in ("F[0-9][0-9][0-9][0-9][0-9][0-9]*.jpg", "F[0-9][0-9][0-9][0-9][0-9][0-9]*.JPG"):
         found += glob.glob(os.path.expanduser(f"~/Downloads/{pat}"))
     out = []
-    for f in sorted(found, key=os.path.getmtime, reverse=True)[:12]:
+    for f in sorted(found, key=os.path.getmtime, reverse=True):
+        if os.path.getmtime(f) < cutoff:
+            continue
         m = re.match(r"F\d{6}([A-Z]{2,4})", os.path.basename(f))
         code = m.group(1) if m else ""
-        out.append({"file": f, "credit": f"צילום: {SHOOTERS.get(code, '___')} / פלאש 90"})
+        out.append({"src": "downloads", "file": f,
+                    "credit": f"צילום: {SHOOTERS.get(code, '___')} / פלאש 90"})
     return out
 
 
@@ -98,21 +129,26 @@ def main():
     if not posts:
         print("אין כתבות חדשות."); return
 
-    imgs = local_images()
     for p in posts:
         art = to_article(p)
         if not art["slug"]:
             continue
+        imgs = article_images(art["slug"], art.get("img", "")) + recent_downloads()
         folder = process(art, imgs)
         st["done"] = list(dict.fromkeys(st["done"] + [art["slug"]]))
         print(f"\n{'='*62}\n▸ {art['title'][:60]}\n  מאת {art['author']} · {art['date']}")
         print(f"  תיקייה: {folder}")
-        if imgs:
-            print(f"  תמונות שדור הכין ב-Downloads ({len(imgs)}) — **אלה המקור**:")
-            for i in imgs[:6]:
+        art_i = [i for i in imgs if i["src"] == "article"]
+        dl_i  = [i for i in imgs if i["src"] == "downloads"]
+        print(f"  תמונות מהכתבה ({len(art_i)}) — המקור העיקרי:")
+        for i in art_i[:8]:
+            print(f"     {i['url'].split('/')[-1]}  ·  {i.get('credit','') or i['role']}")
+        if dl_i:
+            print(f"  + קבצי פלאש 90 טריים ב-Downloads ({len(dl_i)}):")
+            for i in dl_i[:6]:
                 print(f"     {os.path.basename(i['file'])}  ·  {i['credit']}")
-        else:
-            print("  ⚠ אין קבצי פלאש 90 ב-Downloads — לבדוק מול דור לפני הורדה מהאתר.")
+        if not art_i and not dl_i:
+            print("  ⚠ לא נמצאו תמונות — לבדוק מול דור.")
         print("""
   הפעל את הסקילים הקיימים על התיקייה הזו, בסדר הזה:
      1. hamakom-graphic    ← 3 גרפיקות (וואטסאפ / פיד / סטורי)
