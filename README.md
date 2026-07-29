@@ -93,12 +93,13 @@ git push -u origin main
 מסד ה-OSINT הממשלתי (osint.db) מוגש לכל הצוות משרת MCP מרוחק שרץ על VM. הפלאגין `hamakom-osint` מתחבר אליו אוטומטית — כל משתמש/ת רק מגדיר/ה בפרופיל השל:
 
 ```bash
-export OSINT_DB_MCP_URL=https://<vm-host>/mcp
-export OSINT_DB_TOKEN=<token>
+export OSINT_DB_MCP_URL='<ה-endpoint המלא שקיבלתן מדור, כולל ?key=...>'
 ```
+
+משתנה אחד בלבד: ה-nginx מאמת את `?key=` בשאילתה, לא כותרת Bearer. ה-URL כולו הוא סוד.
 
 קוד השרת, הוראות פריסה (docker compose), אימות טוקן ב-nginx, חלופת Tailscale ועדכון המסד עם `sync-db.sh` — הכל ב-[`servers/osint-db/README.md`](servers/osint-db/README.md).
 
 ## סודות ומפתחות — לא בריפו
 
-**אין בריפו הזה אף מפתח API.** כל משתמש/ת מגדיר/ה סודות בסביבה המקומית שלו/ה — למשל `OSINT_DB_MCP_URL` ו-`OSINT_DB_TOKEN` שלמעלה (מומלץ ב-`~/.zshrc`). חיבורי Notion / Gmail / Drive / Calendar / Figma נעשים דרך ה-connectors של Claude/Cowork לכל משתמש בנפרד. אל תוסיפו מפתחות, טוקנים או קבצי `.env` לריפו.
+**אין בריפו הזה אף מפתח API.** כל משתמש/ת מגדיר/ה סודות בסביבה המקומית שלו/ה — למשל `OSINT_DB_MCP_URL` שלמעלה (שכולל את הטוקן) (מומלץ ב-`~/.zshrc`). חיבורי Notion / Gmail / Drive / Calendar / Figma נעשים דרך ה-connectors של Claude/Cowork לכל משתמש בנפרד. אל תוסיפו מפתחות, טוקנים או קבצי `.env` לריפו.

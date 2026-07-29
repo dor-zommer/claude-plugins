@@ -1,6 +1,9 @@
 {
   "name": "hamakom-osint",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "המקום אוסינט — תחקיר מעל מסד ה-OSINT הממשלתי של 'המקום הכי חם בגיהנום': פטורים ממכרז (osint-exemptions), תיק ישות מצולב (osint-entity-dossier), לידים יומיים (osint-daily-leads), כנסת (osint-knesset), תכנון (osint-planning), ותכנון יו\"ש (osint-yosh-planning). כולל את שרת ה-MCP המרוחק osint-db (5 כלים: list_tables, describe_table, query_db, search_entity, new_since).",
-  "author": { "name": "Dor Zommer / Ha-Makom", "email": "zommerd@gmail.com" }
+  "author": {
+    "name": "Dor Zommer / Ha-Makom",
+    "email": "zommerd@gmail.com"
+  }
 }

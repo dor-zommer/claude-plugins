@@ -82,7 +82,7 @@ cd servers/osint-db/scripts
 
 ```bash
 export OSINT_DB_MCP_URL=https://<vm-host>/mcp
-export OSINT_DB_TOKEN=<הטוקן שקיבלתם מדור>
+# (בפריסה בפועל האימות הוא ?key= בשאילתה — ה-URL כולל את הטוקן ואין משתנה נפרד)
 ```
 
 זהו. הפלאגין `hamakom-osint` (דרך ה-`.mcp.json` שלו) מחבר את שרת ה-osint-db אוטומטית בכל סשן Claude Code — בלי קונפיגורציה נוספת. בדיקה מהירה: בתוך Claude Code לבקש "תריץ list_tables על osint-db".

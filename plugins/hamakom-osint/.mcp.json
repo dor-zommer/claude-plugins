@@ -2,8 +2,7 @@
   "mcpServers": {
     "osint-db": {
       "type": "http",
-      "url": "${OSINT_DB_MCP_URL}",
-      "headers": { "Authorization": "Bearer ${OSINT_DB_TOKEN}" }
+      "url": "${OSINT_DB_MCP_URL}"
     }
   }
 }
