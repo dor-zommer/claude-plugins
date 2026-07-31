@@ -66,7 +66,12 @@ WhatsApp), אדום `#f70d28` / ענבר `#d4a13a` (אלה הפלטה הישנה
 |-------|------|---------|--------|
 | **תצוגה-חתימה** | **HaMakom** | Regular (יחיד) | כותרת קאבר, מספר-מחץ, מחץ CTA "בלי בולשיט" — **כשהמחרוזת עברית** |
 | **תצוגה-fallback** | **Publico Headline Hebrew** | Roman · Extrabold | אותם מקומות **כשיש לטינית/em-dash** (HaMakom לא מכסה) |
-| **גוף / UI** | **Graphik HLAR** | Light · Regular · Medium | פסקאות, byline, credit, url, כפתור |
+| **גוף / UI** | **Graphik HLAR** | Light · Regular · Medium · Semibold | פסקאות, byline, credit, url, כפתור |
+
+**חריג הגרפיקה הבודדת (31.07.2026):** ב-`hamakom-graphic` הכותרת היא Publico
+Headline **Extrabold**, לא Roman, וה-byline הוא Graphik **Semibold**. גרפיקה
+בודדת נצרכת בגלילה מהירה ובמסך נעול, שם Roman נבלע מול תמונה בהירה. בקרוסלה
+ובריל, שנצרכים בקריאה רציפה, Roman נשאר ברירת המחדל.
 
 > **HaMakom = פונט התצוגה של המותג** — מודולרי, נגזר מהלוגו (עוצב מתן שליטא, קומפל דור).
 > ב-brand-identity הוא ה-`--f-display` הראשי. **אילוץ קשה: 53 גליפים בלבד** — עברית,
@@ -117,8 +122,16 @@ cp "$DS"/assets/fonts/*.otf "$DS"/assets/fonts/*.ttf ~/Library/Fonts/
 ```
 (ה-`.ttf` הוא HaMakom; ה-`.otf` הם Publico+Graphik.)
 
-**Figma רואה אותם מיד אחרי `cp` — אין צורך ב-restart.** אם מותקנים גם קבצי TRIAL
-(שם משפחה `... TRIAL`) — לא מזיק; ה-resolver מכוון לשמות הנקיים בלבד.
+**⚠️ Figma לא תמיד רואה אותם — גם לא אחרי restart.** ב-31.07.2026 קבצים
+שהותקנו ב-27-28.07 (`Publico Headline Hebrew Roman`, `Graphik HLAR Medium`,
+`HaMakom`) פשוט לא הופיעו ב-`listAvailableFontsAsync()` דרך ה-MCP, בעוד קבצים
+ישנים יותר כן — כולל גרסאות ה-TRIAL. ריסטארט ל-`FigmaAgent.app` ולאפליקציית
+Figma לא ריענן את הרשימה.
+
+לכן **ה-resolver חייב לנסות את משפחות ה-TRIAL לפני שהוא נופל ל-Inter.** אלה
+אותם typefaces בדיוק, רק גרסת ההערכה של הקובץ — נפילה אליהן כמעט בלתי מורגשת,
+בעוד נפילה ל-Inter שוברת את הזהות הטיפוגרפית של המותג. מדווחים על השניים
+בנפרד: `fontFallback` (Inter — כשל) מול `trialCuts` (TRIAL — לציון בלבד).
 
 **resolver בזמן ריצה — חובה, לא לקודד שם קשיח.** הפונטים המסחריים נרשמים פר-משקל
 (`Graphik HLAR Medium` / Regular) *וגם* בקיבוץ טיפוגרפי (`Graphik HLAR` / Medium), ולא
@@ -133,11 +146,11 @@ const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
 const hamakomOK = s => HAMAKOM.family==="HaMakom" && !/[A-Za-z—]/.test(s);  // תצוגה עברית → HaMakom
 const dispFont = (text,heavy) => hamakomOK(text) ? HAMAKOM : (heavy ? ROLE.dispXB : ROLE.disp);
 const ROLE = {
-  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},FB]),
-  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},FB]),
-  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},FB]),
-  reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
-  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},FB]),
+  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},{family:"Publico Headline Hebrew TRIAL",style:"Roman"},FB]),
+  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},{family:"Publico Headline Hebrew TRIAL",style:"Extrabold"},FB]),
+  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Light"},FB]),
+  reg:    pick([{family:"Graphik HLAR",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Regular"},FB]),
+  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Medium"},FB]),
 };
 for (const r of Object.values(ROLE)) { try{ await figma.loadFontAsync(r);}catch(e){} }
 const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");

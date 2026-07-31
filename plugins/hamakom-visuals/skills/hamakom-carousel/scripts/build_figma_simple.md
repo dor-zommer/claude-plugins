@@ -59,11 +59,11 @@ const AV = new Set(fonts.map(f => f.fontName.family + "||" + f.fontName.style));
 const FB = {family:"Inter", style:"Regular"};
 const pick = cands => cands.find(c => AV.has(c.family+"||"+c.style)) || cands[cands.length-1] || FB;
 const ROLE = {
-  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},FB]),
-  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},FB]),
-  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},FB]),
-  reg:    pick([{family:"Graphik HLAR",style:"Regular"},FB]),
-  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Inter",style:"Medium"},FB]),
+  disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},{family:"Publico Headline Hebrew TRIAL",style:"Roman"},FB]),
+  dispXB: pick([{family:"Publico Headline Hebrew",style:"Extrabold"},{family:"Publico Headline Hebrew Exbold",style:"Regular"},{family:"Publico Headline Hebrew TRIAL",style:"Extrabold"},FB]),
+  light:  pick([{family:"Graphik HLAR",style:"Light"},{family:"Graphik HLAR Light",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Light"},FB]),
+  reg:    pick([{family:"Graphik HLAR",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Regular"},FB]),
+  med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Medium"},FB]),
 };
 // --- HaMakom: פונט התצוגה של המותג (בנוי מהלוגו). משקל יחיד. 53 גליפים בלבד —
 // עברית+ספרות+פיסוק, אבל **בלי לטינית ובלי em-dash "—"**. לכן משתמשים בו לתצוגה

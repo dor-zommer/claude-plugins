@@ -40,7 +40,7 @@ servers/osint-db/                 ← קוד שרת ה-MCP (FastMCP/Python) + Do
 
 ### עיצוב ויזואלי — מקור אמת יחיד
 
-כל סקילי `hamakom-visuals` (graphic/carousel/reel) נשענים על `plugins/hamakom-visuals/design-system/HAMAKOM-DS-2026.md`. זה מקור-האמת למותג: שנהב `#faf9f5` / דיו `#141413` / טרקוטה `#D97757`, Suez One + IBM Plex Sans Hebrew, פסי-חתימה טריקולור. שינוי מותג = עריכת הקובץ הזה, לא כל סקיל בנפרד.
+כל סקילי `hamakom-visuals` (graphic/carousel/reel) נשענים על `plugins/hamakom-visuals/design-system/HAMAKOM-DS-2026.md`. זה מקור-האמת למותג: שנהב `#faf9f5` / דיו `#141413` / טרקוטה `#D97757`, Publico Headline Hebrew + Graphik HLAR, פסי-חתימה טריקולור. שינוי מותג = עריכת הקובץ הזה, לא כל סקיל בנפרד.
 
 ## משמעת גרסאות (חשוב)
 
