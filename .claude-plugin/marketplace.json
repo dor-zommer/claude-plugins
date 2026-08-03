@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.25.0"
+    "version": "2.26.0"
   },
   "plugins": [
     {
@@ -25,11 +25,6 @@
       "description": "המקום אוסינט — תחקיר מעל מסד OSINT ממשלתי (פטורים, כנסת, תכנון, מבקר) + שרת osint-db"
     },
     {
-      "name": "hamakom-desk",
-      "source": "./plugins/hamakom-desk",
-      "description": "ניהול מערכת — סנכרון נושן, ליינאפ, ניוזלטר, אסטרטגיה"
-    },
-    {
       "name": "hamakom-visuals",
       "source": "./plugins/hamakom-visuals",
       "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, ורילים"
@@ -43,11 +38,6 @@
       "name": "hamakom-data-page",
       "source": "./plugins/hamakom-data-page",
       "description": "עמוד דאטה-ז'ורנליזם סקרולי-טלינג + אריזה כתוסף WordPress מבודד. סיקור-מקדים מ-WP REST API, טמפלייט, ספריית קומפוננטות, וכללי מותג/קול."
-    },
-    {
-      "name": "hamakom-distribute",
-      "source": "./plugins/hamakom-distribute",
-      "description": "הפצה בלחיצה — כתבה פורסמה ← תיקיית הפצה מלאה בדסקטופ: גרפיקות מעוצבות, קרוסלה, בריף ריל וקופי לכל פלטפורמה לפי ה-DNA של @ha_makom."
     }
   ]
 }
