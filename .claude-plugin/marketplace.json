@@ -6,14 +6,9 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.26.0"
+    "version": "2.27.0"
   },
   "plugins": [
-    {
-      "name": "hamakom-leads",
-      "source": "./plugins/hamakom-leads",
-      "description": "המקום לידים — בריף לידים ועורך בוקר מתוך osint-db, חיבורי חדשות↔דאטה ופיץ' עומק"
-    },
     {
       "name": "hamakom-factcheck",
       "source": "./plugins/hamakom-factcheck",
