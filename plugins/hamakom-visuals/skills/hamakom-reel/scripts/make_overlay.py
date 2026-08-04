@@ -4,8 +4,8 @@
 בונים פעם אחת ומלבישים על כל מקטע (normalize_segment.sh) — אחיד ומהיר:
   1. גרדיאנט דיו אנכי (#141413) בעצירות ה-DS של הקאבר:
      0@0% → 0.1@40% → 0.5@58% → 0.92@78% → 1@100%  (הקריאות במקום צל)
-  2. הלוגו הריבועי הטיפוגרפי, לבן, רוחב ~72px, ממורכז למעלה (y≈48)
-  3. HA-MAKOM.CO.IL למטה במרכז — IBM Plex SemiBold 28, letter-spacing ~4px,
+  2. הלוגו הריבועי הטיפוגרפי, לבן, רוחב ~72px, ממורכז למעלה (y≈150 — מתחת ל-UI העליון)
+  3. HA-MAKOM.CO.IL במרכז, y=H-485 (מעל ה-UI התחתון של טיקטוק) — 28px, ls ~4px,
      לבן באטימות ~25% (שקיפות 75%)
   4. פס-חתימה תחתון יחיד, דק 4px: ימין טרקוטה #D97757 · אמצע מרווה #788C5D ·
      שמאל אברש #8E6FA8
@@ -38,7 +38,7 @@ F_UI_SB = _first(f"{WORKDIR}/IBMPlexSansHebrew-SemiBold.ttf",
 
 def gradient():
     """גרדיאנט דיו אנכי — אינטרפולציה לינארית בין עצירות ה-DS."""
-    stops = [(0.00, 0.0), (0.40, 0.10), (0.58, 0.50), (0.78, 0.92), (1.00, 1.0)]
+    stops = [(0.00, 0.0), (0.38, 0.10), (0.52, 0.50), (0.70, 0.92), (1.00, 1.0)]  # מחוזק — הטקסט יושב גבוה יותר (safe zones 02.08.2026)
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     px = img.load()
     for y in range(H):
@@ -72,14 +72,14 @@ def main():
     ov = gradient()
     # לוגו ריבועי לבן ~72px ממורכז למעלה
     logo = logo_white(72)
-    ov.alpha_composite(logo, ((W - logo.width) // 2, 48))
+    ov.alpha_composite(logo, ((W - logo.width) // 2, 150))  # מתחת ל-130px העליונים שה-UI של טיקטוק מכסה
     # URL תחתון — IBM Plex SemiBold 28, letter-spacing ~4px, לבן 25% אטימות
     d = ImageDraw.Draw(ov)
     uf = ImageFont.truetype(F_UI_SB, 28)
     text, ls = "HA-MAKOM.CO.IL", 4
     tw = sum(d.textlength(c, font=uf) for c in text) + ls * (len(text) - 1)
     x = (W - tw) / 2
-    uy = H - 96
+    uy = H - 485   # מעל אזור ה-UI התחתון של טיקטוק (484px) — לא H-96 (מוסתר)
     for c in text:
         d.text((x, uy), c, font=uf, fill=(255, 255, 255, 64))   # ~25% אטימות
         x += d.textlength(c, font=uf) + ls

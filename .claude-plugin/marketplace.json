@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.29.0"
+    "version": "2.30.0"
   },
   "plugins": [
     {
@@ -23,11 +23,6 @@
       "name": "hamakom-visuals",
       "source": "./plugins/hamakom-visuals",
       "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, ורילים"
-    },
-    {
-      "name": "dor-edit",
-      "source": "./plugins/dor-edit",
-      "description": "הוצא משימוש — גרסה ריקה"
     }
   ]
 }
