@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__osint-db__list_tables mcp__osint-db__describe_table mcp__osint-db__query_db mcp__osint-db__search_entity mcp__osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
 name: hamakom-event-verification
 description: אימות דיווחים מרובי-אירועים עבור דסק "המקום הכי חם בגיהנום" — גלי אלימות, מבצעים, פשיטות, אסונות, מחאות, גלי פשיעה, או כל רשימת אירועי שטח ("X אירועים ב-Y שעות"). הצלבה אירוע-אירוע מול osint-db MCP (כותרות 31 מקורות + הודעות דוברות המשטרה), סוכנויות רשמיות, תקשורת מקומית ובינלאומית וגופים בינלאומיים. התוצר הוא דוח אימות בלבד — לא כתבה. הפעל על "תאמת את האירועים", "תצליב את הרשימה", "תבדוק מה קרה ב-24 שעות", "כמה מזה אמיתי", או כל דיווח מרובה-אירועים שנשלח לבדיקה. לנתון מספרי בודד — hamakom-factcheck-data; לתוכן ויראלי — hamakom-factcheck; לכתיבת האייטם אחרי האימות — hamakom-source-to-item.
 ---
@@ -10,7 +10,7 @@ description: אימות דיווחים מרובי-אירועים עבור דסק
 
 ## מקור הדאטה: osint-db MCP
 
-השתמש בכלי `mcp__osint-db__*` (list_tables, describe_table, query_db, new_since). זה המסד החי של המערכת. אל תחפש קובצי osint.db מקומיים — עותקים מקומיים על מחשבי המערכת הם ישנים או ריקים.
+השתמש בכלי `mcp__plugin_hamakom-osint_osint-db__*` (list_tables, describe_table, query_db, new_since). זה המסד החי של המערכת. אל תחפש קובצי osint.db מקומיים — עותקים מקומיים על מחשבי המערכת הם ישנים או ריקים.
 
 ### טבלאות מפתח לאימות אירועים
 - `news_headlines` — עשרות אלפי כותרות, 31+ מקורות, מתעדכן שוטף. עמודות: outlet, headline, headline_he, url, pub_iso, category, scraped_at. מקורות: סוכנויות פלסטיניות, אל-ג'זירה (ער'+אנג'), אל-קודס, תקשורת ישראלית (הארץ, Ynet, מעריב, וואלה, N12, ערוץ 7, סרוגים, כיפה, JDN, זמן ישראל) ובינלאומית (BBC, Guardian, NYT, WaPo, Le Monde, FT) ועוד.

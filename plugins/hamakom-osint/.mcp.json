@@ -2,7 +2,7 @@
   "mcpServers": {
     "osint-db": {
       "type": "http",
-      "url": "${OSINT_DB_MCP_URL}"
+      "url": "https://context.ha-makom.co.il/osint-mcp/mcp"
     }
   }
 }

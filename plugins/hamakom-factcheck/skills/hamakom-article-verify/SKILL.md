@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__osint-db__list_tables mcp__osint-db__describe_table mcp__osint-db__query_db mcp__osint-db__search_entity mcp__osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
 name: hamakom-article-verify
 description: >-
   אימות עובדתי והצלבה של טיוטת כתבה לפני פרסום עבור "המקום הכי חם בגיהנום" — בלי לערוך את הטקסט. מחלץ כל טענה עובדתית (מספרים, שמות, תאריכים, ציטוטים, טענות סיבתיות), בודק כל אחת מול מקור (WebSearch/WebFetch + osint-db), בוחן לוגיקה פנימית והצלבות, ומחזיר דוח אימות שמסמן כל טענה כמאומת / שגוי / לא אומת / דורש מקור — עם קישור-מקור והצעת תיקון כהערה לכותב. הסקיל לא נוגע בניסוח — לא Edit, לא Write, לא שכתוב. הפעל כשדור מבקש "תאמת את הכתבה", "בדוק עובדות בטיוטה", "תצליב את הטענות", "fact-check לכתבה", "מה לא מאומת בכתבה", "תבדוק את העובדות לפני פרסום". זה אימות בלבד — הוא לא עורך. לעריכה לשונית ראה hamakom-language-editor; לעריכה ישירה ראה hamakom-direct.

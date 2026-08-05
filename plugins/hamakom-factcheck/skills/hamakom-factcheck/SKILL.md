@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__osint-db__list_tables mcp__osint-db__describe_table mcp__osint-db__query_db mcp__osint-db__search_entity mcp__osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
 name: hamakom-factcheck
 description: וידוא עובדות ואיתור מקור ראשוני לתוכן ויראלי — קישורים לרשתות חברתיות (פייסבוק, אינסטגרם, X, טיקטוק, טלגרם, וואטסאפ), כתבות, סרטונים, תמונות, צילומי מסך וקבצים. הפעל את הסקיל הזה בכל פעם שדור שולח קישור, קובץ או תמונה ומבקש "תצליב", "תאמת", "תבדוק את זה", "זה אמיתי?", "זה פייק?", "זה ישן?", "מי העלה את זה ראשון", "תמצא את המקור", "מאיפה זה" — או כל בקשת אימות עיתונאי של טענה שמסתובבת ברשת, גם אם הניסוח עקיף ("קבל את זה", "תראה מה שלחו לי"). מתאים גם לבדיקת טענות טקסטואליות בלי קישור.
 ---

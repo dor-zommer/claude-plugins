@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__osint-db__list_tables mcp__osint-db__describe_table mcp__osint-db__query_db mcp__osint-db__search_entity mcp__osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
 name: hamakom-factcheck-data
 description: אימות טענות מספריות, סטטיסטיות וסקרים עבור דסק "המקום הכי חם בגיהנום" — מספרים, אחוזים, נתוני תקציב, סקרים, מגמות, ודירוגים. מאתר את המקור הראשוני (למ"ס, בנק ישראל, ביטוח לאומי, אגף התקציבים, הכנסת, מבקר המדינה, data.gov.il, וה-osint-db הפנימי) ובודק את המספר מולו, לא מול הסיקור המשני. הפעל כשדור שולח טענה עם מספר ומבקש "תאמת את הנתון", "האם נכון ש-X אחוז", "הסקר הזה אמין?", "מאיפה המספר הזה", "זה באמת עלה ב-Y%", "תבדוק את הסטטיסטיקה", "כמה זה באמת", או כל טענה כמותית שצריך לאשש מול מקור רשמי. לאימות תוכן ויראלי כללי (תמונות, סרטונים, מי פרסם ראשון) — ראה hamakom-factcheck.
 ---

@@ -204,6 +204,18 @@ def query_db(sql: str, limit: int = 100) -> str:
 
 # Tables/columns searched by search_entity (name/company across the DB).
 # Each entry: table -> (search_columns, return_columns)
+#
+# Every column listed here MUST exist in the table — a stale name makes the
+# whole per-table query fail (or, on the live server, emit literal garbage
+# fields like {"\"ministry\"": "ministry"}). Verify with PRAGMA table_info
+# before adding an entry.
+#
+# Deliberately NOT included, because a substring LIKE over them exceeds the
+# ~1M opcode guard and would only ever return a "scan too broad" note:
+#   budget_contracts  (1.03M rows, no index on supplier_name)
+#   budget_supports   (330K rows, index is on recipient_entity_id, not the name)
+# Reach those through query_db with a mandatory narrowing filter — see the
+# osint-money skill and plugins/hamakom-osint/references/db-map.md.
 _ENTITY_SEARCH = {
     "exemptions": (
         ["supplier_names", "contact_name", "publisher", "title"],
@@ -214,10 +226,19 @@ _ENTITY_SEARCH = {
         ["mk_individual_id", "mk_individual_name", "mk_individual_name_eng"],
     ),
     "legislation": (["title", "ministry"], ["id", "title", "ministry", "pub_date", "url"]),
-    "mevaker_reports": (["title", "ministry"], ["id", "title", "ministry", "type", "pub_date", "url"]),
+    # mevaker_reports has no `ministry` and no `type` column.
+    "mevaker_reports": (["title", "content_text"], ["id", "title", "pub_date", "url"]),
     "mavat_plans": (["pl_name", "ja_concat"], ["pl_number", "pl_name", "district_name", "depositing_date", "pl_url"]),
     "yosh_plans": (["pl_name", "ja_concat"], ["pl_number", "pl_name", "district_name", "depositing_date", "pl_url"]),
     "decisions": (["title", "summary"], ["id", "title", "decision_date", "url"]),
+    "amutot": (
+        ["name_he", "name_en"],
+        ["amuta_id", "name_he", "status", "classification", "revenue", "expenses", "nihul_takin", "city"],
+    ),
+    "mod_tenders": (
+        ["title"],
+        ["id", "title", "category", "status", "publish_date", "submission_date", "url"],
+    ),
 }
 
 

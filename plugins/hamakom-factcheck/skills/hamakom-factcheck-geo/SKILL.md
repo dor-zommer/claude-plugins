@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__osint-db__list_tables mcp__osint-db__describe_table mcp__osint-db__query_db mcp__osint-db__search_entity mcp__osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
 name: hamakom-factcheck-geo
 description: גיאולוקיישן וכרונולוקיישן עבור דסק "המקום הכי חם בגיהנום" — אימות איפה ומתי צולמו תמונה או סרטון, באופן בלתי-תלוי בכיתוב. מנתח נקודות ציון, שילוט, אדריכלות, סימוני כביש, צמחייה ושטח, צללים ומזג אוויר, ומצליב מול מפות ותצלומי לוויין. הפעל כשדור מבקש "איפה זה צולם", "מתי זה צולם", "זה באמת ב-X", "תאמת את המיקום", "זה מהאירוע הזה?", "באיזה יום זה", או שולח תמונה/סרטון שצריך לאמת לו מקום וזמן. לזיהוי תמונות AI וזיוף — ראה hamakom-factcheck-visual; למי-פרסם-ראשון — hamakom-factcheck.
 ---

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Claude Code plugin marketplace פנימי** של "המקום הכי חם בגיהנום" (ha-makom.co.il). לא אפליקציה — אוסף פלאגינים שחברי המערכת מתקינים ב-Claude Code כדי לעבוד. אין "build" ואין "test suite"; היחידה הרצה היחידה היא שרת ה-MCP תחת `servers/osint-db/`. רוב התוכן הוא Markdown של סקילים, commands ו-agents.
 
-הריפו הפרטי הקנוני: `github.com/dor-zommer/claude-plugins` (marketplace בשם `hamakom-plugins`).
+**הריפו הקנוני `github.com/dor-zommer/claude-plugins` הוא ציבורי** (אומת 05.08.2026 - התיעוד קרא לו "פרטי" בטעות). הפלאגינים העריכתיים הועברו לריפו פרטי נפרד, אבל **הם עדיין ניתנים לשחזור מהיסטוריית הגיט כאן** - טיהור ההיסטוריה ממתין. אל תוסיף לכאן תוכן שאסור שיהיה פומבי. שם המרקטפלייס: `hamakom-plugins`.
 
 ## ארכיטקטורה
 
@@ -27,16 +27,16 @@ servers/osint-db/                 ← קוד שרת ה-MCP (FastMCP/Python) + Do
 
 זה החוט שמחבר בין הפלאגינים, ולא ברור מקריאת פלאגין בודד:
 
-- **`hamakom-osint`** הוא הבעלים של החיבור. ה-`.mcp.json` שלו מגדיר שרת HTTP MCP בשם `osint-db` שקורא משתנה סביבה אחד: `${OSINT_DB_MCP_URL}`. **האימות הוא `?key=` בשאילתה, לא `Authorization: Bearer`** — ה-nginx על ה-VM בודק רק את `$arg_key`, ולכן הטוקן חייב להיות חלק מה-URL (תוקן 29.07.2026; קודם לכן נשלח Bearer וכל בקשה חטפה 401). הסקילים שלו קוראים ל-5 כלים: `list_tables`, `describe_table`, `query_db`, `search_entity`, `new_since` (מופיעים ב-frontmatter כ-`mcp__osint-db__*`).
-- **שלושה פלאגינים נוספים תלויים באותו שרת ולא מגדירים אותו:** `hamakom-factcheck` (6 סקילים), `hamakom-desk` (4), `hamakom-leads` (1) — סה"כ 11 סקילים שקוראים ל-`mcp__osint-db__*`. **שרתי MCP הם per-plugin ועולים רק כשהפלאגין שלהם מופעל** (מתועד), ולכן התקנה של אחד מהם לבדו לא מביאה את השרת. **הפתרון (19.07.2026): כל ארבעתם מכריזים `"dependencies": ["hamakom-osint"]` ב-`plugin.json`**, כדי שההתקנה תגרור את השרת אוטומטית. בלי השרת שאר הסקילים עובדים; רק אלה שתלויים ב-DB מחזירים ריק.
+- **`hamakom-osint`** הוא הבעלים של החיבור. ה-`.mcp.json` שלו מגדיר שרת HTTP MCP בשם `osint-db` על כתובת מפורשת: `https://context.ha-makom.co.il/osint-mcp/mcp`. **האימות הוא OAuth מול גוגל (05.08.2026), ורשימת המורשים יושבת ב-`/etc/osint-mcp/allowed_emails.txt` על ה-VM ונקראת מחדש בכל בקשה.** ה-`?key=` הישן מת ומחזיר 401; אל תחזיר אותו, ואל תשתמש ב-`35.252.15.58.nip.io` — השרת מצהיר על `context.ha-makom.co.il` כזהותו הקנונית, וכתובת שאינה תואמת נדחית באימות המטא-דאטה. הכתובת נכתבת ישירות ב-`.mcp.json` ולא דרך `${OSINT_DB_MCP_URL}`, כדי שההתקנה תעבוד אצל מי שאין לו את משתנה הסביבה. הסקילים קוראים ל-5 כלים: `list_tables`, `describe_table`, `query_db`, `search_entity`, `new_since` — **ב-frontmatter הם מופיעים כ-`mcp__plugin_hamakom-osint_osint-db__*`**, כי כך קלוד קוד ממרחב שרת שמגיע מפלאגין. `mcp__osint-db__*` היה השם של שרת stdio מקומי שכבר לא קיים; אזכור שלו בסקיל שובר את הקריאה לכלים.
+- **שלושה פלאגינים נוספים תלויים באותו שרת ולא מגדירים אותו:** `hamakom-factcheck` (6 סקילים), `hamakom-desk` (4), `hamakom-leads` (1) — סה"כ 18 סקילים שקוראים ל-`mcp__plugin_hamakom-osint_osint-db__*`. **שרתי MCP הם per-plugin ועולים רק כשהפלאגין שלהם מופעל** (מתועד), ולכן התקנה של אחד מהם לבדו לא מביאה את השרת. **הפתרון (19.07.2026): כל ארבעתם מכריזים `"dependencies": ["hamakom-osint"]` ב-`plugin.json`**, כדי שההתקנה תגרור את השרת אוטומטית. בלי השרת שאר הסקילים עובדים; רק אלה שתלויים ב-DB מחזירים ריק.
 - **אין דרך להכריז MCP ברמת המרקטפלייס.** שורש `marketplace.json` לא תומך ב-`mcpServers` (רק רשומת פלאגין בודדת יכולה). **לא לשכפל את אותו `.mcp.json` לכמה פלאגינים** — התנהגות ה-dedupe לפי שם שרת אינה מתועדת.
-- השרת עצמו (`servers/osint-db/server.py`) הוא FastMCP קריא-בלבד מעל SQLite (`mode=ro`), עם תקרות קשיחות: `MAX_LIMIT=500`, `MAX_OUTPUT_CHARS=50_000`, `QUERY_TIMEOUT_SEC=10`. טבלאות: `exemptions`, `knesset_bills`, `knesset_votes`, `mavat_plans`, `legislation`, `mevaker_reports`, `police_announcements` ועוד. אימות נעשה **לפני** השרת (nginx Bearer או Tailscale), לא בתוכו.
+- השרת עצמו (`servers/osint-db/server.py`) הוא FastMCP קריא-בלבד מעל SQLite (`mode=ro`), עם תקרות קשיחות: `MAX_LIMIT=500`, `MAX_OUTPUT_CHARS=50_000`, `QUERY_TIMEOUT_SEC=10`. טבלאות: `exemptions`, `knesset_bills`, `knesset_votes`, `mavat_plans`, `legislation`, `mevaker_reports`, `police_announcements` ועוד. האימות נעשה בשרת עצמו (OAuth + בדיקת מייל מול רשימת המורשים), ולא ב-nginx כפי שהיה בעבר.
 
 ### מוסכמת SKILL.md
 
 כל `SKILL.md` נפתח ב-frontmatter עם:
 - `name` + `description` בעברית שכולל **ביטויי הפעלה מפורשים** ("הפעל כשדור כותב …") — זה מה שמפעיל את הסקיל, אז שינוי ניסוח משנה התנהגות.
-- `allowed-tools` — רשימת הכלים המותרים, כולל כלי ה-`mcp__osint-db__*` בסקילים שתלויים ב-DB.
+- `allowed-tools` — רשימת הכלים המותרים, כולל כלי ה-`mcp__plugin_hamakom-osint_osint-db__*` בסקילים שתלויים ב-DB.
 
 ### עיצוב ויזואלי — מקור אמת יחיד
 
