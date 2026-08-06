@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-event-verification
 description: אימות דיווחים מרובי-אירועים עבור דסק "המקום הכי חם בגיהנום" — גלי אלימות, מבצעים, פשיטות, אסונות, מחאות, גלי פשיעה, או כל רשימת אירועי שטח ("X אירועים ב-Y שעות"). הצלבה אירוע-אירוע מול osint-db MCP (כותרות 31 מקורות + הודעות דוברות המשטרה), סוכנויות רשמיות, תקשורת מקומית ובינלאומית וגופים בינלאומיים. התוצר הוא דוח אימות בלבד — לא כתבה. הפעל על "תאמת את האירועים", "תצליב את הרשימה", "תבדוק מה קרה ב-24 שעות", "כמה מזה אמיתי", או כל דיווח מרובה-אירועים שנשלח לבדיקה. לנתון מספרי בודד — hamakom-factcheck-data; לתוכן ויראלי — hamakom-factcheck; לכתיבת האייטם אחרי האימות — hamakom-source-to-item.
 ---

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-factcheck-quote
 description: אימות ציטוטים וייחוס אמירות עבור דסק "המקום הכי חם בגיהנום" — האם דמות ציבורית באמת אמרה X, מתי ובאיזה הקשר, או שהציטוט בודה, מיוחס בטעות, נקטע, או הוצא מהקשרו. מאתר את המקור הראשוני של האמירה (וידאו/אודיו של האירוע, תמליל רשמי, פרוטוקול כנסת, הקלטה) ובודק את הנוסח המדויק וההקשר המלא. הפעל כשדור מבקש "האם X אמר את זה", "מי אמר את המשפט הזה", "הציטוט הזה אמיתי?", "תמצא את המקור לאמירה", "זה הוצא מהקשר?", "מתי הוא אמר את זה", או שולח ציטוט מיוחס לבדיקה. לאימות מספרים — ראה hamakom-factcheck-data; לתוכן ויראלי כללי — hamakom-factcheck.
 ---

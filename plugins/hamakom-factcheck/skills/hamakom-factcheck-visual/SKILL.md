@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-factcheck-visual
 description: פורנזיקת תמונה ווידאו עבור דסק "המקום הכי חם בגיהנום" — האם תמונה/סרטון אותנטיים, נוצרו ב-AI, או עברו מניפולציה (עריכה, הדבקה, במה). כולל reverse image search לאיתור ההופעה והמקור הראשוני, זיהוי סימני AI/deepfake, איתור עריכות, ובדיקת EXIF כשקיים. הפעל כשדור מבקש "זה אמיתי או AI", "זה פוטושופ?", "זה דיפfייק", "תעשה reverse image", "מאיפה התמונה הזו", "זה מבוים?", "התמונה הזו ערוכה?", או שולח תמונה/סרטון לבדיקת אותנטיות. לאיפה/מתי צולם — ראה hamakom-factcheck-geo; למי-פרסם-ראשון ותוכן ויראלי — hamakom-factcheck.
 ---

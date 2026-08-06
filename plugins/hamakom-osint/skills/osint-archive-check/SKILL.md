@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-archive-check
 description: בדיקת הארכיון של "המקום הכי חם בגיהנום" לפני שמתחילים תחקיר - מה כבר כתבנו על הנושא, על הגוף או על המקום. מעל ה-osint-db (wp_articles, 5,912 כתבות מ-2013 עד היום; wp_article_locations, 1,013 שיוכי מקום עם קואורדינטות). שני שימושים: מניעת כפילות והמשכיות (מי כתב, מתי, ומה נשאר פתוח), וזיהוי פערי סיקור גיאוגרפיים - איפה סיקרנו הרבה ואיפה כמעט לא. מצליב מקום מול תוכניות בנייה (mavat_plans, yosh_plans) כדי לקשור ליד תכנוני לכתבה קיימת. הפעל כשדור כותב "כבר כתבנו על", "יש לנו כתבה על", "מה כתבנו על X", "בדוק בארכיון", "כתבנו על המקום הזה", "מה סיקרנו ב<מקום>", "יש המשך לכתבה", או לפני שהוא שולח כתב לתחקר ליד. מלכודת מחייבת: הגרשיים הוסרו מהכותרות במאגר. הארכיון הוא אינדקס, לא הכתבה - לפני הסתמכות יש לפתוח את ה-URL.
 ---

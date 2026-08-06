@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-yosh-planning
 description: לידים מתכנון ובנייה ביהודה ושומרון (יו"ש) מעל ה-osint-db (טבלת yosh_plans, 2,570 תוכניות) עבור דסק "המקום הכי חם בגיהנום". מסנן לפי מרחב/התנחלות (plan_county_name, ja_concat), מחוז (district_name) ומגזר (sector), תוכניות שהופקדו לאחרונה (depositing_date / first_seen_at), תוכניות גדולות בשטח (pl_area_dunam), ויחידות דיור מתוכננות (quantity_delta_120). יש lat/lng למיפוי. הפעל כשדור כותב "תוכניות בנייה ביו\"ש", "בנייה בהתנחלויות", "מה הופקד ביו\"ש", "תוכניות ב<התנחלות>", "כמה יח\"ד אושרו בשטחים", "תכנון מעבר לקו הירוק". נושא רגיש עריכתית - דווח עובדתית מהרשומה הרשמית, ייחס לרשות המתכננת, הימנע ממסגור טעון, ואמת מול pl_url. כל תוכנית היא ליד לבדיקה, לא ממצא מאומת. לתכנון בתוך הקו הירוק ראה osint-planning; לתיק על יזם ראה osint-entity-dossier.
 ---

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-planning
 description: לידים מתכנון ובנייה (מנהל התכנון / מבא"ת) בכל ישראל, מעל ה-osint-db (טבלת mavat_plans, 36 אלף תוכניות) עבור דסק "המקום הכי חם בגיהנום". מסנן לפי מחוז (district_name) ורשות/מרחב (plan_county_name), לפי תוכן מטרות (pl_objectives, pl_landuse_string), תוכניות שהופקדו לאחרונה (depositing_date / first_seen_at), תוכניות גדולות בשטח (pl_area_dunam), ומספר יחידות דיור מתוכננות (quantity_delta_120/60/75/80). יש lat/lng למיפוי. הפעל כשדור כותב "תוכניות בנייה ב<מקום>", "מה הופקד לאחרונה", "תוכניות גדולות", "כמה יח\"ד מתוכננות ב", "מה מתוכנן ב<עיר>", "תוכניות דיור באזור". זהו תכנון בתוך הקו הירוק - לתכנון ביו"ש/התנחלויות ראה osint-yosh-planning. כל תוכנית היא ליד לבדיקה מול pl_url הרשמי - לא ממצא מאומת. לתיק על יזם/חברה ראה osint-entity-dossier.
 ---

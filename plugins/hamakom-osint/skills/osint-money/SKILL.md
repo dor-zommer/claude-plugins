@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-money
 description: מעקב אחרי כסף ציבורי עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db - התקשרויות בפועל (budget_contracts, מיליון שורות ממפתח התקציב), תמיכות ומענקים (budget_supports, 330 אלף), עמותות ודוחותיהן הכספיים (amutot מגיידסטאר, 75 אלף), ומכרזי משרד הביטחון (mod_tenders). היכולת המרכזית: הצלבת תמיכה ממשלתית עם הדוח הכספי של מקבלת התמיכה לפי מזהה תאגיד (recipient_entity_id = amuta_id), ולא לפי שם. הפעל כשדור כותב "מי מקבל כסף מ", "כמה תמיכות קיבלה", "התקשרויות של משרד X", "מפתח התקציב", "תמיכות לעמותות", "כמה המדינה שילמה ל", "מי הספק הגדול של", "עמותה שמקבלת תמיכות", "מכרזי משרד הביטחון". כל פריט הוא ליד לבדיקה מול המקור הרשמי, לא ממצא מאומת. לפטורים ממכרז ראה osint-exemptions; לתיק חוצה-תחומים ראה osint-entity-dossier.
 ---

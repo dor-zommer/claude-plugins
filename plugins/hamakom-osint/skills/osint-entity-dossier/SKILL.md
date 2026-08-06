@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-entity-dossier
 description: בניית תיק מאוחד על אדם, חברה או משרד ממשלתי חוצה כל ה-osint-db עבור דסק "המקום הכי חם בגיהנום". מצליב שם אחד על פני התקשרויות בפטור (exemptions), תכנון ובנייה (mavat_plans, yosh_plans), חקיקה (legislation, knesset_bills), מבקר המדינה (mevaker_reports), והחלטות ממשלה (decisions). הנתיב הראשי הוא search_entity(name) שמחזיר התאמות מכל הטבלאות בקריאה אחת, ואז העמקה לכל פגיעה ב-query_db. הפעל כשדור כותב "תבנה תיק על X", "מה יש לנו על חברת Y", "תצליב את השם הזה", "dossier", "מה הקשר של X לממשלה", "איפה השם הזה מופיע במאגר", "תעשה לי תחקיר רקע על". התוצר הוא תיק מסודר לפי תחום עם כל קישור-מקור ורשימת "מה לאמת בהמשך". התאמת שם אינה אישור זהות - כל פריט הוא ליד לבדיקה. לסריקת פטורים ייעודית ראה osint-exemptions; לפרופיל ח"כ מעמיק ראה osint-knesset.
 ---

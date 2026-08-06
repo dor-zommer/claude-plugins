@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-committees
 description: מה קורה בוועדות הכנסת ומה השרים לא עונים - עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db. סדר יום של ישיבות ועדה כולל ישיבות עתידיות (knesset_committee_sessions + knesset_session_items), חומרי רקע ופרוטוקולים להורדה כולל מסמכי מרכז המחקר והמידע (knesset_session_documents), וזיהוי ישיבות חסויות. הליד המובנה: שאילתות ח"כים שהמועד לתשובת השר חלף ולא נענו (knesset_queries) - 93 כאלה במאגר. הפעל כשדור כותב "מה על סדר היום בוועדה", "ישיבות ועדת הכספים", "מה נדון בוועדה", "פרוטוקול ועדה", "חומר רקע לישיבה", "ישיבה חסויה", "שאילתות שלא נענו", "מה השר לא ענה", "שאילתה של ח\"כ". כל פריט הוא ליד לבדיקה מול אתר הכנסת, לא ממצא מאומת. להצבעות, פרופיל ח"כ ומסלול חוק ראה osint-knesset.
 ---

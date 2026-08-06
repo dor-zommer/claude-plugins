@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-exemptions
 description: סריקה תחקירנית של פטורים ממכרז (התקשרויות ללא מכרז) עבור דסק "המקום הכי חם בגיהנום", מעל ה-osint-db (טבלת exemptions, 139 אלף רשומות). מאתר דפוסים חשודים - ספק שחוזר שוב ושוב אצל אותו משרד או בכמה משרדים, ריכוז התקשרויות אצל מפרסם אחד, סכומים חריגים בגודלם, ונימוק דליל או גנרי שלא מצדיק פטור. הפעל כשדור כותב "תבדוק פטורים", "פטור ממכרז חשוד", "מי הספק שחוזר", "כמה X קיבל בפטור", "פטורים גדולים החודש", "תסרוק פטורים של משרד Y", "מי מקבל הכי הרבה בלי מכרז". התוצר הוא לידים לבדיקה עם עדיפות - לא ממצא מאומת. כל ליד חייב אימות מול detail_url הרשמי לפני שהוא הופך לסיפור. לתיק מאוחד על ישות חוצה-מאגר ראה osint-entity-dossier; לדייג'סט יומי של פטורים חדשים ראה osint-daily-leads.
 ---

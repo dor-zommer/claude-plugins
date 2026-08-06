@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-blindspot
 description: איתור נקודות עיוורון בסיקור עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db (news_headlines, 21 אלף כותרות משבעה מגזרי תקשורת). מה עולה בתקשורת הערבית, החרדית, הדתי-לאומית, המקומית והזרה ולא מגיע למיינסטרים העברי - ומה מכל אלה לא סוקר אצלנו. הכותרות מהתקשורת הערבית והזרה מתורגמות לעברית (headline_he). כולל השוואה מול הודעות הדוברות הרשמיות (police_announcements, idf_spokesman) לזיהוי פער בין הגרסה הרשמית לדיווח בשטח. הפעל כשדור כותב "מה פספסנו", "בליינדספוט", "מה בתקשורת הערבית", "מה החרדים מדווחים", "מה לא סוקר", "מה עולה בזרה ולא כאן", "פערי סיקור", "מה מדווח בשטח מול הדובר". כל פריט הוא ליד לבדיקה מול המקור, לא ממצא מאומת. לבדיקה אם כבר כתבנו על נושא ראה osint-archive-check.
 ---

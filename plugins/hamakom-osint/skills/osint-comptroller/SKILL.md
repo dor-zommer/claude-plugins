@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-comptroller
 description: תחקיר דוחות מבקר המדינה עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db (mevaker_reports, 145 דוחות עם גוף טקסט; mevaker_news, הודעות הדוברות). היכולת המרכזית היא חיפוש בתוך גוף הדוחות ולא רק בכותרות - כך עולה גוף, פרויקט או סכום שמוזכר בתוך דוח שכותרתו על נושא אחר לגמרי. כולל מעקב אחרי המשך טיפול: אותו נושא שחוזר בדוחות של שנים שונות. הפעל כשדור כותב "מה המבקר אמר על", "דוחות מבקר המדינה", "יש דוח מבקר על X", "מה כתוב בדוח המבקר", "המבקר בדק את", "אנגלמן", "ביקורת המדינה על". אזהרה מחייבת: גוף הדוח במאגר חתוך ב-20 אלף תווים, ולכן אסור לטעון שדוח "אינו מזכיר" משהו. כל פריט הוא ליד לבדיקה מול הדוח המלא באתר המבקר. לתיק חוצה-תחומים ראה osint-entity-dossier.
 ---

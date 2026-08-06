@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__list_tables mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-knesset
 description: פרופיילר כנסת מעל ה-osint-db עבור דסק "המקום הכי חם בגיהנום", בשלושה מצבים - (א) פרופיל ח"כ - שם ← פרטי הח"כ, תפקידים (סיעה/ועדה/תפקיד דרך knesset_mk_positions), חוקים שיזם (knesset_bill_initiators), והצבעות בולטות; (ב) מסלול הצעת חוק - knesset_bills לפי שם/מספר וסטטוס; (ג) פירוק הצבעה - knesset_votes לפי תיאור הסעיף + ספירת בעד/נגד/נמנע, ופילוח לכל ח"כ דרך knesset_vote_options (תמיד עם vote_id ספציפי כדי לא לסרוק 620 אלף שורות). מציף הצבעות חוצות-סיעה ומפתיעות. הפעל כשדור כותב "פרופיל ח\"כ", "מה X הצביע", "איזה חוקים X יזם", "תפרק לי את ההצבעה", "מי בעד ומי נגד", "מה הסטטוס של החוק", "מי יזם את ההצעה". כל פריט הוא ליד לבדיקה מול אתר הכנסת - לא ממצא מאומת. לתיק חוצה-תחומים על אותו אדם ראה osint-entity-dossier.
 ---
