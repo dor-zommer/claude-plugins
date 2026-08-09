@@ -54,6 +54,7 @@ GROUP BY supplier_names ORDER BY total DESC LIMIT 8
 | `knesset_votes` | 32,281 | `knesset_num`, `vote_date`, `is_accepted` | |
 | `news_headlines` | 21,527 | `pub_iso`, `outlet`, `category`, `sector` | |
 | `mevaker_reports` | 145 | `pub_date` | `content_text LIKE` **עובד** (אומת) - 145 שורות בלבד |
+| `mevaker_donations` | 108,933 | `election_type`, `publication_type`, `publication_date` | `LIKE` על `donor_name` ועל `recipient` **עובד ומהיר** (אומת). `GROUP BY` בלי `WHERE` נקטע. ראה סעיף ייעודי למטה |
 | `legislation` | 287 | `ministry`, `is_open`, `pub_date` | |
 | `decisions` | 429 | `pub_date`, `decision_number` | |
 | `police_announcements` | 828 | `pub_date` | |
@@ -71,6 +72,52 @@ GROUP BY supplier_names ORDER BY total DESC LIMIT 8
 - **`wp_articles` - `category` קיים אבל ריק תמיד.** אל תסנן לפיו; הוא יתאים לאפס שורות בשקט.
 - `knesset_mk_positions` מפתח לפי `person_id` (לא `mk_individual_id`).
 - **`knesset_vote_options.faction_name` ריק בכנסת ה-25.** מאוכלס בהצבעות היסטוריות (נבדק: `vote_id` 20000-20100 מלא, 46000-46200 ריק בכל 8,508 השורות). אל תבנה פילוח סיעתי של הצבעה עכשווית עליו.
+
+## `mevaker_donations` - מאגר תרומות הבחירות (נוסף 09.08.2026)
+
+תרומות, הלוואות וערבויות למערכות בחירות, מתוך פרסומי מבקר המדינה. **108,933 שורות** (נבדק 09.08.2026).
+
+**עמודות:** `id, election_type, publication_type, publication_type_id, donor_name, donor_first, donor_last, donor_city, donor_country, recipient, party, candidate_name, faction, election_city, regional_council, list_name, election_period_name, is_deficit_coverage, sum, sum_in_currency, loan_return_sum, publication_date, election_date, scraped_at`
+
+**פילוח (אומת בהרצה):**
+
+| `election_type` | תרומה | הלוואה | ערבות |
+|---|---|---|---|
+| `primaries` | 52,024 | 5 | 4 |
+| `local` | 42,546 | 2,942 | 546 |
+| `parties` | 6,574 | 1 | 232 |
+| `regional` | 3,187 | 560 | 15 |
+| `special` | 262 | 32 | 3 |
+
+**מה עובד (אומת בהרצה):**
+```sql
+SELECT donor_name, donor_city, recipient, sum, publication_date
+FROM mevaker_donations WHERE donor_name LIKE '%חיימוב%' ORDER BY sum DESC
+```
+```sql
+SELECT recipient, COUNT(*) n, ROUND(SUM(sum)) total
+FROM mevaker_donations WHERE recipient LIKE '%ביטן%' GROUP BY recipient
+```
+```sql
+SELECT substr(publication_date,1,4) yr, election_type, COUNT(*) n, ROUND(SUM(sum))
+FROM mevaker_donations WHERE recipient='ביטן דוד' GROUP BY yr, election_type
+```
+
+**מה נקטע (אומת):** `GROUP BY election_type` על כל הטבלה עם `SUM`+`MIN`+`MAX` יחד. צמצם קודם.
+
+### חמש מלכודות ייחודיות לטבלה הזו
+
+1. **סדר השם אינו עקבי.** אותו אדם מופיע כ"חיימוב יצחק", "יצחק חיימוב", "חיימוב איציק" ו"איציק חיימוב". **חפש לפי שם משפחה בלבד**, וקבץ לפי `donor_last` + `donor_city` ולא לפי `donor_name`.
+2. **`donor_city` מכיל ישויות HTML** - `ת&quot;א` לצד `תל אביב` ו`תל אביב - יפו`. נרמל לפני קיבוץ.
+3. **`donor_country` הוא מחרוזת ריקה, לא NULL.** לאיתור תרומות חוץ: `donor_country NOT IN ('', 'ישראל')`. `IS NOT NULL` יחזיר הכל.
+4. **`election_date` ו-`election_period_name` ריקים בפריימריז.** אי אפשר לשייך תרומה למערכת בחירות דרכם - **יש לגזור מאשכולות `publication_date`**. אומת: 42 התרומות של "ביטן דוד" מתפלגות לשני אשכולות - 10.2012-7.2013 (פריימריז 26.11.2012 → כנסת 19) ו-12.2014-1.2015 (פריימריז 31.12.2014 → כנסת 20). האשכול הראשון נמשך חצי שנה **אחרי** הבחירות; דיווח מאוחר או כיסוי גירעון.
+5. **יש שורות כפולות** - שתי רשומות זהות באותו תאריך ובאותו סכום. תרומה כפולה אמיתית או כפילות סריקה. אל תסכום בלי להציג.
+
+**`is_deficit_coverage = 'True'`** = כיסוי גירעון אחרי הבחירות, קטגוריה נפרדת עם כללים אחרים. **`publication_type = 'הלוואה'` עם `loan_return_sum` ריק** = הלוואה שלא הוחזרה, שקולה כלכלית לתרומה.
+
+**תקרות:** משתנות לפי סוג הבחירות, מספר התורמים והשנה. **אין לקבוע שסכום חרג מהתקרה** בלי אימות מול נוסח החוק והנחיות מבקר המדינה לאותה מערכת.
+
+---
 
 ## מלכודת פורמט התאריך
 
