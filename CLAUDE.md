@@ -43,6 +43,8 @@ servers/osint-db/                 ← קוד שרת ה-MCP (FastMCP/Python) + Do
 
 כל סקילי `hamakom-visuals` (graphic/carousel/reel) נשענים על `plugins/hamakom-visuals/design-system/HAMAKOM-DS-2026.md`. זה מקור-האמת למותג: שנהב `#faf9f5` / דיו `#141413` / טרקוטה `#D97757`, Publico Headline Hebrew + Graphik HLAR, פסי-חתימה טריקולור. שינוי מותג = עריכת הקובץ הזה, לא כל סקיל בנפרד.
 
+**חריג מודע:** `hamakom-osint/skills/osint-visualize` משכפל את טוקני הפלטה לתוך ה-SKILL.md שלו, כי **קובץ שיושב בפלאגין אחר לא נפתר בזמן ריצה**. זה השכפול היחיד שמותר מהכלל "אל תשכפל מ-db-map/DS". שינוי מותג = לעדכן קודם ב-DS ואז שם.
+
 ## משמעת גרסאות (חשוב)
 
 בכל שינוי מהותי בפלאגין צריך **שני** עדכוני גרסה:
