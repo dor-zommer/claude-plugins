@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.33.0"
+    "version": "2.34.0"
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
     {
       "name": "hamakom-osint",
       "source": "./plugins/hamakom-osint",
-      "description": "המקום אוסינט - תחקיר מעל מסד OSINT ממשלתי (פטורים, כסף ציבורי, תרומות בחירות, כנסת, ועדות, תכנון, מבקר, פערי סיקור, ארכיון) + שרת osint-db"
+      "description": "המקום אוסינט - תחקיר מעל מסד OSINT ממשלתי (פטורים, כסף ציבורי, תרומות בחירות, כנסת, ועדות, תכנון, מבקר, פערי סיקור, ארכיון, בעלי מניות פר-ח\"פ מ-checkid) + שרת osint-db"
     },
     {
       "name": "hamakom-visuals",
