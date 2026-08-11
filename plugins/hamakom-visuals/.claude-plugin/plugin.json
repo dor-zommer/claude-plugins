@@ -1,7 +1,7 @@
 {
   "name": "hamakom-visuals",
-  "version": "1.9.0",
-  "description": "נכסי המדיה הוויזואליים של 'המקום הכי חם בגיהנום' — גרפיקות כתבה (hamakom-graphic), קרוסלות אינסטגרם (hamakom-carousel), ורילים (hamakom-reel). עיצוב מותג אחיד — HaMakom DS 2026: שנהב #faf9f5 / דיו #141413 / טרקוטה #D97757, Publico Headline Hebrew + Graphik HLAR (+HaMakom לתצוגה חתימתית), פסי-חתימה טריקולור. מקור-אמת: design-system/HAMAKOM-DS-2026.md.",
+  "version": "1.10.0",
+  "description": "נכסי המדיה הוויזואליים של 'המקום הכי חם בגיהנום' — גרפיקות כתבה (hamakom-graphic), קרוסלות אינסטגרם (hamakom-carousel), רילים (hamakom-reel), וכרטיסי עדכון חי לסיפור מתגלגל (hamakom-update-card). עיצוב מותג אחיד — HaMakom DS 2026: שנהב #faf9f5 / דיו #141413 / טרקוטה #D97757, Publico Headline Hebrew + Graphik HLAR (+HaMakom לתצוגה חתימתית), פסי-חתימה טריקולור. מקור-אמת: design-system/HAMAKOM-DS-2026.md.",
   "author": {
     "name": "Dor Zommer / Ha-Makom",
     "email": "zommerd@gmail.com"

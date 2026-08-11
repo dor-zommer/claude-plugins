@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.34.0"
+    "version": "2.35.0"
   },
   "plugins": [
     {
@@ -22,7 +22,7 @@
     {
       "name": "hamakom-visuals",
       "source": "./plugins/hamakom-visuals",
-      "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, ורילים"
+      "description": "מדיה ויזואלית — גרפיקות כתבה, קרוסלות אינסטגרם, רילים, וכרטיסי עדכון חי"
     }
   ]
 }
