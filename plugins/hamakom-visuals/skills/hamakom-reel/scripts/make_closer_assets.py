@@ -43,7 +43,13 @@ def _first(*cands):
             return c
     return cands[-1]
 
-F_DISPLAY = _first(f"{WORKDIR}/SuezOne-Regular.ttf", f"{HOME_F}/SuezOne-Regular.ttf")
+# פונט התצוגה של הסגיר = Publico Headline Hebrew ExtraBold — זה הפונט הצרוב
+# ב-closer_v3 הקנוני (מניפסט + CTA). Suez One הוא fallback בלבד; אם משתמשים בו
+# הסגיר יוצא דק מדי ולא תואם את הקנוני.
+F_DISPLAY = _first(f"{WORKDIR}/publicoheadlinehebrew-extrabold.otf",
+                   os.path.normpath(f"{HERE}/../../../design-system/assets/fonts/publicoheadlinehebrew-extrabold.otf"),
+                   f"{HOME_F}/PublicoHeadlineHebrew-Black.ttf",
+                   f"{WORKDIR}/SuezOne-Regular.ttf", f"{HOME_F}/SuezOne-Regular.ttf")
 F_UI      = _first(f"{WORKDIR}/IBMPlexSansHebrew-Regular.ttf", f"{HOME_F}/IBMPlexSansHebrew-Regular.ttf")
 F_UI_SB   = _first(f"{WORKDIR}/IBMPlexSansHebrew-SemiBold.ttf", f"{HOME_F}/IBMPlexSansHebrew-SemiBold.ttf", F_UI)
 LOGO_CANDS = [f"{WORKDIR}/logo-square.svg",
