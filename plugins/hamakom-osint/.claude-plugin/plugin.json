@@ -1,6 +1,6 @@
 {
   "name": "hamakom-osint",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "המקום אוסינט - תחקיר מעל מסד ה-OSINT הממשלתי של 'המקום הכי חם בגיהנום', 17 סקילים: פטורים ממכרז (osint-exemptions), כסף ציבורי - התקשרויות, תמיכות ועמותות (osint-money), תיק ישות מצולב (osint-entity-dossier), לידים יומיים (osint-daily-leads), כנסת - הצבעות וחוקים (osint-knesset), ועדות ושאילתות (osint-committees), מבקר המדינה (osint-comptroller), תכנון (osint-planning), תכנון יו\"ש (osint-yosh-planning), פערי סיקור (osint-blindspot), בדיקת ארכיון (osint-archive-check), בעלי שליטה ומניות של חברה פרטית פר-ח\"פ מ-checkid דרך דפדפן אמיתי (checkid-holders), וארבעה סקילי תרומות בחירות מעל mevaker_donations: תיק תורם (osint-donor-profile), מימון מועמד (osint-candidate-funding), חריגות רוחביות (osint-donation-patterns) והצלבה מול כסף ציבורי (osint-donations-crossref). ויזואליזציה כוללנית לכל טבלאות המאגר, עם וידג'ט בצ'אט וייצוא לקוד הטמעה או PNG (osint-visualize). מפת ה-DB, חוקי השאילתה ומצב הסקרייפרים במקור אמת יחיד: references/db-map.md. כולל את שרת ה-MCP המרוחק osint-db (6 כלים: list_tables, describe_table, query_db, search_entity, new_since, ו-population_search - חיפוש במרשם האוכלוסין המלא באגרון, רגיש, עם עוגן חובה ולוג ביקורת מזוהה-קורא).",
   "author": {
     "name": "Dor Zommer / Ha-Makom",
