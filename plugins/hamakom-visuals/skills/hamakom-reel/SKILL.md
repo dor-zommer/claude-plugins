@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Write Edit Grep Glob Bash Skill WebSearch WebFetch TaskCreate TaskUpdate AskUserQuestion
 name: hamakom-reel
+version: 2.0.0
 description: סרטון קצר (ריל, טיקטוק, שורטס, סטורי, וידאו לפייסבוק או לוואטסאפ) לכתבה של "המקום הכי חם בגיהנום" מחומרי גלם של וידאו ותמונות. הפעל בכל פעם שדור מבקש "תעשה ריל", "תערוך לי סרטון לכתבה", "סרטון לאינסטגרם/טיקטוק", "תחבר את הסרטונים לכתבה", שולח קישור ל-ha-makom.co.il או גוגל דוקס יחד עם קבצי וידאו או תמונות, או אומר רק "תעשה מזה סרטון" עם כתבה וקבצים.
 ---
 

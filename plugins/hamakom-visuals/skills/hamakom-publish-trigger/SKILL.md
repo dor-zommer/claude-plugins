@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Write Edit Bash Grep Glob WebFetch
 name: hamakom-publish-trigger
+version: 1.0.0
 description: >-
   הטריגר של "המקום הכי חם בגיהנום": כתבה פורסמה ב-ha-makom.co.il ← פותח תיקיית עבודה
   ומפעיל את סקילי הוויז'ואלס הקיימים בזה אחר זה — hamakom-graphic (3 גרפיקות),

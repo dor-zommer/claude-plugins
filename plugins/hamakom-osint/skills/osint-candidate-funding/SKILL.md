@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-candidate-funding
+version: 1.0.0
 description: מי מימן מועמד, ח"כ, ראש רשות, רשימה מקומית או מפלגה - פרופיל המימון מעל ה-osint-db, מתוך מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations). מפלח לפי מערכות בחירות, מזהה תורמים גדולים וחוזרים, מפריד מימון עצמי, ומחשב ריכוזיות. הפעל כשדור כותב "מי מימן את X", "מי תרם ל-X", "תרומות שקיבל", "מאיפה הכסף של X", "פרופיל מימון", "כמה גייס", "מי מממן את הרשימה". כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לתיק על תורם בודד ראה osint-donor-profile; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
 ---
 

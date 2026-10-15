@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-donations-crossref
+version: 1.0.0
 description: הצלבת תרומות בחירות מול כסף ציבורי ורגולציה מעל ה-osint-db - לוקח תורם או מקבל מ-mevaker_donations ומצליב אותו מול פטורים ממכרז (exemptions), התקשרויות ממשלתיות (budget_contracts), תמיכות (budget_supports), תוכניות בנייה (mavat_plans, yosh_plans), דוחות מבקר, חקיקה, הצבעות וארכיון האתר. זה מה שהופך תרומה לסיפור. הפעל כשדור כותב "תצליב את התרומה", "האם התורם קיבל משהו", "מה הוא קיבל בתמורה", "תרומות מול מכרזים", "תרם וגם זכה", "מה יש לו מול המדינה", או אחרי שסקיל תרומות אחר החזיר שם מעניין. כל פריט הוא ליד לבדיקה מול המקור הרשמי, לא ממצא מאומת. לתורם בודד ראה osint-donor-profile; למקבל ראה osint-candidate-funding; לחריגות רוחביות ראה osint-donation-patterns.
 ---
 

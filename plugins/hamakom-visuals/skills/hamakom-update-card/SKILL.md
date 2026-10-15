@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Write Edit Bash Grep Glob WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-update-card
+version: 1.0.0
 description: >-
   בונה כרטיס עדכון חי של "המקום הכי חם בגיהנום" ב-Figma — 3 פורמטים
   (update-whatsapp-1080x1080, update-instagram-1080x1350, update-story-1080x1920)

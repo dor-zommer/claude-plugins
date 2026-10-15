@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-graphic
+version: 1.0.0
 description: >
   בונה את עמוד הגרפיקות הממותג של "המקום הכי חם בגיהנום" — 3 פורמטים בודדים
   לכתבה אחת, ישירות בתוך Figma. סקיל נפרד מ-hamakom-carousel (שמטפל בקרוסלות

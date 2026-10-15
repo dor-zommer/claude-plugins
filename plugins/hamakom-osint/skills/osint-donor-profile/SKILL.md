@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-donor-profile
+version: 1.0.0
 description: תיק על תורם בודד מעל ה-osint-db - מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations: פריימריז, רשויות מקומיות, מפלגות ארציות, מועצות אזוריות). למי הוא תרם, כמה, מתי, ולאורך כמה מערכות בחירות. הפעל כשדור כותב "תבדוק תרומות של X", "למי X תרם", "כמה X תרם", "תיק תרומות על", "האם X תורם", או כששם עולה בתחקיר וצריך לדעת אם הוא מופיע במאגר התרומות. כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לפרופיל מקבל ראה osint-candidate-funding; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
 ---
 

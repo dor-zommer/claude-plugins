@@ -1,6 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-carousel
+version: 1.0.0
 description: >
   בונה קרוסלות אינסטגרם של "המקום הכי חם בגיהנום" ישירות בתוך Figma. סקיל
   נפרד מ-hamakom-graphic (שמטפל בפוסטים בודדים). גרפיקות הכתבה ב-6 פורמטים
