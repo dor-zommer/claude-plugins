@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-entity-dossier
-version: 1.0.0
+version: 1.1.0
 description: בניית תיק מאוחד על אדם, חברה או משרד ממשלתי חוצה כל ה-osint-db עבור דסק "המקום הכי חם בגיהנום". מצליב שם אחד על פני התקשרויות בפטור (exemptions), תכנון ובנייה (mavat_plans, yosh_plans), חקיקה (legislation, knesset_bills), מבקר המדינה (mevaker_reports), והחלטות ממשלה (decisions). הנתיב הראשי הוא search_entity(name) שמחזיר התאמות מכל הטבלאות בקריאה אחת, ואז העמקה לכל פגיעה ב-query_db. הפעל כשדור כותב "תבנה תיק על X", "מה יש לנו על חברת Y", "תצליב את השם הזה", "dossier", "מה הקשר של X לממשלה", "איפה השם הזה מופיע במאגר", "תעשה לי תחקיר רקע על". התוצר הוא תיק מסודר לפי תחום עם כל קישור-מקור ורשימת "מה לאמת בהמשך". התאמת שם אינה אישור זהות - כל פריט הוא ליד לבדיקה. לסריקת פטורים ייעודית ראה osint-exemptions; לפרופיל ח"כ מעמיק ראה osint-knesset.
 ---
 
@@ -50,7 +50,7 @@ SELECT id, title, publisher, supplier_names, supplier_ids, amount_ils,
        exemption_type, contract_purpose, update_date, detail_url
 FROM exemptions
 WHERE supplier_names LIKE '%שם%' OR contact_name LIKE '%שם%'
-ORDER BY amount_ils DESC
+ORDER BY amount_ils DESC NULLS LAST
 ```
 
 **תכנון ובנייה (כל ישראל):**
@@ -65,9 +65,10 @@ ORDER BY depositing_date DESC
 
 **כנסת - זיהוי ה-ח"כ ואז יוזמות:**
 ```sql
-SELECT mk_individual_id, mk_individual_name, mk_individual_name_eng
+SELECT mk_individual_id, mk_individual_first_name, mk_individual_name, mk_individual_name_eng
 FROM knesset_mk_individuals
-WHERE mk_individual_name LIKE '%שם%';
+WHERE mk_individual_name LIKE '%<שם משפחה>%'
+   OR (mk_individual_first_name || ' ' || mk_individual_name) LIKE '%<שם מלא>%';
 
 SELECT b.name, b.type_desc, b.status_id, b.publication_date
 FROM knesset_bill_initiators i
@@ -91,7 +92,7 @@ SELECT recipient_entity_name, supporting_ministry, year, amount_approved, amount
 FROM budget_supports
 WHERE year = 2024                          -- חובה: צמצום לפני ה-LIKE
   AND recipient_entity_name LIKE '%שם%'
-ORDER BY amount_paid DESC
+ORDER BY amount_paid DESC NULLS LAST
 ```
 עבור על השנים אחת-אחת (2020-2025 בטבלה) וחבר. אם מצאת התאמה, קח את ה-`recipient_entity_id` שלה והמשך דרכו - הוא מאונדקס ולא צריך צמצום:
 ```sql

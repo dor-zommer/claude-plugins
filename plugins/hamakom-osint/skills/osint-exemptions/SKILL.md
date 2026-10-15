@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-exemptions
-version: 1.0.0
+version: 1.1.0
 description: סריקה תחקירנית של פטורים ממכרז (התקשרויות ללא מכרז) עבור דסק "המקום הכי חם בגיהנום", מעל ה-osint-db (טבלת exemptions, 139 אלף רשומות). מאתר דפוסים חשודים - ספק שחוזר שוב ושוב אצל אותו משרד או בכמה משרדים, ריכוז התקשרויות אצל מפרסם אחד, סכומים חריגים בגודלם, ונימוק דליל או גנרי שלא מצדיק פטור. הפעל כשדור כותב "תבדוק פטורים", "פטור ממכרז חשוד", "מי הספק שחוזר", "כמה X קיבל בפטור", "פטורים גדולים החודש", "תסרוק פטורים של משרד Y", "מי מקבל הכי הרבה בלי מכרז". התוצר הוא לידים לבדיקה עם עדיפות - לא ממצא מאומת. כל ליד חייב אימות מול detail_url הרשמי לפני שהוא הופך לסיפור. לתיק מאוחד על ישות חוצה-מאגר ראה osint-entity-dossier; לדייג'סט יומי של פטורים חדשים ראה osint-daily-leads.
 ---
 
@@ -41,7 +41,7 @@ WHERE publisher = 'משרד התחבורה והבטיחות בדרכים'   -- �
   AND supplier_names <> ''
 GROUP BY supplier_names
 HAVING COUNT(*) >= 3
-ORDER BY total_ils DESC
+ORDER BY total_ils DESC NULLS LAST
 LIMIT 20
 ```
 לתמונה רוחבית - הרץ את זה משרד-משרד וחבר את התוצאות בצד שלך. אין קיצור דרך; `GROUP BY supplier_names` על כל הטבלה נקטע.
@@ -52,7 +52,7 @@ SELECT publisher, COUNT(*) AS deals, SUM(amount_ils) AS total_ils
 FROM exemptions
 WHERE amount_ils >= 10000000        -- חובה: צמצום על עמודה מאונדקסת
 GROUP BY publisher
-ORDER BY total_ils DESC
+ORDER BY total_ils DESC NULLS LAST
 LIMIT 25
 ```
 זה נותן את הריכוז בהתקשרויות הגדולות, וזה הליד המעניין בכל מקרה. `GROUP BY publisher` בלי `WHERE` נקטע.
@@ -62,7 +62,7 @@ LIMIT 25
 SELECT id, title, publisher, supplier_names, amount_ils, exemption_type, detail_url
 FROM exemptions
 WHERE amount_ils IS NOT NULL
-ORDER BY amount_ils DESC
+ORDER BY amount_ils DESC NULLS LAST
 LIMIT 30
 ```
 
@@ -73,7 +73,7 @@ SELECT id, title, publisher, supplier_names, amount_ils,
 FROM exemptions
 WHERE amount_ils >= 1000000
   AND (LENGTH(COALESCE(reasoning,'')) < 60 OR LENGTH(COALESCE(regulation_text,'')) < 40)
-ORDER BY amount_ils DESC
+ORDER BY amount_ils DESC NULLS LAST
 LIMIT 40
 ```
 
@@ -85,7 +85,7 @@ SELECT publisher, COUNT(*) AS deals, SUM(amount_ils) AS total_ils
 FROM exemptions
 WHERE supplier_names LIKE '%שם הספק%'      -- LIKE על supplier_names עובד
 GROUP BY publisher
-ORDER BY total_ils DESC
+ORDER BY total_ils DESC NULLS LAST
 ```
 כמה משרדים חזרו בפלט = ריכוז רוחבי. את רשימת הספקים המועמדים קבל קודם מהשאילתה של הסכומים הגדולים או מריכוז לפי מפרסם, ואז בדוק אותם אחד-אחד.
 
@@ -94,7 +94,7 @@ ORDER BY total_ils DESC
 SELECT id, title, publisher, supplier_names, amount_ils, exemption_type, first_seen_at, detail_url
 FROM exemptions
 WHERE first_seen_at >= date('now','-14 days')
-ORDER BY first_seen_at DESC, amount_ils DESC
+ORDER BY first_seen_at DESC, amount_ils DESC NULLS LAST
 LIMIT 50
 ```
 השתמש בתאריכים יחסיים (`date('now','-N days')`) ולא בתאריך קשיח - תאריך קשיח בדוגמה מתיישן ומחזיר חלון שגוי. חלופה: `new_since("exemptions", "<תאריך>")`.
@@ -104,7 +104,7 @@ LIMIT 50
 SELECT id, title, publisher, amount_ils, exemption_type, update_date, detail_url
 FROM exemptions
 WHERE supplier_names LIKE '%שם הספק%'
-ORDER BY amount_ils DESC
+ORDER BY amount_ils DESC NULLS LAST
 ```
 
 ## שלב 3 - סינון רעש ודירוג לידים

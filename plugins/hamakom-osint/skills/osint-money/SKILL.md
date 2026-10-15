@@ -1,8 +1,9 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-money
-version: 1.0.0
-description: מעקב אחרי כסף ציבורי עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db - התקשרויות בפועל (budget_contracts, מיליון שורות ממפתח התקציב), תמיכות ומענקים (budget_supports, 330 אלף), עמותות ודוחותיהן הכספיים (amutot מגיידסטאר, 75 אלף), ומכרזי משרד הביטחון (mod_tenders). היכולת המרכזית: הצלבת תמיכה ממשלתית עם הדוח הכספי של מקבלת התמיכה לפי מזהה תאגיד (recipient_entity_id = amuta_id), ולא לפי שם. הפעל כשדור כותב "מי מקבל כסף מ", "כמה תמיכות קיבלה", "התקשרויות של משרד X", "מפתח התקציב", "תמיכות לעמותות", "כמה המדינה שילמה ל", "מי הספק הגדול של", "עמותה שמקבלת תמיכות", "מכרזי משרד הביטחון". כל פריט הוא ליד לבדיקה מול המקור הרשמי, לא ממצא מאומת. לפטורים ממכרז ראה osint-exemptions; לתיק חוצה-תחומים ראה osint-entity-dossier.
+version: 1.1.0
+description: >-
+  מעקב אחרי כסף ציבורי עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db - התקשרויות בפועל (budget_contracts, מיליון שורות ממפתח התקציב), תמיכות ומענקים (budget_supports, 330 אלף), עמותות ודוחותיהן הכספיים (amutot מגיידסטאר, 75 אלף), ומכרזי משרד הביטחון (mod_tenders). היכולת המרכזית: הצלבת תמיכה ממשלתית עם הדוח הכספי של מקבלת התמיכה לפי מזהה תאגיד (recipient_entity_id = amuta_id), ולא לפי שם. הפעל כשדור כותב "מי מקבל כסף מ", "כמה תמיכות קיבלה", "התקשרויות של משרד X", "מפתח התקציב", "תמיכות לעמותות", "כמה המדינה שילמה ל", "מי הספק הגדול של", "עמותה שמקבלת תמיכות", "מכרזי משרד הביטחון". כל פריט הוא ליד לבדיקה מול המקור הרשמי, לא ממצא מאומת. לפטורים ממכרז ראה osint-exemptions; לתיק חוצה-תחומים ראה osint-entity-dossier.
 ---
 
 # osint-money - מעקב כסף ציבורי
@@ -85,7 +86,7 @@ SELECT recipient_entity_name, recipient_entity_id, supporting_ministry,
        amount_approved, amount_paid, purpose, request_type, item_url
 FROM budget_supports
 WHERE year = 2024
-ORDER BY amount_paid DESC
+ORDER BY amount_paid DESC NULLS LAST
 LIMIT 30
 ```
 (השנים בטבלה: 2020-2025. 2025 חלקית - 6,769 שורות מול ~19 אלף בשנה מלאה.)
@@ -105,7 +106,7 @@ FROM budget_supports WHERE recipient_entity_id = '<id>' ORDER BY year DESC
 SELECT recipient_entity_name, year, amount_approved, amount_paid, purpose
 FROM budget_supports
 WHERE supporting_ministry = '<שם המשרד>'
-ORDER BY amount_paid DESC LIMIT 40
+ORDER BY amount_paid DESC NULLS LAST LIMIT 40
 ```
 
 ## מצב ג - ההצלבה: תמיכה מול הדוח הכספי (זו הליבה)
@@ -140,11 +141,12 @@ LIMIT 25
 SELECT title, type, category, status, is_cancelled, publish_date,
        submission_date, url
 FROM mod_tenders
-WHERE submission_date >= date('now')
-ORDER BY submission_date ASC
+WHERE is_cancelled::text IN ('1','true','True')
+   OR substr(submission_date,1,10) < to_char(CURRENT_DATE,'YYYY-MM-DD')
+ORDER BY submission_date DESC
 LIMIT 40
 ```
-מכרזים שבוטלו (`is_cancelled`) ומכרזים שמועד ההגשה שלהם חלף בלי המשך הם הלידים כאן. הטבלה קטנה (2,967) וסובלנית לשאילתות.
+מכרזים שבוטלו (`is_cancelled`) ומכרזים שמועד ההגשה שלהם חלף בלי המשך הם הלידים כאן. הטבלה קטנה (כ-3,500 שורות, נבדק 15.10.2026) וסובלנית לשאילתות. מכרזים פתוחים: `substr(submission_date,1,10) >= to_char(CURRENT_DATE,'YYYY-MM-DD')`.
 
 ## שלב האימות - מול המקור הרשמי
 
@@ -161,9 +163,9 @@ LIMIT 40
 |---|---|
 | שאילתה נקטעת | כמעט תמיד `LIKE`/`GROUP BY` בלי צמצום. ראה טבלת המלכודות למעלה |
 | `amount_paid` ריק בהרבה שורות | צפוי - התמיכה אושרה ולא שולמה, או טרם דווחה. השתמש ב-`amount_approved` וציין את ההבחנה |
-| `entity_name` ריק ב-budget_contracts | קיים בזנב הטבלה. סנן `WHERE supplier_name <> ''` |
+| `entity_name` ריק ב-budget_contracts | קורה בהרבה שורות (כ-28% במדגם של 200 אלף שורות). ברוב המקרים האלה `supplier_name` מלא - השתמש בו כשם הספק (נבדק 15.10.2026) |
 | ה-JOIN ל-amutot לא מחזיר את הגוף | המזהה אינו של עמותה (עירייה/חברה). חפש ידנית ברשם החברות; אל תניח שאין דיווח |
-| שם משרד לא תפס | השמות ב-budget שונים מ-exemptions ("מ.האוצר - מנהלת הגמלאות"). הוצא את הרשימה בשאילתת ה-`GROUP BY publisher_name` המצומצמת |
+| שם משרד לא תפס | השמות ב-budget שונים מ-exemptions ("מ.האוצר - מנהלת הגמלאות"). הוצא את הרשימה ב-`SELECT DISTINCT publisher_name` (לא ב-`GROUP BY`, שנקטע - ראה טבלת המלכודות) |
 | רוצים "מה חדש" | אין. הטבלאות נטענו ב-import. לדייג'סט יומי יש `osint-daily-leads` על טבלאות אחרות |
 
 **אסור:** להציג תמיכה או התקשרות כ"העברת כספים חשודה" על סמך סכום. הפער בין התמיכה לדוח הכספי הוא שאלה לגוף ולמשרד המתמך, לא מסקנה.

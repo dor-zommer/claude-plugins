@@ -1,8 +1,9 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-committees
-version: 1.0.0
-description: מה קורה בוועדות הכנסת ומה השרים לא עונים - עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db. סדר יום של ישיבות ועדה כולל ישיבות עתידיות (knesset_committee_sessions + knesset_session_items), חומרי רקע ופרוטוקולים להורדה כולל מסמכי מרכז המחקר והמידע (knesset_session_documents), וזיהוי ישיבות חסויות. הליד המובנה: שאילתות ח"כים שהמועד לתשובת השר חלף ולא נענו (knesset_queries) - 93 כאלה במאגר. הפעל כשדור כותב "מה על סדר היום בוועדה", "ישיבות ועדת הכספים", "מה נדון בוועדה", "פרוטוקול ועדה", "חומר רקע לישיבה", "ישיבה חסויה", "שאילתות שלא נענו", "מה השר לא ענה", "שאילתה של ח\"כ". כל פריט הוא ליד לבדיקה מול אתר הכנסת, לא ממצא מאומת. להצבעות, פרופיל ח"כ ומסלול חוק ראה osint-knesset.
+version: 1.1.0
+description: >-
+  מה קורה בוועדות הכנסת ומה השרים לא עונים - עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db. סדר יום של ישיבות ועדה כולל ישיבות עתידיות (knesset_committee_sessions + knesset_session_items), חומרי רקע ופרוטוקולים להורדה כולל מסמכי מרכז המחקר והמידע (knesset_session_documents), וזיהוי ישיבות חסויות. הליד המובנה: שאילתות ח"כים שהמועד לתשובת השר חלף ולא נענו (knesset_queries) - 93 כאלה במאגר. הפעל כשדור כותב "מה על סדר היום בוועדה", "ישיבות ועדת הכספים", "מה נדון בוועדה", "פרוטוקול ועדה", "חומר רקע לישיבה", "ישיבה חסויה", "שאילתות שלא נענו", "מה השר לא ענה", "שאילתה של ח\"כ". כל פריט הוא ליד לבדיקה מול אתר הכנסת, לא ממצא מאומת. להצבעות, פרופיל ח"כ ומסלול חוק ראה osint-knesset.
 ---
 
 # osint-committees - ועדות הכנסת ושאילתות
@@ -33,12 +34,12 @@ description: מה קורה בוועדות הכנסת ומה השרים לא עו
 SELECT q.number, q.name, q.type_desc, q.gov_ministry_id,
        substr(q.submit_date,1,10) submitted,
        substr(q.reply_date_planned,1,10) due,
-       m.mk_individual_name
+       m.mk_individual_first_name || ' ' || m.mk_individual_name AS mk
 FROM knesset_queries q
 LEFT JOIN knesset_mk_individuals m ON m.mk_individual_id = q.person_id
 WHERE q.reply_minister_date IS NULL
   AND q.reply_date_planned IS NOT NULL
-  AND substr(q.reply_date_planned,1,10) < date('now')
+  AND substr(q.reply_date_planned,1,10) < to_char(CURRENT_DATE,'YYYY-MM-DD')
 ORDER BY q.reply_date_planned ASC
 LIMIT 40
 ```
@@ -49,7 +50,7 @@ LIMIT 40
 SELECT gov_ministry_id, COUNT(*) overdue
 FROM knesset_queries
 WHERE reply_minister_date IS NULL
-  AND substr(reply_date_planned,1,10) < date('now')
+  AND substr(reply_date_planned,1,10) < to_char(CURRENT_DATE,'YYYY-MM-DD')
 GROUP BY gov_ministry_id ORDER BY overdue DESC
 ```
 משרד עם ריכוז איחורים גבוה הוא ליד - אבל **חובה לתרגם את הקוד מול אתר הכנסת לפני ייחוס**.
@@ -64,7 +65,7 @@ SELECT s.start_date, c.name AS committee, s.type_desc, s.status_desc,
        s.location, s.session_url
 FROM knesset_committee_sessions s
 LEFT JOIN knesset_committees c ON c.id = s.committee_id
-WHERE s.start_date >= date('now')
+WHERE substr(s.start_date,1,10) >= to_char(CURRENT_DATE,'YYYY-MM-DD')
 ORDER BY s.start_date ASC
 LIMIT 40
 ```
@@ -81,7 +82,7 @@ ORDER BY ordinal
 ועדה מסוימת לאורך זמן:
 ```sql
 SELECT s.start_date, s.type_desc, s.status_desc, s.session_url,
-       (SELECT GROUP_CONCAT(i.name, ' | ') FROM knesset_session_items i
+       (SELECT string_agg(i.name, ' | ') FROM knesset_session_items i
         WHERE i.session_id = s.id) AS agenda
 FROM knesset_committee_sessions s
 JOIN knesset_committees c ON c.id = s.committee_id

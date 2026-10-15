@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-daily-leads
-version: 1.0.0
+version: 1.1.0
 description: דייג'סט בוקר של לידים תחקיריים - מה חדש ב-osint-db מאז הסריקה הקודמת - עבור דסק "המקום הכי חם בגיהנום". סורק במקביל את exemptions, legislation, mevaker_reports, mavat_plans, yosh_plans, decisions, knesset_bills ו-police_announcements דרך new_since(table, since), קובע את חלון הזמן מהריצה הקודמת (scrape_runs) או ברירת מחדל ל-24-48 השעות האחרונות, ומדרג לידים לפי עניין עיתונאי - סכומים גדולים, משרדים רגישים, תזכירים שחלון ההערות שלהם נסגר, ותוכניות ענק. מתוכנן לרוץ כמשימה מתוזמנת בבוקר. הפעל כשדור כותב "לידים יומיים", "מה חדש במאגר", "תסרוק מה נכנס היום", "דייג'סט בוקר osint", "מה התחדש מאתמול", "תביא לי את הלידים של הבוקר". כל פריט הוא ליד לבדיקה עם עדיפות - לא ממצא מאומת; אימות מול ה-URL הרשמי לפני פרסום. לתיק על ישות ראה osint-entity-dossier; לסריקת פטורים לעומק ראה osint-exemptions.
 ---
 
@@ -96,7 +96,7 @@ ORDER BY amount_ils DESC NULLS LAST
 ```sql
 SELECT id, title, ministry, comment_deadline, is_open, url
 FROM legislation
-WHERE is_open = 1 AND comment_deadline >= date('now')
+WHERE is_open = 1 AND osint_date(comment_deadline) >= date('now')
 ORDER BY comment_deadline ASC
 ```
 

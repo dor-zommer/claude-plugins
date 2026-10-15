@@ -1,8 +1,9 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-donor-profile
-version: 1.0.0
-description: תיק על תורם בודד מעל ה-osint-db - מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations: פריימריז, רשויות מקומיות, מפלגות ארציות, מועצות אזוריות). למי הוא תרם, כמה, מתי, ולאורך כמה מערכות בחירות. הפעל כשדור כותב "תבדוק תרומות של X", "למי X תרם", "כמה X תרם", "תיק תרומות על", "האם X תורם", או כששם עולה בתחקיר וצריך לדעת אם הוא מופיע במאגר התרומות. כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לפרופיל מקבל ראה osint-candidate-funding; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
+version: 1.1.0
+description: >-
+  תיק על תורם בודד מעל ה-osint-db - מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations: פריימריז, רשויות מקומיות, מפלגות ארציות, מועצות אזוריות). למי הוא תרם, כמה, מתי, ולאורך כמה מערכות בחירות. הפעל כשדור כותב "תבדוק תרומות של X", "למי X תרם", "כמה X תרם", "תיק תרומות על", "האם X תורם", או כששם עולה בתחקיר וצריך לדעת אם הוא מופיע במאגר התרומות. כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לפרופיל מקבל ראה osint-candidate-funding; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
 ---
 
 # osint-donor-profile - תיק על תורם
@@ -16,17 +17,30 @@ description: תיק על תורם בודד מעל ה-osint-db - מאגר תרו�
 1. **סדר השם אינו עקבי.** חפש לפי שם משפחה בלבד, ורק אחר כך סנן. קבץ לפי `donor_last` + `donor_city`.
 2. **התאמת שם אינה אישור זהות.** בשם נפוץ - הצלב עיר וטווח שנים. בשם נדיר ההתאמה חזקה בהרבה, אבל עדיין ליד.
 3. **תרומה מדווחת אינה עבירה.** הסיפור הוא בדפוס ובהקשר, לא בעצם קיומה.
+4. **שורות זהות.** כ-1% מהשורות זהות לגמרי (תורם, מקבל, סכום ותאריך; נבדק 15.10.2026). זו יכולה להיות תרומה אמיתית שחזרה או כפילות בדיווח. לפני כל סה"כ - בדוק אותן בנפרד והצג אותן, אל תסכום בשקט.
+5. **פרטיות.** רוב התורמים הם אנשים פרטיים. תורם קטן בלי תפקיד ציבורי ובלי קשר לכסף ציבורי לא נכנס לכתבה בשמו. **אין העשרה ב-`population_search`** בלי אישור של דור ועניין ציבורי ברור.
 
 ## הרצף
 
 ### 1. איתור רחב
 
 ```sql
-SELECT donor_name, donor_city, donor_country, recipient, party,
+SELECT id, donor_name, donor_first, donor_last, donor_city, donor_country, recipient, party,
        publication_type, sum, publication_date, election_type
 FROM mevaker_donations
 WHERE donor_name LIKE '%<שם משפחה>%'
-ORDER BY sum DESC
+ORDER BY sum DESC NULLS LAST
+LIMIT 300
+```
+בשם נפוץ (כהן, לוי) - לצמצם מראש לפי `donor_city`, אחרת התוצאה נקטעת.
+
+בדיקת שורות זהות לפני סיכום:
+```sql
+SELECT donor_name, recipient, sum, publication_date, COUNT(*) AS n
+FROM mevaker_donations
+WHERE donor_name LIKE '%<שם משפחה>%'
+GROUP BY donor_name, recipient, sum, publication_date
+HAVING COUNT(*) > 1
 ```
 
 ### 2. איחוד וריאנטים

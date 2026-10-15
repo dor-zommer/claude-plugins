@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-knesset
-version: 1.0.0
+version: 1.1.0
 description: פרופיילר כנסת מעל ה-osint-db עבור דסק "המקום הכי חם בגיהנום", בשלושה מצבים - (א) פרופיל ח"כ - שם ← פרטי הח"כ, תפקידים (סיעה/ועדה/תפקיד דרך knesset_mk_positions), חוקים שיזם (knesset_bill_initiators), והצבעות בולטות; (ב) מסלול הצעת חוק - knesset_bills לפי שם/מספר וסטטוס; (ג) פירוק הצבעה - knesset_votes לפי תיאור הסעיף + ספירת בעד/נגד/נמנע, ופילוח לכל ח"כ דרך knesset_vote_options (תמיד עם vote_id ספציפי כדי לא לסרוק 620 אלף שורות). מציף הצבעות חוצות-סיעה ומפתיעות. הפעל כשדור כותב "פרופיל ח\"כ", "מה X הצביע", "איזה חוקים X יזם", "תפרק לי את ההצבעה", "מי בעד ומי נגד", "מה הסטטוס של החוק", "מי יזם את ההצעה". כל פריט הוא ליד לבדיקה מול אתר הכנסת - לא ממצא מאומת. לתיק חוצה-תחומים על אותו אדם ראה osint-entity-dossier.
 ---
 
@@ -27,7 +27,8 @@ description: פרופיילר כנסת מעל ה-osint-db עבור דסק "המ�
 ```sql
 SELECT mk_individual_id, mk_individual_name, mk_individual_name_eng, mk_individual_first_name
 FROM knesset_mk_individuals
-WHERE mk_individual_name LIKE '%שם%'
+WHERE mk_individual_name LIKE '%<שם משפחה>%'
+   OR (mk_individual_first_name || ' ' || mk_individual_name) LIKE '%<שם מלא>%'
 ```
 (נוח גם: `search_entity("שם")` מחזיר את ה-ח"כ בין שאר ההתאמות.)
 
@@ -63,7 +64,7 @@ SELECT vote_id, kmmbr_id, kmmbr_name, faction_name, vote_result
 FROM knesset_vote_options
 WHERE vote_id = <vote_id> AND kmmbr_id = <mk_individual_id>
 ```
-העמודה היא `kmmbr_id`. `mk_individual_id` **אינה קיימת** בטבלה הזאת והשאילתה תיפול על `no such column`.
+העמודה היא `kmmbr_id`. `mk_individual_id` **אינה קיימת** בטבלה הזאת והשאילתה תיפול על `column "mk_individual_id" does not exist`.
 
 ## מצב ב - מסלול הצעת חוק
 
@@ -138,7 +139,7 @@ GROUP BY vote_result
 | תקלה | פתרון |
 |---|---|
 | שאילתה על knesset_vote_options נקטעת | חובה WHERE vote_id = <מספר>; אל תסרוק את כל הטבלה (1.14 מיליון שורות) |
-| `no such column: mk_individual_id` | ב-knesset_vote_options העמודה היא `kmmbr_id` |
+| `column "mk_individual_id" does not exist` | ב-knesset_vote_options העמודה היא `kmmbr_id` |
 | הפילוח פר-ח"כ חוזר ריק | להצבעה הזאת אין שורות במאגר. קיים כיסוי עד 17.07.2026 בלבד |
 | faction_name ריק בפילוח | צפוי בכנסת ה-25. השלם שיוך סיעתי ידנית; ראה המגבלה במצב ג |
 | שם ח"כ לא נמצא | נסה שם חלקי / כתיב אחר / mk_individual_name_eng; הצלב VIP_id |

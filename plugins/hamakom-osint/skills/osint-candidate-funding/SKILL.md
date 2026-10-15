@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-candidate-funding
-version: 1.0.0
+version: 1.1.0
 description: מי מימן מועמד, ח"כ, ראש רשות, רשימה מקומית או מפלגה - פרופיל המימון מעל ה-osint-db, מתוך מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations). מפלח לפי מערכות בחירות, מזהה תורמים גדולים וחוזרים, מפריד מימון עצמי, ומחשב ריכוזיות. הפעל כשדור כותב "מי מימן את X", "מי תרם ל-X", "תרומות שקיבל", "מאיפה הכסף של X", "פרופיל מימון", "כמה גייס", "מי מממן את הרשימה". כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לתיק על תורם בודד ראה osint-donor-profile; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
 ---
 
@@ -25,7 +25,7 @@ description: מי מימן מועמד, ח"כ, ראש רשות, רשימה מקו
 SELECT recipient, COUNT(*) n, ROUND(SUM(sum)) total
 FROM mevaker_donations
 WHERE recipient LIKE '%<שם>%'
-GROUP BY recipient ORDER BY total DESC
+GROUP BY recipient ORDER BY total DESC NULLS LAST
 ```
 
 LIKE רחב יאסוף אנשים אחרים ("ביטן" מחזיר גם "אביטן"). הצג את הווריאנטים והכרע לפני שממשיכים.
@@ -57,7 +57,9 @@ ORDER BY publication_date
 
 ### 5. הצלבה
 
-לכל תורם משמעותי - `osint-donor-profile` (למי עוד תרם) ו-`osint-donations-crossref` (מה קיבל מהמדינה). הצלב מול `wp_articles` ו-`knesset_mk_individuals`.
+לכל תורם משמעותי - `osint-donor-profile` (למי עוד תרם) ו-`osint-donations-crossref` (מה קיבל מהמדינה). הצלב מול `wp_articles` ו-`knesset_mk_individuals` (`mk_individual_name` הוא שם משפחה בלבד - התאם גם לפי `mk_individual_first_name`).
+
+**פרטיות:** תורם פרטי קטן, בלי תפקיד ציבורי ובלי קשר לכסף ציבורי, לא נכנס לכתבה בשמו. כל שורה בטבלת הפלט היא ליד לבדיקה, לא ממצא.
 
 ## פורמט הפלט
 

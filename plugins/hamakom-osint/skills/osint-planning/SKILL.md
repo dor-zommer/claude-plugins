@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-planning
-version: 1.0.0
+version: 1.1.0
 description: לידים מתכנון ובנייה (מנהל התכנון / מבא"ת) בכל ישראל, מעל ה-osint-db (טבלת mavat_plans, 36 אלף תוכניות) עבור דסק "המקום הכי חם בגיהנום". מסנן לפי מחוז (district_name) ורשות/מרחב (plan_county_name), לפי תוכן מטרות (pl_objectives, pl_landuse_string), תוכניות שהופקדו לאחרונה (depositing_date / first_seen_at), תוכניות גדולות בשטח (pl_area_dunam), ומספר יחידות דיור מתוכננות (quantity_delta_120/60/75/80). יש lat/lng למיפוי. הפעל כשדור כותב "תוכניות בנייה ב<מקום>", "מה הופקד לאחרונה", "תוכניות גדולות", "כמה יח\"ד מתוכננות ב", "מה מתוכנן ב<עיר>", "תוכניות דיור באזור". זהו תכנון בתוך הקו הירוק - לתכנון ביו"ש/התנחלויות ראה osint-yosh-planning. כל תוכנית היא ליד לבדיקה מול pl_url הרשמי - לא ממצא מאומת. לתיק על יזם/חברה ראה osint-entity-dossier.
 ---
 
@@ -61,7 +61,7 @@ SELECT pl_number, pl_name, plan_county_name, pl_area_dunam,
 FROM mavat_plans
 WHERE district_name = 'מרכז'          -- חובה: צמצום על עמודה מאונדקסת
   AND pl_area_dunam IS NOT NULL
-ORDER BY pl_area_dunam DESC
+ORDER BY pl_area_dunam DESC NULLS LAST
 LIMIT 30
 ```
 עבור מחוז-מחוז (`מרכז`, `תל אביב`, `חיפה`, `ירושלים`, `צפון`, `דרום`) וחבר.
@@ -74,7 +74,7 @@ SELECT pl_number, pl_name, district_name, plan_county_name,
        quantity_delta_120, quantity_delta_80, depositing_date, pl_url
 FROM mavat_plans
 WHERE quantity_delta_120 IS NOT NULL
-ORDER BY quantity_delta_120 DESC
+ORDER BY quantity_delta_120 DESC NULLS LAST
 LIMIT 30
 ```
 

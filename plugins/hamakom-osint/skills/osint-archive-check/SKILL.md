@@ -1,8 +1,9 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-archive-check
-version: 1.0.0
-description: בדיקת הארכיון של "המקום הכי חם בגיהנום" לפני שמתחילים תחקיר - מה כבר כתבנו על הנושא, על הגוף או על המקום. מעל ה-osint-db (wp_articles, 5,912 כתבות מ-2013 עד היום; wp_article_locations, 1,013 שיוכי מקום עם קואורדינטות). שני שימושים: מניעת כפילות והמשכיות (מי כתב, מתי, ומה נשאר פתוח), וזיהוי פערי סיקור גיאוגרפיים - איפה סיקרנו הרבה ואיפה כמעט לא. מצליב מקום מול תוכניות בנייה (mavat_plans, yosh_plans) כדי לקשור ליד תכנוני לכתבה קיימת. הפעל כשדור כותב "כבר כתבנו על", "יש לנו כתבה על", "מה כתבנו על X", "בדוק בארכיון", "כתבנו על המקום הזה", "מה סיקרנו ב<מקום>", "יש המשך לכתבה", או לפני שהוא שולח כתב לתחקר ליד. מלכודת מחייבת: הגרשיים הוסרו מהכותרות במאגר. הארכיון הוא אינדקס, לא הכתבה - לפני הסתמכות יש לפתוח את ה-URL.
+version: 1.1.0
+description: >-
+  בדיקת הארכיון של "המקום הכי חם בגיהנום" לפני שמתחילים תחקיר - מה כבר כתבנו על הנושא, על הגוף או על המקום. מעל ה-osint-db (wp_articles, 5,912 כתבות מ-2013 עד היום; wp_article_locations, 1,013 שיוכי מקום עם קואורדינטות). שני שימושים: מניעת כפילות והמשכיות (מי כתב, מתי, ומה נשאר פתוח), וזיהוי פערי סיקור גיאוגרפיים - איפה סיקרנו הרבה ואיפה כמעט לא. מצליב מקום מול תוכניות בנייה (mavat_plans, yosh_plans) כדי לקשור ליד תכנוני לכתבה קיימת. הפעל כשדור כותב "כבר כתבנו על", "יש לנו כתבה על", "מה כתבנו על X", "בדוק בארכיון", "כתבנו על המקום הזה", "מה סיקרנו ב<מקום>", "יש המשך לכתבה", או לפני שהוא שולח כתב לתחקר ליד. מלכודת מחייבת: הגרשיים הוסרו מהכותרות במאגר. הארכיון הוא אינדקס, לא הכתבה - לפני הסתמכות יש לפתוח את ה-URL.
 ---
 
 # osint-archive-check - מה כבר כתבנו
@@ -77,7 +78,7 @@ SELECT p.pl_number, p.pl_name, p.plan_county_name, p.pl_url,
        (SELECT COUNT(*) FROM wp_article_locations l WHERE l.locality = p.plan_county_name) ours
 FROM yosh_plans p
 WHERE p.depositing_date <> ''
-  AND substr(p.depositing_date,7,4)||'-'||substr(p.depositing_date,4,2)||'-'||substr(p.depositing_date,1,2) >= date('now','-90 days')
+  AND substr(p.depositing_date,7,4)||'-'||substr(p.depositing_date,4,2)||'-'||substr(p.depositing_date,1,2) >= to_char(CURRENT_DATE - 90,'YYYY-MM-DD')
 ORDER BY dep_iso DESC
 LIMIT 30
 ```

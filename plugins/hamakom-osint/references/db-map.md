@@ -28,9 +28,20 @@
 | `ica_companies` | 729,268 | **0 - לא הגיעה בכלל** |
 | `exemptions` | 159,351 | 139,464 - מפגר |
 
+**עדכון 15.10.2026 - הבעיה נפתרה (נבדק ישירות ב-Postgres):** `mevaker_donations` = 110,103 שורות, כל המזהים ייחודיים (אין יותר הכפלה); `ica_companies` = 729,268; `exemptions` = 180,331; `ica_changes` = 558,035. כ-1,112 שורות תרומה זהות בתוכן (תורם, מקבל, סכום, תאריך) - ראה מלכודת 5. אם מספר נראה חשוד, מריצים `COUNT(*)` מול `COUNT(DISTINCT id)` לפני שמסיקים משהו. הטבלה וההערה שמעל נשארות לתיעוד.
+
 הכפילות אומתה כשורות זהות לחלוטין (אותו תורם, מקבל, סכום ותאריך - פעמיים). **כל `SUM` או `COUNT` על `mevaker_donations` דרך ה-MCP מחזיר כפול מהאמת.** עד לתיקון הסנכרון: אין לפרסם סכום תרומות מצטבר בלי אימות מול הפרסום הרשמי של מבקר המדינה, ואין להסיק "אין רשומות" מ-`ica_companies` הריקה. שאילתות על תורם בודד ומקבל בודד תקינות מבחינת השמות, אבל כל שורה תופיע פעמיים.
 
 ---
+
+## תאימות SQL (נבדק ישירות ב-Postgres, 15.10.2026)
+
+ה-MCP מריץ PostgreSQL 17.6 עם שכבת תאימות חלקית ל-SQLite:
+- **עובדים:** `date('now')`, `date('now','-N days')` (מחזיר טקסט `YYYY-MM-DD`), `GROUP_CONCAT(x, ' | ')`, `osint_date(text)` (ממיר `DD/MM/YYYY` ל-ISO).
+- **לא עובדים:** `instr` (להשתמש ב-`strpos`), `MAX(a,b)` סקלרי (`GREATEST`), `HAVING` על כינוי של עמודה (לכתוב את הביטוי המלא).
+- **מיון:** `ORDER BY x DESC` שם `NULL` ראשון - על עמודות סכום להוסיף `NULLS LAST`.
+- **`knesset_mk_individuals` - אותו ח"כ יכול להופיע בשתי שורות** עם שני מזהים (למשל גלעד קריב: 1066 ו-30807). `knesset_queries.person_id` מתחבר למזהה מהסוג החדש (30xxx). בזיהוי לפי שם - לבדוק את כל השורות שחוזרות.
+- **הודעות שגיאה** בנוסח Postgres: `column "x" does not exist`, לא `no such column`.
 
 ## חוק הזהב: אין אגרגציה בלי WHERE
 
@@ -86,7 +97,7 @@ GROUP BY supplier_names ORDER BY total DESC LIMIT 8
 | `police_announcements` | 828 | `pub_date` | |
 | `idf_spokesman` | 377 | `pub_date` | |
 | `wp_articles` | 5,912 | (אין אינדקסים; קטנה) | **`category` ריק בכל 5,912 השורות** |
-| `ica_companies` | 729,268 | `name_he`, `status`, `registration_date`, `city` | **ב-Postgres היא ריקה כרגע** (ראה אזהרת הסנכרון למעלה) |
+| `ica_companies` | 729,268 | `name_he`, `status`, `registration_date`, `city` | מלאה ב-Postgres: 729,268 שורות (נבדק 15.10.2026) |
 | `ica_changes` | 558,035 | `company_id`, `company_name`, `request_type`, `status_date` | כאן יושבים רישומי השעבודים |
 | `ica_partnerships` | 28,779 | `name_he`, `status` | |
 | `ica_liquidations` | 1,370 | `company_id`, `name_he`, `liquidation_approved_date` | פירוק מרצון בהליך מזורז בלבד |
@@ -106,7 +117,7 @@ GROUP BY supplier_names ORDER BY total DESC LIMIT 8
 
 ## `mevaker_donations` - מאגר תרומות הבחירות (נוסף 09.08.2026)
 
-תרומות, הלוואות וערבויות למערכות בחירות, מתוך פרסומי מבקר המדינה. **108,943 שורות** ב-SQLite (נבדק 10.08.2026). ב-Postgres מופיעות 217,866 בגלל הכפלת סנכרון - ראה מלכודת 5.
+תרומות, הלוואות וערבויות למערכות בחירות, מתוך פרסומי מבקר המדינה. **108,943 שורות** ב-SQLite (נבדק 10.08.2026). ב-Postgres: 110,103 שורות, בלי הכפלה (נבדק 15.10.2026).
 
 **עמודות:** `id, election_type, publication_type, publication_type_id, donor_name, donor_first, donor_last, donor_city, donor_country, recipient, party, candidate_name, faction, election_city, regional_council, list_name, election_period_name, is_deficit_coverage, sum, sum_in_currency, loan_return_sum, publication_date, election_date, scraped_at`
 
@@ -144,7 +155,7 @@ FROM mevaker_donations WHERE recipient='ביטן דוד' GROUP BY yr, election_t
 4. **`election_date` ו-`election_period_name` ריקים בפריימריז.** אי אפשר לשייך תרומה למערכת בחירות דרכם - **יש לגזור מאשכולות `publication_date`**. אומת: 42 התרומות של "ביטן דוד" מתפלגות לשני אשכולות - 10.2012-7.2013 (פריימריז 26.11.2012 → כנסת 19) ו-12.2014-1.2015 (פריימריז 31.12.2014 → כנסת 20). האשכול הראשון נמשך חצי שנה **אחרי** הבחירות; דיווח מאוחר או כיסוי גירעון.
 5. **שורות כפולות - שתי סיבות שונות, אל תבלבלו ביניהן.**
    - *במקור:* לפעמים שתי רשומות זהות באותו תאריך ובאותו סכום הן תרומה כפולה אמיתית שדווחה פעמיים. אל תסכום בלי להציג.
-   - *בתשתית (פעיל 10.08.2026):* **הטבלה כולה מוכפלת ב-Postgres** בגלל סנכרון שמוסיף במקום להחליף - 217,866 שורות במקום 108,943. זו לא תופעה במקור אלא באג בצינור. ראה אזהרת הסנכרון בראש המסמך. עד לתיקון, כל סכום מצטבר דרך ה-MCP כפול.
+   - *בתשתית (נפתר, נבדק 15.10.2026 - התיעוד ההיסטורי נשאר):* ~~הטבלה כולה מוכפלת ב-Postgres~~ בגלל סנכרון שמוסיף במקום להחליף - 217,866 שורות במקום 108,943. זו לא תופעה במקור אלא באג בצינור. ראה אזהרת הסנכרון בראש המסמך. עד לתיקון, כל סכום מצטבר דרך ה-MCP כפול.
 
 **`is_deficit_coverage = 'True'`** = כיסוי גירעון אחרי הבחירות, קטגוריה נפרדת עם כללים אחרים. **`publication_type = 'הלוואה'` עם `loan_return_sum` ריק** = הלוואה שלא הוחזרה, שקולה כלכלית לתרומה.
 
@@ -183,7 +194,7 @@ FROM mevaker_donations WHERE recipient='ביטן דוד' GROUP BY yr, election_t
 ```sql
 substr(depositing_date,7,4)||'-'||substr(depositing_date,4,2)||'-'||substr(depositing_date,1,2) AS dep_iso
 ```
-ואז `ORDER BY dep_iso DESC` או `WHERE dep_iso >= date('now','-90 days')`. עם ההמרה התוכניות האחרונות ביו"ש יוצאות אוגוסט 2026; בלעדיה 2014.
+ואז `ORDER BY dep_iso DESC` או `WHERE dep_iso >= to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. עם ההמרה התוכניות האחרונות ביו"ש יוצאות אוגוסט 2026; בלעדיה 2014.
 
 `decisions.decision_date` גם הוא בפורמט `DD.MM.YYYY` (למשל `09.04.2026`) - אותו זהירות. עמודות `pub_date` ו-`first_seen_at` ברוב הטבלאות הן ISO.
 

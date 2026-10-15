@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-yosh-planning
-version: 1.0.0
+version: 1.1.0
 description: לידים מתכנון ובנייה ביהודה ושומרון (יו"ש) מעל ה-osint-db (טבלת yosh_plans, 2,570 תוכניות) עבור דסק "המקום הכי חם בגיהנום". מסנן לפי מרחב/התנחלות (plan_county_name, ja_concat), מחוז (district_name) ומגזר (sector), תוכניות שהופקדו לאחרונה (depositing_date / first_seen_at), תוכניות גדולות בשטח (pl_area_dunam), ויחידות דיור מתוכננות (quantity_delta_120). יש lat/lng למיפוי. הפעל כשדור כותב "תוכניות בנייה ביו\"ש", "בנייה בהתנחלויות", "מה הופקד ביו\"ש", "תוכניות ב<התנחלות>", "כמה יח\"ד אושרו בשטחים", "תכנון מעבר לקו הירוק". נושא רגיש עריכתית - דווח עובדתית מהרשומה הרשמית, ייחס לרשות המתכננת, הימנע ממסגור טעון, ואמת מול pl_url. כל תוכנית היא ליד לבדיקה, לא ממצא מאומת. לתכנון בתוך הקו הירוק ראה osint-planning; לתיק על יזם ראה osint-entity-dossier.
 ---
 
@@ -78,7 +78,7 @@ SELECT pl_number, pl_name, district_name, plan_county_name, sector,
        pl_area_dunam, depositing_date, pl_url
 FROM yosh_plans
 WHERE pl_area_dunam IS NOT NULL
-ORDER BY pl_area_dunam DESC
+ORDER BY pl_area_dunam DESC NULLS LAST
 LIMIT 30
 ```
 
@@ -88,7 +88,7 @@ SELECT pl_number, pl_name, plan_county_name, sector,
        quantity_delta_120, depositing_date, pl_url
 FROM yosh_plans
 WHERE quantity_delta_120 IS NOT NULL
-ORDER BY quantity_delta_120 DESC
+ORDER BY quantity_delta_120 DESC NULLS LAST
 LIMIT 30
 ```
 
