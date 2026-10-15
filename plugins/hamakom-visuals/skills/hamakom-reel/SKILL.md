@@ -97,7 +97,7 @@ description: בונה ריל ממותג לאינסטגרם/טיקטוק (9:16, 4
 | סגיר | `closer_v3.mp4` כקליפ האחרון **כמות שהוא**, עם הסאונד שלו (`data-has-audio="true"`). **לא בונים אותו מחדש ולא מנפישים אותו ב-HyperFrames** | - |
 
 **מה לא זז למנוע החדש:**
-- **מוזיקה:** סדר העדיפויות של שלב 7 נשאר (התיקייה הקבועה, Track 1 חסום עד 17.1.2027, ElevenLabs). **לא להשתמש ב-`media-use` לייצור או לבחירת מוזיקה.**
+- **מוזיקה:** סדר העדיפויות של שלב 7 נשאר (טראק חדש ב-Gemini, אחריו התיקייה הקבועה, Track 1 חסום עד 17.1.2027). **לא להשתמש ב-`media-use` לייצור או לבחירת מוזיקה.**
 - **טקסט ה-CTA לפי ז'אנר** - כמו בכללי הסגיר.
 - **מאסטרינג:** אחרי הרינדור, שרשרת `loudnorm` של -16 LUFS ו-`alimiter=limit=0.85:level=false` ב-ffmpeg, ובדיקות שלב 8.
 
@@ -179,8 +179,8 @@ DS=${DS:-plugins/hamakom-visuals/design-system}
 CLOSER="$DS/assets/video/closer_v3.mp4"
 ```
 - **מוזיקת רקע** — טראקי ה-WAV **אינם בריפו** (50MB). הם אצל דור ב-
-  `~/Documents/המקום/שיווק/חומרים להכנת וידאו לרילז/`. אין טראק? לייצר עם
-  `scripts/make_music.py` או לבקש מדור.
+  `~/Documents/המקום/שיווק/חומרים להכנת וידאו לרילז/`. ברירת המחדל היא טראק חדש
+  ב-Gemini (`scripts/make_music_gemini.py`, ראו שלב 7).
   (תיקון 19.07.2026: הנתיב שהיה מתועד כאן — `Desktop/חומרים להכנת וידאו לרילז `
   עם רווח בסוף — **לא קיים**. התיקייה יושבת ב-Documents/המקום/שיווק, בלי רווח.)
 - ודא גישה לתיקיית Documents (נכסי מותג). חסר משהו — request_cowork_directory.
@@ -278,20 +278,22 @@ fps=30 כפוי, `-an`.
 6. mux: `-map 0:v -map "[a]" -c:v copy`.
 פירוט מלא עם פקודות מוכנות: `references/sync-method.md`.
 
-### שלב 7 — מוזיקה
-**לא `make_music.py` הסינתטי.** סדר עדיפויות:
-1. **טראק מוכן מתיקיית החומרים הקבועה** (שלב 0) אם האורך מתאים. קריטריון בחירה:
-   לא להתנגש עם אודיו-מקור (עדויות/עימותים) ולפנות מקום לסגיר — למשל דופק קבוע
-   שמתפוגג בשניות האחרונות, כך שהסטינג של הסגיר מכה מתוך שקט.
-2. יצירה ב-**ElevenLabs Music API**:
-   `POST https://api.elevenlabs.io/v1/music?output_format=mp3_44100_128`
-   עם `{"prompt": "...", "music_length_ms": <אורך מדויק>}`.
-   בפרומפט: dark tense documentary underscore, no vocals, resolves to a sustained
-   final chord in the last seconds.
-   מפתח API: `ELEVENLABS_API_KEY` ב-`~/Developer/video-use/.env` (hex גולמי, בלי
-   `sk_`). אין קונקטור MCP — עובדים ב-curl. מפתחות שמופיעים בהיסטוריית
-   settings.local.json — פגי תוקף.
-3. **fallback אחרון בלבד:** `scripts/make_music.py DURATION HIT_TIME OUT.wav` —
+### שלב 7 - מוזיקה (Gemini, מ-15.10.2026)
+**לא ElevenLabs** (החשבון בלי קרדיטים) **ולא `make_music.py` הסינתטי.** סדר עדיפויות:
+1. **טראק ייעודי חדש ב-Gemini (Lyria RealTime)** - ברירת המחדל:
+   ```bash
+   SSL_CERT_FILE=$(python3 -c 'import certifi;print(certifi.where())') \
+     python3 scripts/make_music_gemini.py "$REEL_WORKDIR/music.mp3" <SECONDS> "<prompt>" [bpm]
+   ```
+   - מפתח: `GEMINI_API_KEY` ב-**`~/.claude/.env`** בלבד (הסקריפט קורא משם). העותק ב-`video-use/.env` ישן.
+   - תלויות: `pip install google-genai certifi`. להריץ **בלי** `SSL_CERT_DIR` מוגדר, אחרת `CERTIFICATE_VERIFY_FAILED`.
+   - מודל `models/lyria-realtime-exp`; פלט mp3 עם פייד-אין 2 שנ', פייד-אאוט 4 שנ' ו-loudnorm.
+   - אורך: `SECONDS` = אורך גוף הריל **בלי** הסגיר, כדי שהמוזיקה תתפוגג והסטינג של הסגיר יכה מתוך שקט.
+   - בפרומפט (אנגלית): dark tense documentary underscore, no vocals, sparse, slow pulse, fades out in the last seconds. BPM 60-80.
+   - Lyria מנגן בזמן אמת: יצירה של 60 שנ' לוקחת בערך דקה. בסביבה עם מגבלת 45 שניות לפקודה - לבקש מדור לייצר ב-Gemini מפרומפט שאני כותב, או לעבור לעדיפות 2.
+2. **טראק מוכן מתיקיית החומרים הקבועה** (שלב 0) אם האורך מתאים. **Track 1 חסום עד 17.1.2027**; Tracks 2 ו-4 בהיסוס. קריטריון בחירה:
+   לא להתנגש עם אודיו-מקור (עדויות/עימותים) ולפנות מקום לסגיר.
+3. **fallback אחרון בלבד:** `scripts/make_music.py DURATION HIT_TIME OUT.wav` -
    מוזיקה מסונתזת (דרון, פעימת לב, טיקים, רייזר, אקורד סיום ב-HIT_TIME).
 
 **שתי מלכודות מיקס שחובה לתקן:**
@@ -323,7 +325,8 @@ fps=30 כפוי, `-an`.
 | `scripts/normalize_segment.sh` | שלב 5 — נרמול מקטע |
 | `scripts/make_closer_assets.py` | שלב 5 — נכסי סגיר מותאם (רק כש-closer_v3 לא מתאים) |
 | `scripts/make_closer.sh` | שלב 5 — הרכבת סגיר מותאם (רק כש-closer_v3 לא מתאים) |
-| `scripts/make_music.py` | שלב 7 — **fallback אחרון בלבד** למוזיקה |
+| `scripts/make_music_gemini.py` | שלב 7 - מוזיקה חדשה ב-Gemini Lyria (ברירת מחדל) |
+| `scripts/make_music.py` | שלב 7 - **fallback אחרון בלבד** למוזיקה |
 | `references/brand-assets.md` | שלב 0 — נתיבי נכסים, תיקיית החומרים, iCloud |
 | `references/sync-method.md` | שלב 6 — שיטת הסינק המלאה עם פקודות |
 | `references/lessons-atwail-2026-07.md` | לקחי ריל א-טוואיל — המקור להחלטות כאן |

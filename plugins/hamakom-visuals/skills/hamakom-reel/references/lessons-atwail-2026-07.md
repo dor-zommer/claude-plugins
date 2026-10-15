@@ -38,7 +38,7 @@
 
 ## 3. סאונד ומוזיקה
 
-- **מוזיקת רקע: לא `make_music.py` הסינתטי.** סדר עדיפויות:
+- **מוזיקת רקע: לא `make_music.py` הסינתטי.** סדר עדיפויות: *(היסטורי. מ-15.10.2026 המוזיקה נוצרת ב-Gemini Lyria, ראו שלב 7 ב-SKILL.md; ElevenLabs בלי קרדיטים.)*
   1. טראק מוכן מתיקיית החומרים (סעיף 5) אם האורך מתאים.
   2. יצירה ב-**ElevenLabs Music API**: ‏`POST https://api.elevenlabs.io/v1/music?output_format=mp3_44100_128`
      עם `{"prompt": "...", "music_length_ms": <אורך מדויק>}`.

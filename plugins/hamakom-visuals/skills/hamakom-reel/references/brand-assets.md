@@ -88,9 +88,7 @@ Graphik HLAR מכסה גם לטינית — "ha-makom.co.il" ייצא תקין.
   (`bidi.algorithm.get_display`) ומסירים `direction='rtl'`/`'ltr'` —
   אחרת ValueError. עברית עם גרש — גרש עברי ׳ (U+05F3), לא אפוסטרוף לטיני.
 
-## ElevenLabs (מוזיקה — עדיפות 2)
+## מוזיקה - Gemini Lyria (עדיפות 1, מ-15.10.2026)
 
-- מפתח API: `ELEVENLABS_API_KEY` ב-`~/Developer/video-use/.env` (hex גולמי,
-  בלי `sk_`). אין קונקטור MCP — עובדים ב-curl.
-- מפתחות שמופיעים בהיסטוריית settings.local.json — **פגי תוקף**; התקף רק
-  ב-`video-use/.env`.
+- `scripts/make_music_gemini.py`, מפתח `GEMINI_API_KEY` ב-`~/.claude/.env`. פירוט בשלב 7 ב-SKILL.md.
+- **ElevenLabs לא בשימוש** - החשבון בלי קרדיטים (`insufficient_credits`).
