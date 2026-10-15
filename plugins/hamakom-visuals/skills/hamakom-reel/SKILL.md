@@ -1,5 +1,5 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
+allowed-tools: Read Write Edit Grep Glob Bash Skill WebSearch WebFetch TaskCreate TaskUpdate
 name: hamakom-reel
 description: בונה ריל ממותג לאינסטגרם/טיקטוק (9:16, 45 שניות עד 2 דקות) מכתבה של "המקום הכי חם בגיהנום" + חומרי גלם של וידאו ותמונות. מחלץ משפטי מפתח מהכתבה מילה-במילה, מצמיד אותם לוויז'ואל לפי קשר נרטיבי, מסנתז מוזיקת מתח מותאמת, ומסיים בסגיר מונפש עם CTA לאתר. הפעל בכל פעם שדור מבקש "תעשה ריל", "תערוך לי סרטון לכתבה", "סרטון לאינסטגרם/טיקטוק", "תחבר את הסרטונים לכתבה", שולח קישור ל-ha-makom.co.il או גוגל דוקס יחד עם קבצי וידאו/תמונות, או כל בקשה להפוך חומרי גלם + כתבה לסרטון הפצה. גם אם הוא אומר רק "תעשה מזה סרטון" עם כתבה וקבצים — זה הסקיל.
 ---
@@ -74,6 +74,43 @@ description: בונה ריל ממותג לאינסטגרם/טיקטוק (9:16, 4
   `references/lessons-atwail-2026-07.md`.
 
 
+
+## מנוע הרכבה: HyperFrames (ברירת מחדל מ-15.10.2026)
+
+כשהפלאגין `hyperframes@hyperframes` מותקן (Claude Code על המק של דור), **ההרכבה נבנית כפרויקט HyperFrames** במקום שלבים 4-6 של ffmpeg. כל העקרונות, כללי העיצוב, ה-safe zones, הקריוקי ושלבים 0-3, 7-8 חלים בלי שינוי - משתנה רק המנוע שמרכיב.
+
+**בדיקת זמינות (בתחילת שלב 0):** `claude plugin list | grep hyperframes` ו-`npx hyperframes doctor`. אין פלאגין (Cowork, claude.ai) או שרינדור לא יכול לרוץ מעבר למגבלת 45 השניות של הסביבה - **נתיב ffmpeg של שלבים 4-6 כמות שהוא.** אף סקריפט לא נמחק.
+
+**הסקיל הזה הוא בעל הבריף.** אחרי שטבלת הטיימליין (שלב 3) מוכנה - לכתוב בעצמך `BRIEF.md` בפרויקט, כדי שהראוטר של HyperFrames ימשיך ממנו ולא יפתח שאלון משלו. לטעון לפי הצורך: `hyperframes:hyperframes-core`, `hyperframes-keyframes`, `hyperframes-animation`, `hyperframes-audio`, `hyperframes-cli`. תיקיית הפרויקט: `$REEL_WORKDIR/hf/`.
+
+| רכיב | ב-HyperFrames | מחליף את |
+|---|---|---|
+| גרדיאנט דיו + לוגו + URL + פס-חתימה | שכבת HTML אחת לאורך כל הגוף, באותן עצירות גרדיאנט ובאותם מיקומים (לוגו y≈150, URL ב-y=H-485, פס 4px) | `make_overlay.py` |
+| כרטיסי ציטוט | HTML עם Publico Headline לבן; כניסת fade+rise של 40px ב-0.5 שנ' (`power3.out`) | `make_cards.py` |
+| קריוקי | `<span>` לכל מילה, GSAP צובע ל-#E8906F. **טבלת 15 CPS שלמעלה נשארת המפרט** | `make_karaoke.py` |
+| מספר-מחץ וגרפים | count-up ובר שגדל ב-GSAP על אותו טיימליין | הטריק של `--virtual-time-budget` |
+| zoompan על סטילס | `hyperframes-keyframes` - Ken Burns של 6-10%, לסירוגין in/out, על wrapper פנימי | `zoompan` |
+| crossfade 0.35 שנ' | חפיפת קליפים במסלולים שונים + מעטפות opacity ו-volume | `xfade` |
+| פוטג' לא אנכי | אותו קליפ פעמיים: עותק `object-fit: cover` מטושטש ברקע + עותק ממורכז. **לאמת ברינדור הראשון**; אם הטשטוש לא מתרנדר - רקע מטושטש בעיבוד מקדים ב-ffmpeg | `boxblur` ב-`normalize_segment.sh` |
+| אודיו מקור | נשאר על הקליפ (`data-has-audio="true"`) - תמונה וקול באותו טיימינג, בלי דריפט ובלי שיטת ספירת הפריימים | שלב 6 ו-`sync-method.md` |
+| מוזיקה וירידה מתחת לעדויות | `<audio>` עם `data-automation` (lane של volume) שיורד מתחת לאודיו מקור; `hyperframes-audio` למיקס | `sidechaincompress` |
+| סגיר | `closer_v3.mp4` כקליפ האחרון **כמות שהוא**, עם הסאונד שלו (`data-has-audio="true"`). **לא בונים אותו מחדש ולא מנפישים אותו ב-HyperFrames** | - |
+
+**מה לא זז למנוע החדש:**
+- **מוזיקה:** סדר העדיפויות של שלב 7 נשאר (התיקייה הקבועה, Track 1 חסום עד 17.1.2027, ElevenLabs). **לא להשתמש ב-`media-use` לייצור או לבחירת מוזיקה.**
+- **טקסט ה-CTA לפי ז'אנר** - כמו בכללי הסגיר.
+- **מאסטרינג:** אחרי הרינדור, שרשרת `loudnorm` של -16 LUFS ו-`alimiter=limit=0.85:level=false` ב-ffmpeg, ובדיקות שלב 8.
+
+**כללים שנבדקו ברינדור אמיתי (15.10.2026):**
+- **אסור `dir="rtl"` על תגית `<html>`** - הרינדור יוצא שחור לגמרי (lint תופס: `html_dir_attribute_breaks_render`). `lang="he"` על html, ו-`direction: rtl` רק על אלמנטי הטקסט.
+- העברית מתעצבת נכון בדפדפן - **בלי python-bidi** בנתיב הזה. הגרש העברי ׳ (U+05F3) נשאר חובה.
+- URL לטיני: `direction: ltr; unicode-bidi: isolate`.
+- פונטים: `@font-face` לקבצים מ-`design-system/assets/fonts/` (להעתיק ל-`fonts/` בפרויקט). בלי `@font-face`, lint נכשל.
+- **אסור `data-playback-rate` להאטה** - מייצר פריים כפול ופריים נשמט כל ~5 פריימים. האטה נעשית בעיבוד מקדים ב-ffmpeg לקליפ ביניים. קליפ רגיל של 30fps מתרנדר פריים-לפריים.
+- סדר עבודה: `npx hyperframes lint` → `check` → `snapshot` (פריימים לבדיקת safe zones, אף שורה לא חוצה y=1420) → `npx hyperframes render --fps 30 --quality high`.
+- **רינדור מקומי בלבד.** אסור `hyperframes publish` או `cloud render` בלי אישור מפורש של דור - זה מעלה חומר גלם עיתונאי לשרת חיצוני.
+
+---
 
 ## כתוביות קריוקי — מילים שנצבעות בקצב קריאה (נוסף 02.08.2026)
 
@@ -173,7 +210,7 @@ ffmpeg -y -v error -i IN.mp4 -vf "fps=1/10,scale=480:-2,tile=3x3" grid.png
 45–120 שניות סך הכל, כולל סגיר. כל מקטע 5–20 שניות (הוק קצר, תיעוד מתמשך יכול
 להיות ארוך יותר). לכתוב טבלה: מקטע / מקור+חלון / משפט / האם אודיו מקור נשמע.
 
-### שלב 4 — כרטיסי טקסט + אוברליי
+### שלב 4 - כרטיסי טקסט + אוברליי (נתיב ffmpeg - גיבוי; ב-HyperFrames ר' "מנוע הרכבה")
 `scripts/make_cards.py` — לערוך את רשימת הכרטיסים בתחתית הקובץ ולהריץ.
 `scripts/make_overlay.py` — בונה פעם אחת את overlay.png (גרדיאנט דיו + לוגו
 ריבועי + URL + פס-חתימה) לכל המקטעים.
@@ -212,7 +249,7 @@ ffmpeg -y -framerate 30 -i "frames/f%03d.png" -c:v libx264 -pix_fmt yuv420p grap
 **מלכודת:** `--virtual-time-budget` הוא הדרך היחידה לתפוס פריים באמצע אנימציית CSS
 ב-headless; בלעדיו כל הצילומים יוצאים בפריים הסופי.
 
-### שלב 5 — רינדור מקטעים (וידאו בלבד, בלי אודיו!)
+### שלב 5 - רינדור מקטעים (נתיב ffmpeg - גיבוי; וידאו בלבד, בלי אודיו!)
 `scripts/normalize_segment.sh IN OUT SS T CARD` — מנרמל ל-1080x1920: רקע מטושטש
 (scale קטן → boxblur → scale חזרה: מהיר פי כמה מ-gblur על full-res), פוטג' ממורכז,
 overlay.png (גרדיאנט + לוגו + URL + פס), כרטיס בשליש התחתון (margin 240px),
@@ -223,7 +260,7 @@ fps=30 כפוי, `-an`.
 הקריאה (nohup/setsid לא עוזרים). לכן מקטע אחד או שניים לכל קריאת bash. קליפ מקור
 ארוך מ-40 שניות — לפצל קודם עם `-c copy -f segment` ולנרמל כל חלק בנפרד.
 
-### שלב 6 — סינק: חיבור וידאו ובניית אודיו בנפרד
+### שלב 6 - סינק: חיבור וידאו ובניית אודיו בנפרד (נתיב ffmpeg - גיבוי; ב-HyperFrames האודיו נשאר על הקליפ)
 זה הלקח הכי חשוב מהפעם הראשונה (היה דריפט והסאונד זלג בין קליפים):
 1. קונקט וידאו: `ffmpeg -f concat -safe 0 -i list.txt -c copy body.mp4` — מקטעים
    זהי-קידוד מתחברים בלי דריפט כשאין אודיו.
