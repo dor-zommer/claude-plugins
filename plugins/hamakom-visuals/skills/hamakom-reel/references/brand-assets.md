@@ -27,7 +27,7 @@ request_cowork_directory אם אין). בסיס: `Documents/המקום/שיוו�
 
 | נכס | נתיב | שימוש |
 |---|---|---|
-| לוגו מרובע טיפוגרפי (SVG, שחור) | `שיווק/hamakom square black.svg` או `hamakom-carousel/assets/logo-square-black.svg` בפלאגין | **ווטרמרק עליון** (לבן ~72px, y≈48) + סגיר — לרסטר ולצבוע |
+| לוגו מרובע טיפוגרפי (SVG, שחור) | `שיווק/hamakom square black.svg` או `design-system/assets/logo/logo-square-black.svg` בפלאגין | **ווטרמרק עליון** (לבן ~72px, y≈48) + סגיר - לרסטר ולצבוע |
 | לוגו רוחבי לבן (PNG 600x178) | `שיווק/New-Logo White .png` (שים לב לרווח לפני הסיומת) | לא בשימוש בריל (הווטרמרק הוא הריבועי) |
 
 **רסטור מ-SVG עם cairosvg — לשמור על ערוץ האלפא ולצבוע רק RGB.**

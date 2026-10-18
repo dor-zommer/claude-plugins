@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-daily-leads
-version: 1.1.0
+version: 1.2.0
 description: דייג'סט בוקר של לידים תחקיריים - מה חדש ב-osint-db מאז הסריקה הקודמת - עבור דסק "המקום הכי חם בגיהנום". סורק במקביל את exemptions, legislation, mevaker_reports, mavat_plans, yosh_plans, decisions, knesset_bills ו-police_announcements דרך new_since(table, since), קובע את חלון הזמן מהריצה הקודמת (scrape_runs) או ברירת מחדל ל-24-48 השעות האחרונות, ומדרג לידים לפי עניין עיתונאי - סכומים גדולים, משרדים רגישים, תזכירים שחלון ההערות שלהם נסגר, ותוכניות ענק. מתוכנן לרוץ כמשימה מתוזמנת בבוקר. הפעל כשדור כותב "לידים יומיים", "מה חדש במאגר", "תסרוק מה נכנס היום", "דייג'סט בוקר osint", "מה התחדש מאתמול", "תביא לי את הלידים של הבוקר". כל פריט הוא ליד לבדיקה עם עדיפות - לא ממצא מאומת; אימות מול ה-URL הרשמי לפני פרסום. לתיק על ישות ראה osint-entity-dossier; לסריקת פטורים לעומק ראה osint-exemptions.
 ---
 
@@ -68,11 +68,8 @@ ORDER BY amount_ils DESC NULLS LAST
 
 **המנוע הוא Postgres, לא SQLite** (מאז 11.8.2026). שלוש מסקנות מעשיות:
 
-- **עמודת תאריך טקסטואלית חייבת `osint_date()`.** ‏`pub_date`, ‏`update_date`,
-  ‏`depositing_date` ו-`comment_deadline` שמורות כ-`DD/MM/YYYY`, והשוואה
-  ישירה עליהן ממיינת לפי ספרת היום. `osint_date(pub_date) >= date('now','-7 days')`
-  הוא הכתיב הנכון לשאלה "מה **פורסם** לאחרונה", בעוד `first_seen_at`
-  עונה על "מה **נקלט** לאחרונה". שתי שאלות שונות.
+- **עמודת תאריך טקסטואלית - דרך `osint_date()`.** הפורמטים לא אחידים (נבדק 18.10.2026): `exemptions.pub_date` ו-`legislation.pub_date` הם `DD/MM/YYYY`; `comment_deadline` כולל גם שעה ("17/4/2026 בשעה 23:59"); `mevaker_reports.pub_date` ו-`mavat_plans.depositing_date` הם ISO. `osint_date()` מטפל בכולם ומחזיר ISO, ולכן `osint_date(pub_date) >= date('now','-7 days')`
+  הוא הכתיב הבטוח לשאלה "מה **פורסם** לאחרונה", בעוד `first_seen_at` עונה על "מה **נקלט** לאחרונה". שתי שאלות שונות.
 - **‏`ORDER BY` על עמודה עם NULL צריך `NULLS LAST`.** אחרת "העסקאות
   הגדולות" מחזיר רשומות בלי סכום.
 - ‏`LIKE` אינו רגיש לרישיות (מתורגם ל-`ILIKE`), ואין `julianday` ואין

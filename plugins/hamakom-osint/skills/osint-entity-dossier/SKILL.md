@@ -1,8 +1,8 @@
 ---
 allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
 name: osint-entity-dossier
-version: 1.1.0
-description: בניית תיק מאוחד על אדם, חברה או משרד ממשלתי חוצה כל ה-osint-db עבור דסק "המקום הכי חם בגיהנום". מצליב שם אחד על פני התקשרויות בפטור (exemptions), תכנון ובנייה (mavat_plans, yosh_plans), חקיקה (legislation, knesset_bills), מבקר המדינה (mevaker_reports), והחלטות ממשלה (decisions). הנתיב הראשי הוא search_entity(name) שמחזיר התאמות מכל הטבלאות בקריאה אחת, ואז העמקה לכל פגיעה ב-query_db. הפעל כשדור כותב "תבנה תיק על X", "מה יש לנו על חברת Y", "תצליב את השם הזה", "dossier", "מה הקשר של X לממשלה", "איפה השם הזה מופיע במאגר", "תעשה לי תחקיר רקע על". התוצר הוא תיק מסודר לפי תחום עם כל קישור-מקור ורשימת "מה לאמת בהמשך". התאמת שם אינה אישור זהות - כל פריט הוא ליד לבדיקה. לסריקת פטורים ייעודית ראה osint-exemptions; לפרופיל ח"כ מעמיק ראה osint-knesset.
+version: 1.2.0
+description: בניית תיק מאוחד על אדם, חברה או משרד ממשלתי חוצה כל ה-osint-db עבור דסק "המקום הכי חם בגיהנום". מצליב שם אחד על פני התקשרויות בפטור (exemptions), תכנון ובנייה (mavat_plans, yosh_plans), חקיקה (legislation, knesset_bills), מבקר המדינה (mevaker_reports), החלטות ממשלה (decisions), רשם החברות (ica_companies, ica_changes), נושאי משרה בחברות ציבוריות (maya_officers) ותרומות לבחירות (mevaker_donations). הנתיב הראשי הוא search_entity(name) שמחזיר התאמות מכל הטבלאות בקריאה אחת, ואז העמקה לכל פגיעה ב-query_db. הפעל כשדור כותב "תבנה תיק על X", "מה יש לנו על חברת Y", "תצליב את השם הזה", "dossier", "מה הקשר של X לממשלה", "איפה השם הזה מופיע במאגר", "תעשה לי תחקיר רקע על". התוצר הוא תיק מסודר לפי תחום עם כל קישור-מקור ורשימת "מה לאמת בהמשך". התאמת שם אינה אישור זהות - כל פריט הוא ליד לבדיקה. לסריקת פטורים ייעודית ראה osint-exemptions; לפרופיל ח"כ מעמיק ראה osint-knesset.
 ---
 
 # osint-entity-dossier - תיק ישות חוצה-מאגר
@@ -84,7 +84,7 @@ FROM mevaker_reports
 WHERE title LIKE '%שם%' OR content_text LIKE '%שם%'
 ORDER BY pub_date DESC
 ```
-חיפוש בגוף הדוח (`content_text`) עובד - הטבלה קטנה (145 דוחות) והוא הכלי החזק כאן, כי שם הישות מופיע בתוך הדוח ולא בכותרת. לעומק - ראה `osint-comptroller`.
+חיפוש בגוף הדוח (`content_text`) עובד - הטבלה קטנה (מאות בודדות של דוחות) והוא הכלי החזק כאן, כי שם הישות מופיע בתוך הדוח ולא בכותרת. לעומק - ראה `osint-comptroller`.
 
 **כסף: התקשרויות בפועל ותמיכות** (מה ש-`search_entity` פספס). ב-`budget_supports` האינדקס הוא על ה-`recipient_entity_id` ולא על השם, ולכן `LIKE` על השם **חייב** צמצום קודם ב-`year` או ב-`supporting_ministry` - בלעדיו הוא נקטע:
 ```sql
@@ -105,6 +105,38 @@ FROM amutot
 WHERE name_he LIKE '%שם%'
 ```
 ל-`budget_contracts` **אין** נתיב חיפוש לפי ספק - ראה `osint-money`.
+
+**חברה: רשם החברות ושינויים** (`ica_companies` - כל החברות הרשומות; `ica_changes` - שעבודים ושינויים). `company_id` הוא מספר ב-`ica_companies` וטקסט ב-`ica_changes`, ולכן משווים כמחרוזת:
+```sql
+SELECT c.company_id, c.name_he, c.status, c.company_type, c.registration_date,
+       (SELECT COUNT(*) FROM ica_changes ch WHERE ch.company_id = c.company_id::text) AS changes
+FROM ica_companies c
+WHERE c.name_he LIKE '%שם%'
+LIMIT 20;
+
+SELECT request_type, status_date, lien_id FROM ica_changes
+WHERE company_id = '<ח"פ>' ORDER BY status_date DESC NULLS LAST;
+```
+בעלי מניות ודירקטורים של חברה פרטית אינם ברשם הפתוח - `checkid-holders`.
+
+**חברה ציבורית: נושאי משרה** (`maya_officers`, מדיווחי מאיה). שם החברה שם מקוצר ("אאורה השקעות"), לא השם הרשמי ברשם:
+```sql
+SELECT name, position, company_name, start_date, end_date, proof_url
+FROM maya_officers
+WHERE company_name LIKE '%שם%' OR name LIKE '%שם%'
+ORDER BY start_date DESC NULLS LAST
+LIMIT 40;
+```
+
+**תרומות לבחירות** (`mevaker_donations`) - האם הישות, או אדם בשמה, תרמה למועמדים ולמפלגות:
+```sql
+SELECT donor_name, donor_city, recipient, party, sum, publication_date, election_type
+FROM mevaker_donations
+WHERE donor_name LIKE '%שם%'
+ORDER BY sum DESC NULLS LAST
+LIMIT 100;
+```
+לעומק - `osint-donor-profile`. תורם פרטי בלי תפקיד ציבורי ובלי קשר לכסף ציבורי לא נכנס לתיק בשמו.
 
 **חקיקה ותזכירים + החלטות ממשלה:**
 ```sql
@@ -162,6 +194,12 @@ SELECT id, title, decision_date, source, summary, url FROM decisions WHERE title
 [ח"כ/יוזמות + קישור]
 ### מבקר המדינה
 [דוחות + url]
+### רשם החברות ומאיה
+[סטטוס, שעבודים, נושאי משרה]
+
+### תרומות לבחירות
+[למי, כמה, מתי - רק אם רלוונטי לעניין הציבורי]
+
 ### חקיקה והחלטות ממשלה
 [פריטים + url]
 
