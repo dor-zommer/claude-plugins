@@ -372,18 +372,20 @@ for (const c of [...figma.currentPage.children]) {
 // v = {id:[name, label], body:[...], quote:[...], punch:[...]} - כל המחרוזות מילה במילה מהכתבה
 function voiceBuild(f, v, top, s){
   const nodes=[]; const add=n=>{nodes.push(n);return n;}; let y=top;
-  let n=add(T(f,{chars:v.id[0],font:F.med,size:34*s,color:C.white,y})); y+=n.height+8;
-  n=add(T(f,{chars:v.id[1],font:F.med,size:29*s,color:C.scTerra,y})); y+=n.height+34*s;
-  for(const b of v.body){ n=add(T(f,{chars:b,font:F.reg,size:33*s,color:C.white,op:0.72,y,lh:145})); y+=n.height+24*s; }
-  const q0=y; for(const q of v.quote){ n=add(T(f,{chars:q,font:F.disp,size:43*s,color:C.white,y,lh:124,w:896})); y+=n.height+14*s; }
-  add(R(f,{x:1000,y:q0+6,w:4,h:y-q0-20*s,color:C.scTerra}));          // פס ציטוט
+  // גדלים לפי מה שדור קבע בקרוסלת "שמונה צעירים" (19.10.2026): כותרת 80, שם 40, תווית 34, גוף 40, ציטוט 50, פואנטה 43
+  if(v.head){ let h=add(T(f,{chars:v.head,font:F.disp,size:80*s,color:C.scTerra,y,lh:108})); y+=h.height+28*s; }
+  let n=add(T(f,{chars:v.id[0],font:F.med,size:40*s,color:C.white,y})); y+=n.height+8;
+  n=add(T(f,{chars:v.id[1],font:F.med,size:34*s,color:C.scTerra,y})); y+=n.height+34*s;
+  for(const b of v.body){ n=add(T(f,{chars:b,font:F.reg,size:40*s,color:C.white,op:0.8,y,lh:145})); y+=n.height+24*s; }
+  const q0=y; for(const q of v.quote){ n=add(T(f,{chars:q,font:F.disp,size:50*s,color:C.white,y,lh:122,w:896})); y+=n.height+14*s; }
+  add(R(f,{x:996,y:q0+6,w:7,h:y-q0-20*s,color:C.scTerra}));          // פס ציטוט 7px
   y+=22*s; add(R(f,{x:80,y,w:920,h:1,color:C.white,op:0.25})); y+=30*s;
-  for(const p of v.punch){ n=add(T(f,{chars:p,font:F.med,size:35*s,color:C.white,y,lh:142})); y+=n.height+12*s; }
+  for(const p of v.punch){ n=add(T(f,{chars:p,font:F.med,size:43*s,color:C.white,y,lh:140})); y+=n.height+12*s; }
   return {nodes,y};
 }
 function voiceSlide(f, v, top, bottom){
-  let s=1.45, r;
-  for(; s>=0.8; s-=0.03){ r=voiceBuild(f,v,top,s); if(r.y<=bottom) break; r.nodes.forEach(n=>n.remove()); }
+  let s=1.15, r;
+  for(; s>=0.7; s-=0.03){ r=voiceBuild(f,v,top,s); if(r.y<=bottom) break; r.nodes.forEach(n=>n.remove()); }
   const shift=Math.round((bottom-r.y)/2); if(shift>0) r.nodes.forEach(n=>n.y+=shift);   // מרכוז אנכי
   return {scale:s, end:r.y+Math.max(0,shift)};
 }
