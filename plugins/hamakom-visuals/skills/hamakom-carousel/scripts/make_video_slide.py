@@ -3,7 +3,7 @@
 
   python3 make_video_slide.py IN.mp4 OUT.mp4 --start 12.5 --dur 20 \
       --credit "תיעוד: בצלם" [--mode fill|fit] [--bg ink|ivory] [--mute] \
-      [--logo bottom|top|none] [--strip]
+      [--logo bottom|top|none] [--strip] [--crop W:H:X:Y]
 
 - fill: ממלא את הפריים וחותך עודפים (ברירת מחדל). fit: כל הפריים נראה, והשאר רקע
   דיו או שנהב (לצילומי מסך מוקלטים, מסמכים, וידאו אנכי צר).
@@ -76,16 +76,18 @@ def main():
     ap.add_argument("--logo", choices=["bottom", "top", "none"], default="bottom")
     ap.add_argument("--strip", action="store_true"); ap.add_argument("--mute", action="store_true")
     ap.add_argument("--size", default="1080x1350")
+    ap.add_argument("--crop", default="", help="W:H:X:Y בפיקסלי המקור, לפני ההתאמה - למשל להוציא כותרת שצרובה בווידאו של כלי תקשורת אחר. לא חותכים לוגו/קרדיט של המקור")
     a = ap.parse_args()
     assert features.check("raqm"), "PIL בלי libraqm - הקרדיט העברי ייצא הפוך"
     W, H = map(int, a.size.split("x"))
     with tempfile.TemporaryDirectory() as tmp:
         ov = overlay(a, W, H, tmp)
+        pre = f"crop={a.crop}," if a.crop else ""
         if a.mode == "fill":
-            v = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}"
+            v = pre + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}"
         else:
             bg = "0x141413" if a.bg == "ink" else "0xfaf9f5"
-            v = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color={bg}"
+            v = pre + f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color={bg}"
         cmd = ["ffmpeg", "-y", "-v", "error", "-ss", str(a.start)]
         if a.dur: cmd += ["-t", str(a.dur)]
         cmd += ["-i", a.inp, "-i", ov, "-filter_complex",
