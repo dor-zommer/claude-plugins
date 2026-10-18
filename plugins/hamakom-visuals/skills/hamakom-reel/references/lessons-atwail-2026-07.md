@@ -67,7 +67,7 @@
 - **הסגיר הקנוני:** `design-system/assets/video/closer_v3.mp4` בפלאגין (עודכן
   19.07.2026 — לפני כן היה מתועד נתיב אישי בדסקטופ שלא היה קיים).
   טראקי המוזיקה נשארו מחוץ לריפו, ב-`~/Documents/המקום/שיווק/חומרים להכנת וידאו לרילז/`.
-- **הלוגו הריבועי:** לרסטר מ-SVG (`hamakom-carousel/assets/logo-square-black.svg`
+- **הלוגו הריבועי:** לרסטר מ-SVG (`design-system/assets/logo/logo-square-black.svg`
   או `Documents/המקום/שיווק/hamakom square black.svg`) עם cairosvg — **לשמור על
   ערוץ האלפא ולצבוע רק RGB**. ההמרה שבסקריפט הישן (לומיננס→אלפא) שגויה: פיקסלים
   שקופים הם RGB=0 ולכן מתקבל ריבוע מלא.

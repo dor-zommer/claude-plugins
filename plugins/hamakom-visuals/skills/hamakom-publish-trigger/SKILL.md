@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read Write Edit Bash Grep Glob WebFetch
 name: hamakom-publish-trigger
-version: 1.0.0
+version: 1.0.1
 description: >-
   הטריגר של "המקום הכי חם בגיהנום": כתבה פורסמה ב-ha-makom.co.il ← פותח תיקיית עבודה
   ומפעיל את סקילי הוויז'ואלס הקיימים בזה אחר זה — hamakom-graphic (3 גרפיקות),
@@ -20,7 +20,7 @@ description: >-
 | סקיל | מה הוא בונה |
 |---|---|
 | `hamakom-graphic` | 3 גרפיקות בודדות — וואטסאפ 1:1 · פיד 4:5 · סטורי 9:16 |
-| `hamakom-carousel` | קרוסלת אינסטגרם, 8-10 שקפים |
+| `hamakom-carousel` | קרוסלת אינסטגרם, קונספט עיצובי לכל כתבה (ברירת מחדל 8-10 שקפים) |
 | `hamakom-reel` | ריל 9:16 (דורש חומרי גלם) |
 
 אם נדרש שינוי עיצובי — **עורכים את הסקיל הרלוונטי או את

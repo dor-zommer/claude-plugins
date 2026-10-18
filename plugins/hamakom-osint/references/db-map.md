@@ -37,7 +37,7 @@
 ## תאימות SQL (נבדק ישירות ב-Postgres, 15.10.2026)
 
 ה-MCP מריץ PostgreSQL 17.6 עם שכבת תאימות חלקית ל-SQLite:
-- **עובדים:** `date('now')`, `date('now','-N days')` (מחזיר טקסט `YYYY-MM-DD`), `GROUP_CONCAT(x, ' | ')`, `osint_date(text)` (ממיר `DD/MM/YYYY` ל-ISO).
+- **עובדים:** `date('now')`, `date('now','-N days')` (מחזיר טקסט `YYYY-MM-DD`), `GROUP_CONCAT(x, ' | ')`, `osint_date(text)` (ממיר `DD/MM/YYYY`, `D/M/YYYY` ותאריך עם שעה ל-ISO, ומעביר ISO כמו שהוא - בטוח על כל עמודת תאריך טקסטואלית).
 - **לא עובדים:** `instr` (להשתמש ב-`strpos`), `MAX(a,b)` סקלרי (`GREATEST`), `HAVING` על כינוי של עמודה (לכתוב את הביטוי המלא).
 - **מיון:** `ORDER BY x DESC` שם `NULL` ראשון - על עמודות סכום להוסיף `NULLS LAST`.
 - **`knesset_mk_individuals` - אותו ח"כ יכול להופיע בשתי שורות** עם שני מזהים (למשל גלעד קריב: 1066 ו-30807). `knesset_queries.person_id` מתחבר למזהה מהסוג החדש (30xxx). בזיהוי לפי שם - לבדוק את כל השורות שחוזרות.
@@ -204,15 +204,32 @@ substr(depositing_date,7,4)||'-'||substr(depositing_date,4,2)||'-'||substr(depos
 
 `pub_date` ריק בחלק גדול מהטבלאות. החתך לעדכניות הוא `first_seen_at`, וזה מה ש-`new_since` משתמש בו. אבל:
 
-**אין `first_seen_at` בכלל (ולכן `new_since` מחזיר שגיאה):**
-`news_headlines` (יש `scraped_at`), `election_polls` (יש `scraped_at`), `election_poll_seats`, `wp_articles` (יש `pub_date`).
+**אין `first_seen_at`, אבל `new_since` עובד עליהן** - הכלי מזהה לבד את עמודת הזמן (נבדק 18.10.2026 על `news_headlines` ו-`wp_articles`):
+`news_headlines` (`scraped_at`), `election_polls` (`scraped_at`), `election_poll_seats`, `wp_articles` (`pub_date`).
 
 **יש `first_seen_at` אבל הוא חסר משמעות:**
 `budget_contracts`, `budget_supports`, `budget_items`, `budget_categories` - כולן נטענו ב-import חד-פעמי ב-24.07.2026, והחותמות הן שניות רצות של אותה טעינה. `new_since` עליהן יחזיר את **כל** הטבלה או **כלום**, לפי הצד של 24.07. אל תכלול אותן בלופ של דייג'סט יומי. `amutot` נטענה ב-24.07 ורועננה ב-02.08 - שני תאריכים בלבד.
 
 ---
 
-## מצב הסקרייפרים - 04.08.2026
+## מצב הסקרייפרים - 18.10.2026
+
+כל המקורות רצו היום. **השורה החדשה האחרונה** (לפי `first_seen_at`, לא לפי `new_count`):
+
+| טבלה | שורה חדשה אחרונה | הערה |
+|---|---|---|
+| `exemptions`, `police_announcements`, `mevaker_news`, `knesset_committee_sessions` | 18.10.2026 | חיים |
+| `mevaker_reports` | 24.09.2026 | המבקר מפרסם בגלים; הסקרייפר רץ (עם כשלונות מדי פעם) |
+| `knesset_bill_initiators` | 06.10.2026 | |
+| `knesset_queries` | 09.08.2026 | הכנסת בפגרה; לבדוק שוב אחרי פתיחת המושב |
+| `knesset_committees` | 07.07.2026 | רשימת ועדות כמעט קבועה - לא בהכרח תקלה |
+
+**לרענון המצב** (במקום להסתמך על הטבלה הזאת):
+```sql
+SELECT to_char(max(first_seen_at::timestamptz),'DD.MM.YYYY') FROM <table>
+```
+
+## מצב הסקרייפרים - 04.08.2026 (היסטורי)
 
 נשלף מ-`scrape_runs` (יש בה `source`; ראה חוק החלון למטה).
 
@@ -239,7 +256,7 @@ substr(depositing_date,7,4)||'-'||substr(depositing_date,4,2)||'-'||substr(depos
 
 ## חוק חלון הזמן ב-scrape_runs
 
-`scrape_runs` מכילה 18,751 ריצות של **כל המקורות מעורבבים**, עם עמודת `source`. לכן `SELECT * FROM scrape_runs ORDER BY rowid DESC LIMIT 10` מחזיר תערובת ואי אפשר לגזור ממנה חלון פר-טבלה. הצורה הנכונה:
+`scrape_runs` מכילה 18,751 ריצות של **כל המקורות מעורבבים**, עם עמודת `source`. לכן `SELECT * FROM scrape_runs ORDER BY started_at DESC LIMIT 10` מחזיר תערובת ואי אפשר לגזור ממנה חלון פר-טבלה. הצורה הנכונה:
 
 ```sql
 SELECT started_at FROM scrape_runs

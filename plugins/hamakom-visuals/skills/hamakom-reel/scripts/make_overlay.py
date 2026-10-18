@@ -31,7 +31,7 @@ def _first(*cands):
 
 LOGO_CANDS = [f"{WORKDIR}/logo-square.svg",
               os.path.expanduser("~/Documents/המקום/שיווק/hamakom square black.svg"),
-              os.path.normpath(f"{HERE}/../../hamakom-carousel/assets/logo-square-black.svg")]
+              os.path.normpath(f"{HERE}/../../../design-system/assets/logo/logo-square-black.svg")]
 F_UI_SB = _first(f"{WORKDIR}/IBMPlexSansHebrew-SemiBold.ttf",
                  f"{HOME_F}/IBMPlexSansHebrew-SemiBold.ttf")
 

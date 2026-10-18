@@ -77,7 +77,7 @@ Headline **Extrabold**, לא Roman, וה-byline הוא Graphik **Semibold**. ג�
 > ב-brand-identity הוא ה-`--f-display` הראשי. **אילוץ קשה: 53 גליפים בלבד** — עברית,
 > ספרות, ופיסוק (`! " ' ( ) , - . / : ; ? ׳ ״`), **אבל אין לטינית ואין em-dash `—`.** לכן
 > משתמשים בו לתצוגה **רק אם המחרוזת נתמכת**; אחרת נופלים ל-Publico. הבחירה אוטומטית
-> (`dispFont` בבילדרים בודק `/[A-Za-z—]/`). ה-url `HA-MAKOM.CO.IL` (לטיני) — תמיד Graphik.
+> (`dispFont` בבילדרים בודק רשימה לבנה של הגליפים הנתמכים, כי גם מקף בינוני U+2013, מרכאות לטיניות וסימנים אחרים חסרים בו). ה-url `HA-MAKOM.CO.IL` (לטיני) - תמיד Graphik.
 >
 > **גבול השימוש (החלטת דור 24.07.2026) — חוק:** HaMakom הוא פונט **תצוגה חתימתית קצרה
 > בלבד** — כותרת קאבר, מספר-מחץ, קיקרים ותגיות, מחץ CTA. **אסור להשתמש בו לטקסט רץ:**
@@ -143,7 +143,7 @@ const AV = new Set(fonts.map(f => f.fontName.family + "||" + f.fontName.style));
 const FB = {family:"Inter", style:"Regular"};
 const pick = c => c.find(x => AV.has(x.family+"||"+x.style)) || c[c.length-1] || FB;
 const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
-const hamakomOK = s => HAMAKOM.family==="HaMakom" && !/[A-Za-z—]/.test(s);  // תצוגה עברית → HaMakom
+const hamakomOK = s => HAMAKOM.family==="HaMakom" && !/[^\u05D0-\u05EA0-9\s!"'(),\-.\/:;?\u05F3\u05F4]/.test(s);  // רשימה לבנה של 53 הגליפים. תצוגה עברית → HaMakom
 const dispFont = (text,heavy) => hamakomOK(text) ? HAMAKOM : (heavy ? ROLE.dispXB : ROLE.disp);
 const ROLE = {
   disp:   pick([{family:"Publico Headline Hebrew",style:"Roman"},{family:"Publico Headline Hebrew Roman",style:"Regular"},{family:"Publico Headline Hebrew TRIAL",style:"Roman"},FB]),
