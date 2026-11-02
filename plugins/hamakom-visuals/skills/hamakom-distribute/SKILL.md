@@ -24,7 +24,7 @@ description: >-
 | טריגר "כתבה פורסמה" | `hamakom-publish-trigger` (ב-hamakom-visuals) |
 | 3 גרפיקות בודדות | `hamakom-graphic` |
 | קרוסלה | `hamakom-carousel` |
-| ריל | `hamakom-reel` |
+| ריל | `hamakom-reel` (בפלאגין `hamakom-video` מאז 1.17.0) |
 
 **אסור לשכפל לכאן לוגיקת עיצוב.** שינוי ויזואלי = עריכת הסקיל הרלוונטי או
 `design-system/HAMAKOM-DS-2026.md`.
