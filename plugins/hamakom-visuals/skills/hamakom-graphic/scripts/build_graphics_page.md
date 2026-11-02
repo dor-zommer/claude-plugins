@@ -34,8 +34,8 @@ error לפני שהיא רצה. אין קשר לתוכן הסקריפט — פש
 5. **כותרת + byline בלבד** — אין קיקר, אין lede, אין משנה, אין תגית קטגוריה.
 6. **הכותרת צמודה ל-byline** — `titleGap = 0`. ממקמים מלמטה למעלה:
    byline → כותרת ישירות מעליו. הכותרת היא האלמנט העליון.
-7. **byline = `שם | סוג הכתבה`** (בלי "מאת:"), Graphik Semibold.
-   טור דעה → **אברש `#8E6FA8`**; תחקיר/כתבה → ink-soft `#6b6a63`.
+7. **byline = שם הכותב/ת בלבד** (בלי "מאת:", לעולם לא "| כתבה"), Graphik Semibold.
+   טור דעה → **אברש `#8E6FA8`**; כתבה/תחקיר → **טרקוטה `#D97757`** (דור, 2.11.2026).
 8. **Gradient מעוגן בכותרת** — `p3 = titleFrac + 0.036`, `p2 = p3 − 0.327`.
    ~65-70% העליונים של התמונה גלויים לחלוטין.
 9. **כותרת = h1 verbatim**, Publico Headline **Extrabold** — לא `og:title`, לא קיצור.
@@ -65,15 +65,14 @@ const HERO_IMAGE_HASH = "<from upload_assets of cover image>";
 const C = {
   ink:{r:0.0784,g:0.0784,b:0.0745},     // דיו — gradient + רקע
   terra:{r:0.851,g:0.4667,b:0.3412}, sage:{r:0.4706,g:0.549,b:0.3647}, heather:{r:0.5569,g:0.4353,b:0.6588},
-  inkSoft:{r:0.4196,g:0.4157,b:0.3882}, // byline של תחקיר/כתבה
   onDarkSoft:{r:0.7176,g:0.7098,b:0.6745}, white:{r:1,g:1,b:1},
 };
 const CONTENT = {
   title:  "הכותרת המלאה של הכתבה מילה במילה",   // h1 verbatim — האלמנט העליון
-  byline: "שם הכותב/ת | טור דעה",                // שם + סוג, בלי "מאת:"
+  byline: "שם הכותב/ת",                          // שם בלבד - בלי "מאת:", לעולם לא "| כתבה"
   credit: "צילום: ... (verbatim מה-figcaption)",  // null בתמונת AI/המחשה
 };
-const OPINION = true;   // טור דעה → byline באברש; אחרת ink-soft
+const OPINION = false;  // טור דעה → byline באברש; כתבה/תחקיר → טרקוטה
 
 // ============================ FONTS ============================
 // חובה fallback ל-TRIAL לפני Inter: Figma לעיתים מגיש רשימת פונטים ישנה
@@ -91,12 +90,8 @@ const ROLE = {
   med:    pick([{family:"Graphik HLAR",style:"Medium"},{family:"Graphik HLAR Medium",style:"Regular"},{family:"Graphik HLAR TRIAL",style:"Medium"},FB]),
   semi:   pick([{family:"Graphik HLAR",style:"Semibold"},{family:"Graphik HLAR TRIAL",style:"Semibold"},FB]),
 };
-// HaMakom — פונט תצוגת המותג (53 גליפים: עברית+ספרות+פיסוק, בלי לטינית/em-dash).
-// לרוב לא זמין ב-Figma, וזה בסדר: h1 עם לטינית או מקף ממילא הולך ל-Publico.
-const HAMAKOM = pick([{family:"HaMakom",style:"Regular"},FB]);
-const HAMAKOM_GLYPHS = /^[ -"'-),-;?־א-ת׳-״]*$/;
-const hamakomOK = s => HAMAKOM.family==="HaMakom" && HAMAKOM_GLYPHS.test(s);
-function dispFont(text){ return hamakomOK(text) ? HAMAKOM : ROLE.dispXB; }  // כותרת = Extrabold
+// הכותרת תמיד ROLE.dispXB (Publico Headline Extrabold, TRIAL מותר). לא HaMakom:
+// עד 2.11.2026 היה כאן dispFont שבחר HaMakom כשהיה זמין, ודור פסל: ״לא הפונט שלנו״.
 function roleFor(fam, style){
   if (fam==="HEAD") return style==="Extrabold" ? ROLE.dispXB : ROLE.disp;
   if (style==="Light") return ROLE.light;
@@ -185,13 +180,13 @@ async function buildGraphic(name, posX, posY, W, H, o) {
   const logo=makeLogo(C.white, logoW, logoH);
   logo.x=Math.floor((W-logoW)/2); logo.y=url.y-logoH-o.logoGap; frame.appendChild(logo);
 
-  // 3. byline — שם | סוג, בצבע התפקיד
+  // 3. byline - שם בלבד, בצבע התפקיד
   const byline = await txt({ chars:CONTENT.byline, family:BODY, style:"Semibold", size:o.bylineSize,
-    color: OPINION ? C.heather : C.inkSoft, x:52, y:0, w:952, align:"RIGHT" });
+    color: OPINION ? C.heather : C.terra, x:52, y:0, w:952, align:"RIGHT" });
   byline.y = logo.y - o.bylineGap - byline.height; frame.appendChild(byline);
 
   // 4. כותרת Publico Extrabold verbatim — צמודה ל-byline (gap 0), האלמנט העליון
-  const title = await txt({ chars:CONTENT.title, font:dispFont(CONTENT.title), size:o.titleSize,
+  const title = await txt({ chars:CONTENT.title, font:ROLE.dispXB, size:o.titleSize,
     color:C.white, x:60, y:0, w:952, align:"RIGHT", lhPct:108 });
   title.y = byline.y - title.height; frame.appendChild(title);
 
@@ -247,11 +242,11 @@ for (const id of ["1:4","1:36","1:67"]) {
 ## עיצוב — כן/לא
 
 ✓ תמונה full-bleed, gradient דיו מעוגן בכותרת, כותרת Publico **Extrabold** לבנה
-צמודה ל-byline כאלמנט העליון, byline `שם | סוג` בצבע התפקיד, לוגו מרכזי-תחתון,
+צמודה ל-byline כאלמנט העליון, byline של שם בלבד בצבע התפקיד (טרקוטה / אברש), לוגו מרכזי-תחתון,
 שורת credit+url צמודה לפס, פס-חתימה טריקולור תחתון יחיד 4px.
 
 ✗ אסור: אדום `#f70d28` / פס אדום / NextExit; פס-חתימה עליון; **כל שכבת טקסט
-מעל הכותרת** — קיקר, lede, משנה או תגית קטגוריה; "מאת:" ב-byline; כותרת
+מעל הכותרת** — קיקר, lede, משנה או תגית קטגוריה; "מאת:" או "| כתבה" ב-byline; הגופן HaMakom בכותרת; כותרת
 באמצע הפריים; רווח בין הכותרת ל-byline; אינסטגרם ריבוע (פיד=4:5); gradient
 שמחשיך מעל אזור הטקסט; פורמט רביעי; נפילה ל-Inter.
 
