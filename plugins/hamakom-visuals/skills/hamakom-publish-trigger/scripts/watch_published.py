@@ -177,10 +177,11 @@ def main():
         if not art_i and not dl_i:
             print("  ⚠ לא נמצאו תמונות — לבדוק מול דור.")
         print("""
-  הפעל את הסקילים הקיימים על התיקייה הזו, בסדר הזה:
-     1. hamakom-graphic    ← 3 גרפיקות (וואטסאפ / פיד / סטורי)
-     2. hamakom-carousel   ← קרוסלה 8-10 שקפים
-     3. hamakom-reel       ← ריל (דורש חומרי גלם)""")
+  הפעל במקביל, כל סקיל בסשן משלו, על התיקייה הזו:
+     · hamakom-graphic     ← 3 גרפיקות (וואטסאפ / פיד / סטורי)
+     · hamakom-carousel    ← קרוסלה 8-10 שקפים
+     · hamakom-reel        ← ריל (דורש חומרי גלם)
+     · hamakom-distribute  ← פוסטים לרשתות + קישורים קצרים""")
 
     os.makedirs(DEST, exist_ok=True)
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
