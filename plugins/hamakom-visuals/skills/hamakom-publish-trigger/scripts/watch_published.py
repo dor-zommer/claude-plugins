@@ -106,9 +106,36 @@ def load_state():
         return {"done": []}
 
 
+# ‏קישור מתויג לכל רשת, להעתקה כשמפרסמים ידנית. בלי התגית ביקורים מטלגרם, מוואטסאפ, מטיקטוק
+# ‏ומיוטיוב נספרים ב-Google Analytics כ"ישירים" (האפליקציה לא מעבירה מאיפה הגיעו).
+# ‏אותם ערכים כמו ב-hamakom-distribute (utm_source=<רשת>, utm_medium=social, utm_campaign=<slug>).
+NETWORKS = [("פייסבוק", "facebook"), ("אינסטגרם (סטורי / ביו)", "instagram"), ("X", "x"),
+            ("טלגרם", "telegram"), ("וואטסאפ", "whatsapp"), ("טיקטוק (ביו)", "tiktok"),
+            ("יוטיוב (תיאור)", "youtube"), ("Threads", "threads")]
+
+
+def tagged_link(art, source):
+    from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+    u = urlsplit(art.get("link") or "")
+    q = dict(parse_qsl(u.query, keep_blank_values=True))
+    for k, v in (("utm_source", source), ("utm_medium", "social"), ("utm_campaign", art.get("slug") or "article")):
+        q.setdefault(k, v)
+    return urlunsplit((u.scheme, u.netloc, u.path, urlencode(q), u.fragment))
+
+
+def write_links(art, folder):
+    lines = [f"קישורים מתויגים - {art.get('title', '')}", "",
+             "להעתיק את הקישור של הרשת שמפרסמים בה, כדי שהביקורים ייספרו לה בדאשבורד.", ""]
+    for name, src in NETWORKS:
+        lines += [name, tagged_link(art, src), ""]
+    open(os.path.join(folder, "קישורים לרשתות.txt"), "w", encoding="utf-8").write("\n".join(lines))
+
+
 def process(art, imgs):
     folder = os.path.join(DEST, f"{art['date'] or datetime.date.today().isoformat()}-{art['slug']}")
     os.makedirs(folder, exist_ok=True)
+    if art.get("link"):
+        write_links(art, folder)
     json.dump(art, open(os.path.join(folder, "article.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     json.dump(imgs, open(os.path.join(folder, "images.json"), "w", encoding="utf-8"),
@@ -150,10 +177,11 @@ def main():
         if not art_i and not dl_i:
             print("  ⚠ לא נמצאו תמונות — לבדוק מול דור.")
         print("""
-  הפעל את הסקילים הקיימים על התיקייה הזו, בסדר הזה:
-     1. hamakom-graphic    ← 3 גרפיקות (וואטסאפ / פיד / סטורי)
-     2. hamakom-carousel   ← קרוסלה 8-10 שקפים
-     3. hamakom-reel       ← ריל (דורש חומרי גלם)""")
+  הפעל במקביל, כל סקיל בסשן משלו, על התיקייה הזו:
+     · hamakom-graphic     ← 3 גרפיקות (וואטסאפ / פיד / סטורי)
+     · hamakom-carousel    ← קרוסלה 8-10 שקפים
+     · hamakom-reel        ← ריל (דורש חומרי גלם)
+     · hamakom-distribute  ← פוסטים לרשתות + קישורים קצרים""")
 
     os.makedirs(DEST, exist_ok=True)
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
