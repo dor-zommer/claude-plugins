@@ -24,14 +24,16 @@ except Exception:
 
 BASE = "https://www.ha-makom.co.il/wp-json/wp/v2"
 UA = {"User-Agent": "Mozilla/5.0 hamakom-publish-trigger"}
-FIELDS = "slug,link,title,excerpt,date,categories,jetpack_featured_media_url,yoast_head_json"
+FIELDS = "slug,link,title,excerpt,date,categories,featured_media,jetpack_featured_media_url,yoast_head_json"
+OPINION_CAT = 547  # קטגוריית "דעות" (slug opinions). טור = genre "opinion" ב-article.json
 DEST = os.path.expanduser(os.environ.get("DEST", "~/Desktop/הפצה"))
 STATE = os.path.join(DEST, ".state.json")
 
 # קודי צלמים בשמות קבצי פלאש 90 (F<YYMMDD><XX><NNN>.jpg) — מ-hamakom-carousel חוק 5
 SHOOTERS = {"CG": "חיים גולדברג", "YS": "יונתן סינדל", "TN": "תומר נויברג",
             "FFSS": "שרה שומאן", "MG": "מרים אלסטר", "SD": "שריה דיאמנט",
-            "DP": "דור פזואלו", "NI": "נאסר אשתיה", "WH": "ואיל חסן"}
+            "DP": "דור פזואלו", "NI": "נאסר אשתיה", "WH": "ויסאם השלמון"}
+# WH = Wisam Hashlamoun (נמדד 6.11.2026 במטא-דאטה של 8 קבצי WH; עד אז נרשם בטעות "ואיל חסן").
 
 
 def _get(url):
@@ -51,7 +53,23 @@ def to_article(p):
             "excerpt": strip(p.get("excerpt", {}).get("rendered", "")),
             "date": p.get("date", "")[:10],
             "img": p.get("jetpack_featured_media_url") or "",
-            "author": y.get("author", "") or ""}
+            "author": y.get("author", "") or "",
+            # השדות ש-hamakom-distribute קורא מ-article.json (עד 6.11.2026 הוזנו ידנית)
+            "genre": "opinion" if OPINION_CAT in (p.get("categories") or []) else "news",
+            "image_credit": featured_credit(p.get("featured_media"))}
+
+
+def featured_credit(media_id):
+    """הקרדיט כלשונו מכיתוב התמונה הראשית באתר ("צילום: ..."). ריק כשאין."""
+    if not media_id:
+        return ""
+    try:
+        cap = strip(_get(f"{BASE}/media/{media_id}?_fields=caption")
+                    .get("caption", {}).get("rendered", ""))
+    except Exception:
+        return ""
+    m = re.search(r"צילום[^|()]*", cap)
+    return m.group(0).strip() if m else ""
 
 
 def article_images(slug, featured=""):
@@ -92,10 +110,40 @@ def recent_downloads(hours=36):
     for f in sorted(found, key=os.path.getmtime, reverse=True):
         if os.path.getmtime(f) < cutoff:
             continue
-        m = re.match(r"F\d{6}([A-Z]{2,4})", os.path.basename(f))
-        code = m.group(1) if m else ""
-        out.append({"src": "downloads", "file": f,
-                    "credit": f"צילום: {SHOOTERS.get(code, '___')} / פלאש 90"})
+        m = re.match(r"F(\d{6})([A-Z]{2,4})", os.path.basename(f))
+        code = m.group(2) if m else ""
+        meta = file_meta(f)
+        name = SHOOTERS.get(code) or meta.get("author") or "___"
+        item = {"src": "downloads", "file": f,
+                "credit": f"צילום: {name} / פלאש 90"}
+        if m:
+            d = m.group(1)
+            item["shot"] = f"20{d[:2]}-{d[2:4]}-{d[4:]}"
+        if meta.get("author"):
+            item["author_meta"] = meta["author"]
+        if meta.get("caption"):
+            item["caption"] = meta["caption"]
+        out.append(item)
+    return out
+
+
+def file_meta(path):
+    """צלם וכיתוב מהמטא-דאטה של הקובץ (IPTC דרך Spotlight ב-macOS).
+    הכיתוב של פלאש 90 אומר איפה ומתי צולם. בלעדיו, תמונה מאירוע אחר (לפעמים
+    מלפני שנים) נראית בתיקייה כמו עוד צילום לכתבה. מחזיר {} כשאין mdls."""
+    import subprocess
+    out = {}
+    for key, field in (("kMDItemAuthors", "author"), ("kMDItemDescription", "caption")):
+        try:
+            v = subprocess.run(["mdls", "-raw", "-name", key, path],
+                               capture_output=True, text=True, timeout=10).stdout.strip()
+        except Exception:
+            return out
+        if not v or v == "(null)":
+            continue
+        if v.startswith("("):
+            v = ", ".join(x.strip().strip('"') for x in v.strip("()").split(",") if x.strip().strip('".'))
+        out[field] = v
     return out
 
 
@@ -173,7 +221,7 @@ def main():
         if dl_i:
             print(f"  + קבצי פלאש 90 טריים ב-Downloads ({len(dl_i)}):")
             for i in dl_i[:6]:
-                print(f"     {os.path.basename(i['file'])}  ·  {i['credit']}")
+                print(f"     {os.path.basename(i['file'])}  ·  {i['credit']}  ·  צולם {i.get('shot','?')}")
         if not art_i and not dl_i:
             print("  ⚠ לא נמצאו תמונות — לבדוק מול דור.")
         print("""

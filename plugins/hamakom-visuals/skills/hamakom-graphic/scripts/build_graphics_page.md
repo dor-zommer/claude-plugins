@@ -37,7 +37,8 @@ error לפני שהיא רצה. אין קשר לתוכן הסקריפט — פש
 7. **byline = שם הכותב/ת בלבד** (בלי "מאת:", לעולם לא "| כתבה"), Graphik Semibold.
    טור דעה → **אברש `#8E6FA8`**; כתבה/תחקיר → **טרקוטה `#D97757`** (דור, 2.11.2026).
 8. **Gradient מעוגן בכותרת** — `p3 = titleFrac + 0.036`, `p2 = p3 − 0.327`.
-   ~65-70% העליונים של התמונה גלויים לחלוטין.
+   הנוסחה היא מקור האמת (דור כייל אותה ב-31.07): ~47-55% העליונים של התמונה גלויים
+   לחלוטין (נמדד 6.11.2026 על 3 הפורמטים), ומשם ההחשכה מדורגת עד הכותרת.
 9. **כותרת = h1 verbatim**, Publico Headline **Extrabold** — לא `og:title`, לא קיצור.
 10. **פס-חתימה טריקולור תחתון יחיד** — 4px בקצה התחתון (טרקוטה·מרווה·אברש). אין פס עליון.
 11. **שורת תחתית צמודה לפס**: credit צילום שמאל (x≈18, לבן opacity 0.53) +
@@ -100,13 +101,13 @@ function roleFor(fam, style){
   return ROLE.reg;
 }
 const HEAD="HEAD", BODY="BODY";
-for (const r of [...Object.values(ROLE), HAMAKOM]) { try{ await figma.loadFontAsync(r);}catch(e){} }
+for (const r of Object.values(ROLE)) { try{ await figma.loadFontAsync(r);}catch(e){} }
 const fontFallback = Object.values(ROLE).some(r => r.family==="Inter");      // כשל אמיתי
 const trialCuts    = Object.values(ROLE).some(r => /TRIAL/.test(r.family));  // לציין בלבד
 
 // ============================ PAGE ============================
 const graphicsPage = figma.createPage();
-graphicsPage.name = "Graphics — פורמטים";
+graphicsPage.name = "Graphics - פורמטים";
 await figma.setCurrentPageAsync(graphicsPage);
 
 // קרא את הקובץ והדבק כאן את תוכנו כמו שהוא:
@@ -254,7 +255,7 @@ for (const id of ["1:4","1:36","1:67"]) {
 
 ## פלט QA
 
-`get_screenshot` על 3 הפריימים — לוודא: תמונה נראית (~65-70% העליונים גלויים),
+`get_screenshot` על 3 הפריימים — לוודא: תמונה נראית (כמחצית העליונה גלויה לחלוטין),
 **המקף בכותרת במקום הנכון**, אין מילה יתומה בשורה אחרונה, הכותרת זהה תו-בתו
 בשלושת הפריימים, byline בצבע התפקיד, פונטים לא Inter, פס-חתימה תחתון יחיד,
 לוגו לבן מרכזי, ופריימי בדיקה זמניים נמחקו.
