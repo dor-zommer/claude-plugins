@@ -54,6 +54,14 @@ def api(path, body=None):
         return json.load(r)
 
 
+# פייסבוק ואינסטגרם מוסיפים לכל קישור ?fbclid= / ?igsh=, ויש אפליקציות שמוסיפות לוכסן בסוף.
+# בלי שתי ההגדרות האלה ההפניה מחזירה 404, והמטמון של LiteSpeed ו-Cloudflare שומר את ה-404
+# (11.11.2026, הקישורים של ad-kan-rahat-election). flag_query=ignore: התוספת נזרקת, וה-UTM
+# שביעד נשמר; flag_trailing: /wa/key/ מזוהה כמו /wa/key.
+MATCH_DATA = {"source": {"flag_query": "ignore", "flag_case": True,
+                         "flag_trailing": True, "flag_regex": False}}
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) < 2:
@@ -75,10 +83,24 @@ def main():
             if dest != target:
                 problems.append(f"{path} כבר קיים ומפנה ל-{dest}")
                 continue
-            state = "קיים"
+            src = ((cur.get("match_data") or {}).get("source") or {})
+            if any(src.get(k) != MATCH_DATA["source"][k] for k in ("flag_query", "flag_trailing")):
+                if create:
+                    api(f"redirect/{cur['id']}", {
+                        "url": path, "action_type": cur["action_type"],
+                        "action_code": cur["action_code"], "match_type": cur["match_type"],
+                        "group_id": cur["group_id"], "action_data": cur["action_data"],
+                        "match_data": {"source": {**src, "flag_query": "ignore",
+                                                  "flag_trailing": True}}})
+                    state = "קיים, תוקן"
+                else:
+                    state, missing = "קיים בהגדרה ישנה (--create יתקן)", missing + 1
+            else:
+                state = "קיים"
         elif create:
             api("redirect", {"url": path, "action_type": "url", "action_code": 302,
                              "match_type": "url", "group_id": 1, "regex": False,
+                             "match_data": MATCH_DATA,
                              "action_data": {"url": target}})
             state = "נוצר"
         else:
