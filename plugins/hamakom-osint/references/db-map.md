@@ -1,329 +1,108 @@
-# מפת osint-db - מקור אמת יחיד
+# מפת osint-db
 
-מסמך העזר של כל סקילי `hamakom-osint` (וגם `hamakom-factcheck`, שקורא לאותו שרת). **אין לשכפל ספירות שורות, שמות עמודות או חוקי שאילתה לתוך SKILL.md** - כל סקיל מפנה לכאן. כך נמנעת הסחיפה שגילינו: סקילים שנכתבו בזמנים שונים החזיקו ספירות שונות ושמות עמודות שגויים.
+**נבנה מהמאגר ב-20.11.2026** בסקריפט tools/build_db_map.py. הטבלה למטה נמדדת בכל בנייה; אין לערוך אותה ביד. המלכודות, בסוף, הן הידע שנכתב ביד.
 
-נבדק מול ה-DB החי: **04.08.2026**, ורוענן **10.08.2026** (שינוי ארכיטקטורה, חמש טבלאות חדשות, ואזהרת סנכרון - ראה מיד למטה). כל שורה כאן אומתה בהרצה, לא בהנחה.
+## איך השרת מריץ שאילתה
 
----
+- המאגר הוא Postgres. ה-MCP קורא ישירות ממנו, בתפקיד קריאה בלבד. אין SQLite ואין סנכרון לילי.
+- `query_db`: SELECT או WITH אחד בלבד, עד 50 אלף תווים בפלט, ועד 10 שניות. שאילתה ארוכה יותר נקטעת בשגיאת timeout.
+- `query_db` מחזיר 100 שורות כברירת מחדל. `LIMIT` בתוך ה-SQL לא מעלה את התקרה; כדי לקבל יותר מעבירים `limit` לכלי, עד 500.
+- כלי קודם: `search_entity`, `entity_profile`, `legislation_history`, `search_exemption_documents`, `read_exemption_documents`, `new_since`. `query_db` רק למה שהם לא מחזירים. `describe_table()` מחזיר את רשימת הטבלאות, ו-`describe_table(name)` את העמודות של טבלה.
+- לפני מסקנה של "אין במאגר": לבדוק ב-`scrape_runs` שהמקור רץ (`status IN ('ok','warn')`).
 
-## שינוי ארכיטקטורה 10.08.2026: ה-MCP קורא מ-Postgres, לא מ-SQLite
+## הטבלאות
 
-זה הסעיף החשוב במסמך, כי הוא משנה את מה שהצוות בפועל רואה.
+| טבלה | שורות | עמודות מאונדקסות | עמודת תאריך | השורה האחרונה | מצב |
+|---|---|---|---|---|---|
+| `exemptions` | 212,875 | `id`, `publisher`, `exemption_type`, `pub_date`, `amount_ils`, `enriched_at` | `pub_date_iso` | 2026-11-20 | פעיל |
+| `budget_contracts` | 1,020,934 | `id`, `entity_id`, `publisher_name`, `order_id` | `order_date` | 2026-05-25 | פעיל |
+| `budget_supports` | 329,580 | `id`, `recipient_entity_id`, `year`, `supporting_ministry` | `year` | 2025 | פעיל |
+| `amutot` | 76,188 | `amuta_id`, `status`, `classification` | - | - | פעיל |
+| `mavat_plans` | 37,576 | `pl_number`, `district_name`, `plan_county_name`, `station_desc`, `depositing_date` | `depositing_date` | 2026-10-19 | פעיל |
+| `mavat_status_history` | 743 | `changed_at` | - | - | פעיל |
+| `yosh_plans` | 2,632 | `pl_number`, `sector` | `depositing_date` | 2026-11-17 | פעיל |
+| `yosh_status_history` | 114 | `changed_at` | - | - | פעיל |
+| `mod_tenders` | 3,693 | `id`, `status` | `publish_date` | 2026-11-19 | פעיל |
+| `gov_tenders` | 22,330 | `publication_id`, `publisher`, `status` | - | - | פעיל |
+| `gov_tender_awards` | 10,652 | `publication_id`, `supplier_reg` | - | - | פעיל |
+| `rmi_allocations` | 51,974 | `exemption_id` | - | - | פעיל |
+| `knesset_bills` | 60,298 | `id`, `last_updated`, `knesset_num` | - | - | פעיל |
+| `knesset_votes` | 37,055 | `vote_id`, `knesset_num`, `vote_date`, `is_accepted`, `sess_item_id` | `vote_date` | 2026-11-18 | פעיל |
+| `knesset_vote_options` | ~2,270,687 | `vote_id`, `kmmbr_id`, `knesset_num`, `faction_id`, `vote_result` | - | - | פעיל |
+| `knesset_mk_individuals` | 1,305 | `mk_individual_id` | - | - | פעיל |
+| `knesset_mk_positions` | 17,430 | `id`, `person_id`, `knesset_num`, `is_current`, `committee_id` | - | - | פעיל |
+| `knesset_queries` | 42,890 | `id`, `submit_date`, `person_id`, `gov_ministry_id` | - | - | פעיל |
+| `knesset_protocol_attendees` | 547,650 | `doc_set`, `session_id`, `name` | - | - | פעיל |
+| `legislation` | 7,499 | `id`, `ministry`, `is_open`, `pub_date`, `pub_date_iso` | `pub_date_iso` | 2026-11-19 | פעיל |
+| `legislation_comments` | 159,465 | `comment_id`, `legislation_id`, `comment_date` | - | - | פעיל |
+| `decisions` | 26,488 | `id`, `pub_date`, `decision_number` | `pub_date` | 2026-11-17 | פעיל |
+| `gov_agendas` | 1,053 | `id`, `meeting_date` | `meeting_date` | 2026-11-11 | פעיל |
+| `mevaker_reports` | 140 | - | `pub_date` | 2026-11-16 | פעיל |
+| `mevaker_news` | 45 | `id`, `pub_date`, `topic` | `pub_date` | 2026-11-16 | פעיל |
+| `mevaker_donations` | 112,396 | `id`, `election_type`, `donor_name`, `recipient`, `party`, `publication_date` | `publication_date` | 2026-10-29 | פעיל |
+| `police_announcements` | 4,715 | `id`, `pub_date`, `channel` | `pub_date` | 2026-11-20T11:38:21 | פעיל |
+| `idf_spokesman` | 20,507 | `id`, `url` | `pub_date` | 2026-11-20T12:02:29 | פעיל |
+| `news_headlines` | 300,770 | `id`, `outlet`, `category`, `sector`, `url` | `pub_iso` | 2026-11-20T17:40:44 | פעיל |
+| `wp_articles` | 6,008 | `post_id`, `author_id` | `pub_date` | 2026-11-08T08:00:00 | קפוא: האתר הוחלף; איסוף הכתבות מ-WP REST (local_news_wp_api.py) הוצא מהקרון ב-9.11.2026 |
+| `ica_companies` | 733,995 | `company_id`, `name_he`, `status`, `registration_date`, `city` | `registration_date` | 2026-11-19 | פעיל |
+| `ica_changes` | 688,775 | `company_id`, `company_name`, `request_type`, `status_date` | `status_date` | 2026-11-20 | פעיל |
+| `maya_officers` | 21,530 | `id`, `name`, `company_name`, `position`, `person_id` | - | - | פעיל |
+| `exemption_attachments` | 137,654 | `att_key`, `exemption_id`, `status`, `sha256` | - | - | פעיל |
+| `scrape_runs` | 64,529 | `id`, `source` | `started_at` | 2026-11-20T17:40:01 | פעיל |
 
-המאגר הועבר ל-**Supabase Postgres** (פרויקט `Hamakom-Osint-DB`, פרנקפורט). שרת ה-MCP על ה-VM רץ עם `OSINT_MCP_BACKEND=postgres` ומצביע לשם דרך תפקיד קריאה-בלבד. לכן:
-
-- **הסקרייפרים עדיין כותבים ל-SQLite** על ה-VM (`/home/dorzommer/osint.db`).
-- **הצוות קורא מ-Postgres** דרך ה-MCP.
-- ביניהם **סנכרון לילי** (`nightly_pg_sync.sh`, 03:40).
-
-כלומר מה שסקרייפר כתב היום לא מגיע לצוות עד הלילה. אם סקיל מדווח "אין תוצאות" על משהו שנסרק היום, חשוד קודם בהשהיית הסנכרון ולא בהיעדר דאטה.
-
-### אזהרה פעילה: הסנכרון מוסיף במקום להחליף (אומת 10.08.2026)
-
-מדידה של שני הצדדים באותו רגע:
-
-| טבלה | SQLite (המקור, נכון) | Postgres (מה שהצוות רואה) |
-|---|---|---|
-| `mevaker_donations` | 108,943 | **217,866 - כל שורה פעמיים** |
-| `ica_companies` | 729,268 | **0 - לא הגיעה בכלל** |
-| `exemptions` | 159,351 | 139,464 - מפגר |
-
-**עדכון 15.10.2026 - הבעיה נפתרה (נבדק ישירות ב-Postgres):** `mevaker_donations` = 110,103 שורות, כל המזהים ייחודיים (אין יותר הכפלה); `ica_companies` = 729,268; `exemptions` = 180,331; `ica_changes` = 558,035. כ-1,112 שורות תרומה זהות בתוכן (תורם, מקבל, סכום, תאריך) - ראה מלכודת 5. אם מספר נראה חשוד, מריצים `COUNT(*)` מול `COUNT(DISTINCT id)` לפני שמסיקים משהו. הטבלה וההערה שמעל נשארות לתיעוד.
-
-הכפילות אומתה כשורות זהות לחלוטין (אותו תורם, מקבל, סכום ותאריך - פעמיים). **כל `SUM` או `COUNT` על `mevaker_donations` דרך ה-MCP מחזיר כפול מהאמת.** עד לתיקון הסנכרון: אין לפרסם סכום תרומות מצטבר בלי אימות מול הפרסום הרשמי של מבקר המדינה, ואין להסיק "אין רשומות" מ-`ica_companies` הריקה. שאילתות על תורם בודד ומקבל בודד תקינות מבחינת השמות, אבל כל שורה תופיע פעמיים.
-
----
-
-## תאימות SQL (נבדק ישירות ב-Postgres, 15.10.2026)
-
-ה-MCP מריץ PostgreSQL 17.6 עם שכבת תאימות חלקית ל-SQLite:
-- **עובדים:** `date('now')`, `date('now','-N days')` (מחזיר טקסט `YYYY-MM-DD`), `GROUP_CONCAT(x, ' | ')`, `osint_date(text)` (ממיר `DD/MM/YYYY`, `D/M/YYYY` ותאריך עם שעה ל-ISO, ומעביר ISO כמו שהוא - בטוח על כל עמודת תאריך טקסטואלית).
-- **לא עובדים:** `instr` (להשתמש ב-`strpos`), `MAX(a,b)` סקלרי (`GREATEST`), `HAVING` על כינוי של עמודה (לכתוב את הביטוי המלא).
-- **מיון:** `ORDER BY x DESC` שם `NULL` ראשון - על עמודות סכום להוסיף `NULLS LAST`.
-- **`knesset_mk_individuals` - אותו ח"כ יכול להופיע בשתי שורות** עם שני מזהים (למשל גלעד קריב: 1066 ו-30807). `knesset_queries.person_id` מתחבר למזהה מהסוג החדש (30xxx). בזיהוי לפי שם - לבדוק את כל השורות שחוזרות.
-- **הודעות שגיאה** בנוסח Postgres: `column "x" does not exist`, לא `no such column`.
-
-## חוק הזהב: אין אגרגציה בלי WHERE
-
-השרת קוטע כל שאילתה שחורגת מ-**מיליון צעדי VM של sqlite או 10 שניות** (`MAX_PROGRESS_CALLS × PROGRESS_EVERY` ב-`servers/osint-db/server.py`). המשמעות המעשית:
-
-**נקטע (אומת בהרצה):**
-```sql
-SELECT supplier_names, COUNT(*), SUM(amount_ils) FROM exemptions
-GROUP BY supplier_names HAVING COUNT(*) >= 5     -- 139K שורות, אין צמצום
-```
-```sql
-SELECT publisher, COUNT(*), SUM(amount_ils) FROM exemptions GROUP BY publisher
-```
-```sql
-SELECT supplier_name, SUM(volume) FROM budget_contracts GROUP BY supplier_name
-```
-
-**עובד מיד (אומת בהרצה):**
-```sql
-SELECT supplier_names, COUNT(*) deals, SUM(amount_ils) total FROM exemptions
-WHERE publisher = 'משרד התחבורה והבטיחות בדרכים'   -- צמצום על עמודה מאונדקסת
-GROUP BY supplier_names ORDER BY total DESC LIMIT 8
-```
-
-**הכלל:** כל `GROUP BY` חייב `WHERE` על עמודה מאונדקסת. אין "סקירה כללית של כל הטבלה" - יש סקירה של משרד, של שנה, של טווח סכומים. אם צריך תמונה רוחבית, הרץ כמה שאילתות מצומצמות וחבר את התוצאות בצד שלך.
-
-`ORDER BY <עמודה מאונדקסת> ... LIMIT n` בלי `GROUP BY` עובד גם על הטבלאות הגדולות.
+"~" הוא אומדן של Postgres לטבלה של יותר משני מיליון שורות.
 
 ---
 
-## עמודות מאונדקסות - נקודות הכניסה המותרות
-
-זו הרשימה הקובעת. חיפוש על עמודה שאינה כאן, בטבלה גדולה, ייקטע.
-
-| טבלה | שורות | נקודות כניסה מאונדקסות | מלכודת |
-|---|---|---|---|
-| `exemptions` | 139,233 | `publisher`, `exemption_type`, `pub_date`, `amount_ils` | **אין אינדקס על `supplier_names`.** `LIKE` עליה עובד (139K), אבל `GROUP BY` עליה נקטע |
-| `budget_contracts` | 1,034,518 | `entity_id`, `publisher_name`, `volume` | **אין אינדקס על `supplier_name`. `LIKE '%ספק%'` עליה נקטע.** הכניסה היחידה היא `publisher_name=` או `entity_id=` |
-| `budget_supports` | 329,578 | `recipient_entity_id`, `year`, `supporting_ministry`, `amount_approved` | **האינדקס הוא על ה-`recipient_entity_id`, לא על `recipient_entity_name`.** `LIKE` על השם בלי צמצום נקטע. צמצם קודם ב-`year=` או `supporting_ministry=` |
-| `budget_items` | 9,005 | `year`, `code_level4` | קטנה, סובלנית |
-| `budget_categories` | 45 | `year`+`depth`, `parent_code` | זעירה |
-| `amutot` | 75,556 | `status`, `classification` | אין אינדקס על `name_he`, אבל `LIKE` עליה עובד (אומת). `GROUP BY` עליה - לא |
-| `mavat_plans` | 36,796 | `district_name`, `plan_county_name`, `station_desc`, `depositing_date` | |
-| `yosh_plans` | 2,569 | (קטנה, סובלנית) | |
-| `mod_tenders` | 2,967 | `submission_date`, `publish_date`, `status` | |
-| `knesset_vote_options` | **1,140,301** | `kmmbr_id`, `knesset_num`, `faction_id`, `vote_result` | חובה `WHERE vote_id=` ספציפי. ראה אזהרת העמודות למטה |
-| `knesset_votes` | 32,281 | `knesset_num`, `vote_date`, `is_accepted` | |
-| `news_headlines` | 21,527 | `pub_iso`, `outlet`, `category`, `sector` | |
-| `mevaker_reports` | 145 | `pub_date` | `content_text LIKE` **עובד** (אומת) - 145 שורות בלבד |
-| `mevaker_donations` | 108,933 | `election_type`, `publication_type`, `publication_date` | `LIKE` על `donor_name` ועל `recipient` **עובד ומהיר** (אומת). `GROUP BY` בלי `WHERE` נקטע. ראה סעיף ייעודי למטה |
-| `legislation` | 287 | `ministry`, `is_open`, `pub_date` | |
-| `decisions` | 429 | `pub_date`, `decision_number` | |
-| `police_announcements` | 828 | `pub_date` | |
-| `idf_spokesman` | 377 | `pub_date` | |
-| `wp_articles` | 5,912 | (אין אינדקסים; קטנה) | **`category` ריק בכל 5,912 השורות** |
-| `ica_companies` | 729,268 | `name_he`, `status`, `registration_date`, `city` | מלאה ב-Postgres: 729,268 שורות (נבדק 15.10.2026) |
-| `ica_changes` | 558,035 | `company_id`, `company_name`, `request_type`, `status_date` | כאן יושבים רישומי השעבודים |
-| `ica_partnerships` | 28,779 | `name_he`, `status` | |
-| `ica_liquidations` | 1,370 | `company_id`, `name_he`, `liquidation_approved_date` | פירוק מרצון בהליך מזורז בלבד |
-| `maya_officers` | 21,530 | `name`, `company_name`, `position` | חברות ציבוריות בלבד (~1,360) |
-
----
-
-## אזהרות עמודות - שמות שנראים נכונים ואינם
-
-אלה שגיאות שהיו בסקילים והופלו בהרצה:
-
-- **`knesset_vote_options` - אין `mk_individual_id`.** העמודה היא `kmmbr_id`. `SELECT mk_individual_id FROM knesset_vote_options` מחזיר `no such column`. הטבלה כוללת גם `kmmbr_name` **ו-`faction_name`** - כלומר אין צורך ב-JOIN ל-`knesset_mk_individuals` או ל-`knesset_mk_positions` כדי לקבל שם וסיעה.
-- **`mevaker_reports` - אין `ministry` ואין `type`.** העמודות: `id, title, url, pub_date, content_html, content_text, summary, first_seen_at, last_seen_at`. (זו גם באג פעיל ב-`search_entity` בשרת - ראה למטה.)
-- **`wp_articles` - `category` קיים אבל ריק תמיד.** אל תסנן לפיו; הוא יתאים לאפס שורות בשקט.
-- `knesset_mk_positions` מפתח לפי `person_id` (לא `mk_individual_id`).
-- **`knesset_vote_options.faction_name` ריק בכנסת ה-25.** מאוכלס בהצבעות היסטוריות (נבדק: `vote_id` 20000-20100 מלא, 46000-46200 ריק בכל 8,508 השורות). אל תבנה פילוח סיעתי של הצבעה עכשווית עליו.
-
-## `mevaker_donations` - מאגר תרומות הבחירות (נוסף 09.08.2026)
-
-תרומות, הלוואות וערבויות למערכות בחירות, מתוך פרסומי מבקר המדינה. **108,943 שורות** ב-SQLite (נבדק 10.08.2026). ב-Postgres: 110,103 שורות, בלי הכפלה (נבדק 15.10.2026).
-
-**עמודות:** `id, election_type, publication_type, publication_type_id, donor_name, donor_first, donor_last, donor_city, donor_country, recipient, party, candidate_name, faction, election_city, regional_council, list_name, election_period_name, is_deficit_coverage, sum, sum_in_currency, loan_return_sum, publication_date, election_date, scraped_at`
-
-**פילוח (אומת בהרצה):**
-
-| `election_type` | תרומה | הלוואה | ערבות |
-|---|---|---|---|
-| `primaries` | 52,024 | 5 | 4 |
-| `local` | 42,546 | 2,942 | 546 |
-| `parties` | 6,574 | 1 | 232 |
-| `regional` | 3,187 | 560 | 15 |
-| `special` | 262 | 32 | 3 |
-
-**מה עובד (אומת בהרצה):**
-```sql
-SELECT donor_name, donor_city, recipient, sum, publication_date
-FROM mevaker_donations WHERE donor_name LIKE '%חיימוב%' ORDER BY sum DESC
-```
-```sql
-SELECT recipient, COUNT(*) n, ROUND(SUM(sum)) total
-FROM mevaker_donations WHERE recipient LIKE '%ביטן%' GROUP BY recipient
-```
-```sql
-SELECT substr(publication_date,1,4) yr, election_type, COUNT(*) n, ROUND(SUM(sum))
-FROM mevaker_donations WHERE recipient='ביטן דוד' GROUP BY yr, election_type
-```
-
-**מה נקטע (אומת):** `GROUP BY election_type` על כל הטבלה עם `SUM`+`MIN`+`MAX` יחד. צמצם קודם.
-
-### חמש מלכודות ייחודיות לטבלה הזו
-
-1. **סדר השם אינו עקבי.** אותו אדם מופיע כ"חיימוב יצחק", "יצחק חיימוב", "חיימוב איציק" ו"איציק חיימוב". **חפש לפי שם משפחה בלבד**, וקבץ לפי `donor_last` + `donor_city` ולא לפי `donor_name`.
-2. **`donor_city` מכיל ישויות HTML** - `ת&quot;א` לצד `תל אביב` ו`תל אביב - יפו`. נרמל לפני קיבוץ.
-3. **`donor_country` הוא מחרוזת ריקה, לא NULL.** לאיתור תרומות חוץ: `donor_country NOT IN ('', 'ישראל')`. `IS NOT NULL` יחזיר הכל.
-4. **`election_date` ו-`election_period_name` ריקים בפריימריז.** אי אפשר לשייך תרומה למערכת בחירות דרכם - **יש לגזור מאשכולות `publication_date`**. אומת: 42 התרומות של "ביטן דוד" מתפלגות לשני אשכולות - 10.2012-7.2013 (פריימריז 26.11.2012 → כנסת 19) ו-12.2014-1.2015 (פריימריז 31.12.2014 → כנסת 20). האשכול הראשון נמשך חצי שנה **אחרי** הבחירות; דיווח מאוחר או כיסוי גירעון.
-5. **שורות כפולות - שתי סיבות שונות, אל תבלבלו ביניהן.**
-   - *במקור:* לפעמים שתי רשומות זהות באותו תאריך ובאותו סכום הן תרומה כפולה אמיתית שדווחה פעמיים. אל תסכום בלי להציג.
-   - *בתשתית (נפתר, נבדק 15.10.2026 - התיעוד ההיסטורי נשאר):* ~~הטבלה כולה מוכפלת ב-Postgres~~ בגלל סנכרון שמוסיף במקום להחליף - 217,866 שורות במקום 108,943. זו לא תופעה במקור אלא באג בצינור. ראה אזהרת הסנכרון בראש המסמך. עד לתיקון, כל סכום מצטבר דרך ה-MCP כפול.
-
-**`is_deficit_coverage = 'True'`** = כיסוי גירעון אחרי הבחירות, קטגוריה נפרדת עם כללים אחרים. **`publication_type = 'הלוואה'` עם `loan_return_sum` ריק** = הלוואה שלא הוחזרה, שקולה כלכלית לתרומה.
-
-**תקרות:** משתנות לפי סוג הבחירות, מספר התורמים והשנה. **אין לקבוע שסכום חרג מהתקרה** בלי אימות מול נוסח החוק והנחיות מבקר המדינה לאותה מערכת.
-
----
-
-## רשם החברות ונושאי משרה (נוסף 10.08.2026)
-
-ארבע טבלאות `ica_*` מגיעות מ-data.gov.il (משרד המשפטים, רשות התאגידים), נטענות מחדש במלואן ב-`ica_scraper.py`. `maya_officers` מגיעה מ-budgetkey ומכילה נושאי משרה בחברות **ציבוריות** בלבד.
-
-**`ica_companies`** - כל החברות הרשומות בישראל. עמודות: `company_id, name_he, name_en, company_type, status, sub_status, description, goal, registration_date, is_government, limit_type, is_violating, last_report_year, city, street, street_number, zip_code, pob, country, located_at, scraped_at`.
-
-**`ica_changes`** - בקשות שינוי בתאגידים, וזה גם המקום שבו נמצאים **רישומי השעבודים**: `request_type = 'רישום שעבוד'`. עמודות: `company_id, company_name, request_type, request_type_code, status_date, lien_id`.
-
-**`maya_officers`** - `person_id, name, gender, position, start_date, end_date, company_name, proof_url, source`. ה-`proof_url` מפנה להודעה המקורית במאיה, וזו הראיה שמצרפים לכתבה.
-
-### ארבע מלכודות
-
-1. **אין בעלי מניות של חברות פרטיות, בשום מקום במאגר.** רשם החברות לא מפרסם אותם; הם קיימים רק בנסח בתשלום. `maya_officers` מכסה רק חברות ציבוריות, ורק נושאי משרה - לא אחוזי אחזקה. לשמות של חברה פרטית יש סקיל נפרד, `checkid-holders`, שעובד פר-ח"פ דרך דפדפן ומחזיר לידים לא מאומתים.
-2. **`is_violating` אינו בוליאני.** הערך הוא המחרוזת `'מפרה'` או ריק. הסינון הוא `WHERE is_violating = 'מפרה'` (אומת: 198,025 חברות מפרות מתוך 729 אלף - כלומר "מפרה" הוא מצב נפוץ מאוד, בדרך כלל אי-הגשת דוח שנתי, ולא סיפור בפני עצמו).
-3. **`company_id` הוא מספר ב-`ica_companies` אבל טקסט ב-`ica_changes` וב-`ica_liquidations`.** בהצלבה ביניהן השווה כמחרוזת, אחרת ה-JOIN יחזיר ריק בשקט.
-4. **השם ב-`maya_officers.company_name` הוא שם מקוצר** ("אאורה השקעות"), לא השם הרשמי המלא שב-`ica_companies` ("אאורה השקעות בע~מ"). ההצלבה בין השתיים היא `LIKE`, לא שוויון. שים לב גם שמרכאות בשמות רשם החברות מיוצגות כ-`~`.
-
-**נקודת הכניסה הנכונה לתחקיר:** שם חברה שעלה בתרומות או בפטורים ← `ica_companies` (סטטוס וכתובת) ← `ica_changes` (שעבודים - סימן למצוקה או למימון) ← `maya_officers` אם ציבורית, או `checkid-holders` אם פרטית.
-
----
-
-## מלכודת פורמט התאריך
-
-**`yosh_plans.depositing_date` הוא `DD/MM/YYYY`** (למשל `10/05/2017`), בעוד **`mavat_plans.depositing_date` הוא ISO** (`2026-07-08`).
-
-המשמעות: ב-`yosh_plans` כל `WHERE depositing_date >= '2026-05-01'` וכל `ORDER BY depositing_date DESC` **מחזירים זבל** - ההשוואה לקסיקוגרפית ולכן היום קודם לשנה. אומת: שאילתה על "90 הימים האחרונים" החזירה תוכניות מ-2014 ומ-2020.
-
-הצורה הנכונה - המר בשאילתה:
-```sql
-substr(depositing_date,7,4)||'-'||substr(depositing_date,4,2)||'-'||substr(depositing_date,1,2) AS dep_iso
-```
-ואז `ORDER BY dep_iso DESC` או `WHERE dep_iso >= to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. עם ההמרה התוכניות האחרונות ביו"ש יוצאות אוגוסט 2026; בלעדיה 2014.
-
-`decisions.decision_date` גם הוא בפורמט `DD.MM.YYYY` (למשל `09.04.2026`) - אותו זהירות. עמודות `pub_date` ו-`first_seen_at` ברוב הטבלאות הן ISO.
-
----
-
-## עדכניות: איזו עמודה קובעת "חדש"
-
-`pub_date` ריק בחלק גדול מהטבלאות. החתך לעדכניות הוא `first_seen_at`, וזה מה ש-`new_since` משתמש בו. אבל:
-
-**אין `first_seen_at`, אבל `new_since` עובד עליהן** - הכלי מזהה לבד את עמודת הזמן (נבדק 18.10.2026 על `news_headlines` ו-`wp_articles`):
-`news_headlines` (`scraped_at`), `election_polls` (`scraped_at`), `election_poll_seats`, `wp_articles` (`pub_date`).
-
-**יש `first_seen_at` אבל הוא חסר משמעות:**
-`budget_contracts`, `budget_supports`, `budget_items`, `budget_categories` - כולן נטענו ב-import חד-פעמי ב-24.07.2026, והחותמות הן שניות רצות של אותה טעינה. `new_since` עליהן יחזיר את **כל** הטבלה או **כלום**, לפי הצד של 24.07. אל תכלול אותן בלופ של דייג'סט יומי. `amutot` נטענה ב-24.07 ורועננה ב-02.08 - שני תאריכים בלבד.
-
----
-
-## מצב הסקרייפרים - 18.10.2026
-
-כל המקורות רצו היום. **השורה החדשה האחרונה** (לפי `first_seen_at`, לא לפי `new_count`):
-
-| טבלה | שורה חדשה אחרונה | הערה |
-|---|---|---|
-| `exemptions`, `police_announcements`, `mevaker_news`, `knesset_committee_sessions` | 18.10.2026 | חיים |
-| `mevaker_reports` | 24.09.2026 | המבקר מפרסם בגלים; הסקרייפר רץ (עם כשלונות מדי פעם) |
-| `knesset_bill_initiators` | 06.10.2026 | |
-| `knesset_queries` | 09.08.2026 | הכנסת בפגרה; לבדוק שוב אחרי פתיחת המושב |
-| `knesset_committees` | 07.07.2026 | רשימת ועדות כמעט קבועה - לא בהכרח תקלה |
-
-**לרענון המצב** (במקום להסתמך על הטבלה הזאת):
-```sql
-SELECT to_char(max(first_seen_at::timestamptz),'DD.MM.YYYY') FROM <table>
-```
-
-## מצב הסקרייפרים - 04.08.2026 (היסטורי)
-
-נשלף מ-`scrape_runs` (יש בה `source`; ראה חוק החלון למטה).
-
-**חיים, הכניסו שורות חדשות היום:** `legislation`, `yosh`, `decisions`, `mavat`, `exemptions`, `police`.
-
-**חיים ומעודכנים מאתמול:** כל זרוע הכנסת (`knesset`, `knesset_bills`, `knesset_committee_sessions`, `knesset_queries`, `knesset_session_items/documents/broadcasts`).
-
-**תקועים - לא לבנות עליהם בלי אימות ידני:**
-
-| מקור | ריצות | ריצה אחרונה | שורה חדשה אחרונה | כשלונות |
-|---|---|---|---|---|
-| `mevaker` (newsroom) | 1,985 | 04.08 | **09.05.2026** | 47 |
-| `mevaker_reports` | 101 | **03.06.2026** | 26.05.2026 | 0 |
-| `knesset_committees` | 325 | 04.08 | **07.07.2026** | 5 |
-| `knesset_bill_initiators` | 331 | 04.08 | 29.07.2026 | 3 |
-| `police` | 1,994 | 04.08 | 04.08 | 42 |
-| `budget_*`, `amutot` | 3-4 | 02.08 | (dump, אין `new_count`) | 1 |
-
-`mevaker` רץ כל שעה שלושה חודשים ומחזיר את אותן 10 שורות. `mevaker_reports` פשוט הפסיק לרוץ בתחילת יוני; הדוחות שבטבלה מגיעים עד 07.07 ונכנסו בדרך אחרת.
-
-**פער נוסף:** ל-`knesset_votes` יש רשומות עד 28.07.2026, אבל פילוח פר-ח"כ ב-`knesset_vote_options` קיים רק עד **17.07**, ו-`total_for`/`total_against` ריקים בהצבעות האחרונות. פירוק הצבעה טרייה לא יעבוד.
-
----
-
-## חוק חלון הזמן ב-scrape_runs
-
-`scrape_runs` מכילה 18,751 ריצות של **כל המקורות מעורבבים**, עם עמודת `source`. לכן `SELECT * FROM scrape_runs ORDER BY started_at DESC LIMIT 10` מחזיר תערובת ואי אפשר לגזור ממנה חלון פר-טבלה. הצורה הנכונה:
-
-```sql
-SELECT started_at FROM scrape_runs
-WHERE source = 'exemptions' AND status = 'ok'
-ORDER BY started_at DESC LIMIT 2
-```
-
-שמות ה-`source` אינם זהים לשמות הטבלאות: `mavat` (לא `mavat_plans`), `yosh` (לא `yosh_plans`), `mevaker` (ל-newsroom) מול `mevaker_reports` (לדוחות), `knesset` (לכמה טבלאות יחד).
-
-**`new_count` אינו מספר החדשים.** בכל הריצות שנבדקו הוא שווה ל-`row_count` (למשל 2569=2569), כלומר הוא סופר את מה שנסרק. לקביעת "מה חדש" השתמש ב-`new_since` על `first_seen_at`, לא בעמודה הזאת.
-
----
-
-## search_entity - מה הוא באמת מכסה
-
-הכלי סורק **7 טבלאות בלבד**: `exemptions`, `knesset_mk_individuals`, `legislation`, `mevaker_reports`, `mavat_plans`, `yosh_plans`, `decisions`.
-
-**הוא עיוור ל:** `budget_contracts` (מיליון שורות), `budget_supports` (330 אלף), `amutot` (75 אלף), `mod_tenders`, `knesset_bills`, `police_announcements`, `idf_spokesman`, `news_headlines`, `wp_articles`.
-
-לכן תיק ישות שנבנה על `search_entity` לבד **מפספס את מפתח התקציב וגיידסטאר לגמרי**, בלי להודיע. חובה להשלים ידנית מול הטבלאות האלה (ראה `osint-money`).
-
-**שתי תקלות פעילות בכלי:**
-
-1. **`exemptions` נקטע בשקט על מונח בלי התאמות מוקדמות.** הפלט מכיל אז `{"table": "exemptions", "note": "scan too broad (aborted)"}` - שורה אחת קטנה שקל לפספס. אם היא שם, **אין מסקנה** על פטורים; זה לא "אין התאמות". אומת עם המונח "הזדקנות האוכלוסייה".
-2. **`mevaker_reports` מחזיר שדות זבל:** `"\"ministry\"": "ministry"` ו-`"\"type\"": "type"`, כי המפה בשרת מפנה לעמודות שלא קיימות. ההתאמה עצמה תקינה; התעלם מהשדות האלה.
-
----
-
-## הרחבת שם-גג (חוזר מ-osint-entity-dossier)
-
-גופים רבים אינם במאגר בשמם המוכר אלא תחת ארגון-האם. לפני שמסיקים "אין במאגר": נסה את הארגון שמעליו, שם רשום מלא עם ובלי "בע"מ", ראשי תיבות מול שם מלא. דוגמה מאומתת: "החטיבה להתיישבות" כמעט ריקה, "ההסתדרות הציונית העולמית" מחזירה מאות מיליונים - אבל אז חובה להפריד בתוצאות מה שייך לישות המבוקשת ומה זרוע אחרת.
-
----
-
-## תקרות השרת
-
-| מגבלה | ערך |
-|---|---|
-| שורות לשאילתה | 500 (`MAX_LIMIT`) |
-| תווים בפלט | 50,000 |
-| צעדי VM | ~1,000,000 |
-| timeout | 10 שניות |
-| כלים | `list_tables`, `describe_table`, `query_db`, `search_entity`, `new_since`, `population_search` |
-| מצב | קריאה בלבד (`mode=ro`), `SELECT`/`WITH` בלבד |
-
----
-
-## `population_search` - מרשם האוכלוסין (רגיש, לתחקיר בלבד)
-
-חיפוש במרשם האוכלוסין המלא (אגרון משרד הפנים, 9.22M רשומות). **לא** נמצא ב-`list_tables`
-ולא נגיש דרך `query_db` - הוא קובץ נפרד מ-osint.db, והכלי המובנה הזה הוא הדרך היחידה אליו.
-זמין מכל סקיל/סשן עם osint-db, להצלבה של אדם מול שאר המאגר (תרומות, חברות, כנסת, פטורים).
-
-- **עוגן חובה** - לפחות אחד: `identity` (ת"ז), `phone`, או `last_name` (2+ תווים). אין
-  חיפוש רחב. אפשר לצמצם עם `first_name` / `city` / `street`.
-- ת"ז מנורמלת אוטומטית ל-9 ספרות (כולל ת"ז קצרות של ותיקי ראשית המדינה); תקרת 20 שורות.
-- **כל חיפוש נרשם בלוג ביקורת עם המייל המאומת של הקורא.** אם הלוג נכשל - השאילתה נדחית.
-  חיפוש בלי התחברות מאומתת נדחה.
-- **המידע רגיש.** התאמת שם היא ליד, לא עובדה. אסור לצטט פרט אישי בלי לאמת מול מקור נוסף.
-- **גיל: השתמש ב-`age_now`, לא ב-`age`.** השדה `age` במרשם הוא צילום סטטי שקפא בשנת
-  ההפקה ואינו מתעדכן. הכלי מוסיף `age_now` מחושב מ-`birth_date` לפי התאריך הנוכחי (ולמי
-  שנפטר - גיל בפטירה מ-`death_date`), עם `age_note` שמסביר. `age_now=null` = תאריך לידה לא תקין.
-
-דוגמה: `population_search(last_name="כהן", city="חדרה")` · `population_search(identity="012345678")`.
-
----
-
-## טבלאות שאינן מקורות תחקיר
-
-`saved_items`, `user_follows`, `user_digests`, `user_digest_sources`, `user_alert_prefs`, `home_brief_cache`, `news_topics_cache` - מצב האפליקציה של משתמשי קונטקסט (מזוהות ב-`user_email`), לא דאטה ממשלתי. `scrape_items` ו-`scrape_sources` ריקות (0 שורות).
+## מלכודות (נכתב ביד, נבדק מול המאגר ב-20.11.2026)
+
+### תאריכים
+- `exemptions.pub_date` הוא DD/MM/YYYY, ובחלק גדול מהשורות ריק. למיון ולסינון: `pub_date_iso`.
+- `legislation.pub_date` הוא DD/MM/YYYY; `legislation.pub_date_iso` מחושב במאגר.
+- `yosh_plans.depositing_date` הוא DD/MM/YYYY, `mavat_plans.depositing_date` הוא ISO. השוואה של עמודת DD/MM לתאריך מחזירה זבל או שגיאה.
+- `decisions.decision_date` הוא ISO.
+- על כל עמודת תאריך טקסטואלית: `osint_date(col)` מחזיר ISO מכל הפורמטים, וזו הדרך הבטוחה. `date('now','-N days')` עובד ב-`query_db`, כי השרת מתרגם אותו לטקסט ISO לפי שעון ירושלים. ב-Postgres ישיר, מחוץ לשרת, הוא לא קיים.
+
+### תאימות SQL
+- השרת מתרגם רק את `date('now', ...)`, `datetime('now', ...)`, `strftime` ו-`group_concat`. כל השאר הוא Postgres: אין `instr` (`strpos`), אין `MAX(a,b)` סקלרי (`GREATEST`), אין `rowid`. ב-`string_agg(x, ' | ')` אפשר להשתמש ישירות.
+- `ORDER BY x DESC` שם NULL ראשון. על עמודות סכום: `NULLS LAST`.
+- שגיאות בנוסח Postgres: `column "x" does not exist`.
+
+### "חדש" מול "נקלט"
+- `first_seen_at` אומר מתי שורה נקלטה, לא מתי קרה האירוע. אחרי השלמה לאחור, שורות ישנות מקבלות חותמת טרייה. כל פריט "חדש" נבדק גם לפי עמודת התאריך שלו בטבלה למעלה.
+- ב-`budget_supports` יש שני ערכים בלבד של `first_seen_at` (טעינה מרוכזת), ולכן `new_since` עליה אינו אומר דבר.
+- ב-`news_headlines` אין `first_seen_at`; עמודת הזמן היא `pub_iso` (ו-`scraped_at`).
+- `scrape_runs.new_count` אינו "כמה נוספו" אלא כמה שורות עברו בריצה.
+
+### scrape_runs
+- כל המקורות מעורבבים, עם עמודת `source`. תמיד לסנן לפי מקור, עם `status IN ('ok','warn')`.
+- שמות ה-`source` אינם שמות הטבלאות: `mavat`, `yosh`, `police`, `mevaker` (הודעות), `mevaker_library_collector` (הדוחות).
+
+### מקורות קפואים
+- `wp_articles` ו-`wp_article_locations` קפואות מ-9.11.2026, בהחלטה: האתר הוחלף. `category` שם מלאה (6,007 מתוך 6,008). אין כתבות אחרי התאריך הזה, וזה לא סימן שלא כתבנו.
+- `election_polls` קפואה מ-9.11.2026: הבחירות לכנסת ה-26 הסתיימו.
+
+### כנסת
+- ב-`knesset_vote_options` אין `mk_individual_id`. העמודות: `kmmbr_id`, `kmmbr_name`, `faction_name`, `mk_person_id`. תמיד עם `WHERE vote_id =`.
+- `faction_name` ריק בחלק מהקולות בכנסת ה-25 (581 מלאים מתוך 1,017 ב-30 ההצבעות האחרונות שנבדקו). פילוח סיעתי של הצבעה עכשווית: לבדוק כמה ריקים לפני שמסיקים.
+- אותו ח"כ יכול להופיע ב-`knesset_mk_individuals` בשתי שורות עם שני מזהים. בזיהוי לפי שם, לבדוק את כל השורות.
+
+### תרומות לבחירות (mevaker_donations)
+- סדר השם אינו עקבי ("חיימוב יצחק" מול "יצחק חיימוב"). לחפש לפי שם משפחה, ולקבץ לפי `donor_last` ו-`donor_city`.
+- `donor_city` מכיל ישויות HTML לצד שמות רגילים. לנרמל לפני קיבוץ.
+- `donor_country` הוא מחרוזת ריקה ולא NULL (11,816 שורות). תרומות חוץ: `donor_country NOT IN ('', 'ישראל')`.
+- `election_date` ריק בפריימריז. את מערכת הבחירות גוזרים מאשכולות של `publication_date`.
+- כ-1,000 קבוצות של שורות זהות (תורם, מקבל, סכום, תאריך). לפני סכום מצטבר: להציג אותן ולא לסכום בשקט.
+- אין לקבוע שתרומה חרגה מהתקרה בלי נוסח החוק והנחיות המבקר לאותה מערכת.
+
+### רשם החברות ומאיה
+- אין בעלי מניות של חברות פרטיות במאגר. `maya_officers` היא נושאי משרה בחברות ציבוריות בלבד. לבעלי מניות של חברה פרטית: הסקיל `checkid-holders`.
+- `ica_companies.is_violating` הוא מחרוזת: `'מפרה'` (188,636), `'התראה'` (30) או ריק. "מפרה" הוא מצב נפוץ, בדרך כלל אי-הגשת דוח שנתי, ולא סיפור בפני עצמו.
+- `company_id` הוא מספר ב-`ica_companies` וטקסט ב-`ica_changes` וב-`ica_liquidations`. ב-JOIN להשוות כמחרוזת.
+- `maya_officers.company_name` הוא שם מקוצר. ההצלבה ל-`ica_companies` היא `LIKE`, לא שוויון.
+
+### שם גג
+- גוף רבים יושבים במאגר תחת הארגון שמעליהם. לפני "אין במאגר": לנסות את הארגון שמעל, שם רשום מלא עם ובלי "בע"מ", ראשי תיבות וכתיב מלא וחסר ("התיישבות" מול "התישבות").
+
+### טבלאות שאינן מקורות
+- טבלאות האזור האישי והצ'אט של קונטקסט חסומות לכלים ואינן מקור תחקיר.

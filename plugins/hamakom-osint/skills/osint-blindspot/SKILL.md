@@ -1,34 +1,45 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since
 name: osint-blindspot
-version: 1.1.0
-description: איתור נקודות עיוורון בסיקור עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db (news_headlines, 21 אלף כותרות משבעה מגזרי תקשורת). מה עולה בתקשורת הערבית, החרדית, הדתי-לאומית, המקומית והזרה ולא מגיע למיינסטרים העברי - ומה מכל אלה לא סוקר אצלנו. הכותרות מהתקשורת הערבית והזרה מתורגמות לעברית (headline_he). כולל השוואה מול הודעות הדוברות הרשמיות (police_announcements, idf_spokesman) לזיהוי פער בין הגרסה הרשמית לדיווח בשטח. הפעל כשדור כותב "מה פספסנו", "בליינדספוט", "מה בתקשורת הערבית", "מה החרדים מדווחים", "מה לא סוקר", "מה עולה בזרה ולא כאן", "פערי סיקור", "מה מדווח בשטח מול הדובר". כל פריט הוא ליד לבדיקה מול המקור, לא ממצא מאומת. לבדיקה אם כבר כתבנו על נושא ראה osint-archive-check.
+version: 1.2.0
+description: איתור נקודות עיוורון בסיקור עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db (news_headlines, כ-300 אלף כותרות מ-96 כלי תקשורת ב-15 מגזרים). מה עולה בתקשורת הערבית, החרדית, הדתי-לאומית, המקומית והזרה ולא מגיע למיינסטרים העברי - ומה מכל אלה לא סוקר אצלנו. רוב הכותרות שאינן בעברית מתורגמות לעברית (headline_he). כולל השוואה מול הודעות הדוברות הרשמיות (police_announcements, idf_spokesman) לזיהוי פער בין הגרסה הרשמית לדיווח בשטח. הפעל כשדור כותב "מה פספסנו", "בליינדספוט", "מה בתקשורת הערבית", "מה החרדים מדווחים", "מה לא סוקר", "מה עולה בזרה ולא כאן", "פערי סיקור", "מה מדווח בשטח מול הדובר". כל פריט הוא ליד לבדיקה מול המקור, לא ממצא מאומת. לבדיקה אם כבר כתבנו על נושא ראה osint-archive-check.
 ---
 
 # osint-blindspot - פערי סיקור
 
-סקיל שקורא את `news_headlines` (21,527 כותרות, מתעדכן שוטף) כדי לאתר מה נמצא בשוליים של תשומת הלב: דיווח שעולה במגזר אחד ולא חוצה למיינסטרים, ופער בין הודעת דוברות רשמית לדיווח מהשטח.
+סקיל שקורא את `news_headlines` (300,681 כותרות מ-96 כלי תקשורת, מ-31.5.2026, נמדד 20.11.2026; מתעדכן שוטף) כדי לאתר מה נמצא בשוליים של תשומת הלב: דיווח שעולה במגזר אחד ולא חוצה למיינסטרים, ופער בין הודעת דוברות רשמית לדיווח מהשטח.
 
-**קרא קודם `references/db-map.md`.**
+**חוקי המאגר.** המפה המלאה היא `references/db-map.md` בשורש התוסף (`../../references/db-map.md` מתיקיית הסקיל). יש סביבות שטוענות רק את SKILL.md, ולכן העיקר כאן:
+- **כלי קודם.** לשם (אדם, חברה, רשות, מקום, תוכנית) - `search_entity(name)`, אחריו `entity_profile(<המזהה שחזר>)`, ו-`query_db` רק למה שהכלים לא מחזירים.
+- את העמודות נותן `describe_table("<טבלה>")`, ואת רשימת הטבלאות `describe_table()` בלי שם. לא מנחשים שם עמודה.
+- **חוק הזהב:** אין אגרגציה ואין `LIKE` על טבלה גדולה בלי `WHERE` על עמודה מאונדקסת. שאילתה שנקטעה או שחרגה מהזמן (10 שניות) אינה "אין תוצאות".
+- **תאריכים.** רוב עמודות התאריך במאגר הן טקסט. `osint_date(col)` מחזיר מהן ISO (`YYYY-MM-DD`) בכל הפורמטים שבמאגר (ISO, `DD/MM/YYYY`, גם עם שעה), ומשווים מול `to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. `date('now', ...)` הוא SQLite: השרת מתרגם אותו בשקט, אבל מול המאגר ישירות הוא נכשל (`function date(unknown, unknown) does not exist`), ולכן כותבים את הצורה המפורשת שעובדת בכל מסלול. השוואה של עמודת טקסט ל-`CURRENT_DATE` נכשלת בכל מסלול (`operator does not exist: text >= date`).
+- **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין". המקורות כאן: `news_rss_scraper` (הכותרות), `news_translate` (התרגום ל-`headline_he`), `police` (הודעות המשטרה) ו-`idf_spokesman_scraper` (דובר צה"ל).
+
+לשם מסוים (אדם, מקום, ארגון) `search_entity("<שם>")` מחזיר, כשאין לשם ישות במודל, כרטיס זמני מתוך הכותרות שמזכירות אותו: ספירה לפי כלי ומגזר, טווח תאריכים, וחמש האחרונות עם קישור. זו נקודת פתיחה מהירה לפני השאילתות של מצב א.
 
 ## מבנה הדאטה - מה יש ומה אין
 
+נמדד 20.11.2026:
+
 | שדה | מה בו |
 |---|---|
-| `sector` | `arabic` (7,890), `foreign` (4,450), `dati_leumi` (3,991), `local` (1,123), `haredi` (920), `alternative` (747), `gendered` (8), ו-`NULL` (2,553) |
-| `category` | `osint` (19,129) או `mainstream` (2,553). ה-`NULL` ב-`sector` הוא בדיוק ה-`mainstream` |
-| `headline_he` | תרגום לעברית - **קיים רק ל-`arabic` ו-`foreign`** (אומת: 100% בהם, 0% בשאר). במגזרים העבריים `headline` עצמו בעברית |
-| `outlet` | אל-ג'זירה, שהאב, אל-קודס, פלסטין אונליין, Le Monde, FT, The Economist, סרוגים, כיפה, ערוץ 7, JDN, זמן ישראל, Ynet, Maariv ועוד |
-| `pub_iso` | מאונדקס. זו עמודת הזמן |
+| `sector` | 15 מגזרים: `arabic` (56,946), `foreign` (52,021), `arab_regional` (37,277), `dati_leumi` (33,827), `mainstream` (30,223), `haredi` (14,556), `palestinian` (13,950), `russian` (13,771), `mainstream_en` (8,643), `agency` (8,351), `arab_il` (5,309), `independent` (5,147), `local` (3,276), `alternative` (1,208), `gendered` (44), ועוד 16,132 שורות עם `sector` NULL |
+| `category` | `mainstream` (46,355) או `osint` (כל השאר). **המיינסטרים העברי מפוצל:** `sector = 'mainstream'` (30,223) ועוד `sector IS NULL` (16,132), ושניהם עם `category = 'mainstream'`. לכן מסננים מיינסטרים לפי `category = 'mainstream'`, לא לפי `sector` |
+| `mainstream_en` | Jerusalem Post, Times of Israel, Ynet English. **רשום תחת `category = 'osint'`**, כלומר "אין שורה במיינסטרים" אינו כולל אותם. אם נושא מופיע רק שם, ציין זאת בנפרד |
+| `headline_he` | תרגום לעברית - קיים לכ-85% מהכותרות במגזרים שאינם בעברית (`arabic`, `foreign`, `arab_regional`, `palestinian`, `russian`, `mainstream_en`, `agency`, `arab_il`), ו-0% במגזרים העבריים, שבהם `headline` עצמו בעברית |
+| `outlet` | 96 כלים. במיינסטרים: ישראל היום, Maariv, Ynet, Haaretz, ביזפורטל, ערוץ 14, כאן 11, חדשות 13, TheMarker, Walla, כלכליסט, Globes, N12. בשוליים: אל-ג'זירה, שהאב, אל-קודס, פלסטין אונליין, Le Monde, Guardian, סרוגים, כיפה, ערוץ 7, JDN, כיכר השבת, זמן ישראל, שיחה מקומית, העין השביעית ועוד |
+| `pub_iso` | טקסט ISO עם שעה (`2026-11-20T17:32:25+00:00`), מאונדקס. זו עמודת הזמן. משווים מול `to_char(CURRENT_DATE - N,'YYYY-MM-DD')` |
+| `headline`, `headline_he` | עם אינדקס טריגרם, ולכן `LIKE '%מונח%'` עליהם מהיר |
 | `multi_source` | **0 בכל השורות** - לא בשימוש. אל תסתמך עליו |
-| `first_seen_at` | **אינו קיים**, אבל `new_since` עובד (מזהה לבד את `scraped_at`, נבדק 18.10.2026). לסינון לפי מועד פרסום - `pub_iso` |
+| `first_seen_at` | **אינו קיים**, אבל `new_since` עובד (משתמש ב-`scraped_at`). לסינון לפי מועד פרסום - `pub_iso` |
 
 ## עקרונות יסוד
 
 1. **פער בסיקור אינו קנוניה.** מיינסטרים שלא סיקר נושא יכול להיות עומס, שיקול חדשותי, או שהסיפור לא אומת. הבליינדספוט הוא נקודת פתיחה לבדיקה שלנו, לא כתב אישום על עיתונות אחרת.
 2. **כותרת אינה דיווח מאומת.** `news_headlines` מחזיקה כותרות בלבד - לא גוף, לא אימות. כותרת בשהאב או בערוץ 7 היא אינדיקציה שמשהו דווח, לא שמשהו קרה. **חובה לפתוח את הכתבה במקור** לפני שמתקדמים.
-3. **התרגום הוא מכונה.** `headline_he` בכותרות ערביות וזרות הוא תרגום אוטומטי. אל תצטט ממנו; השתמש בו לניווט וקרא את המקור.
-4. **היחס אינו מדד.** בשבעה ימים יש בטבלה יותר מ-3,000 כותרות ובאתר שלנו 6 כתבות. "לא סיקרנו" נכון כמעט לכל נושא ולכן חסר משמעות. הכלי עובד **לפי נושא**, לא ברמת מאקרו.
+3. **התרגום הוא מכונה.** `headline_he` בכותרות שאינן בעברית הוא תרגום אוטומטי. אל תצטט ממנו; השתמש בו לניווט וקרא את המקור.
+4. **היחס אינו מדד.** בשבעה ימים נכנסות לטבלה כ-20 אלף כותרות (20,174 בשבוע שעד 20.11.2026), ואצלנו כתבות בודדות. "לא סיקרנו" נכון כמעט לכל נושא ולכן חסר משמעות. הכלי עובד **לפי נושא**, לא ברמת מאקרו.
 5. **כשאי-אפשר לקבוע - הערך כיוון והסתברות.**
 
 ## מצב א - נושא: מי דיווח ומי לא
@@ -39,41 +50,42 @@ description: איתור נקודות עיוורון בסיקור עבור דסק
 SELECT sector, outlet, substr(pub_iso,1,10) d,
        COALESCE(headline_he, headline) AS title, url
 FROM news_headlines
-WHERE (headline LIKE '%מונח%' OR headline_he LIKE '%מונח%')
-  AND pub_iso >= date('now','-14 days')
+WHERE (headline LIKE '%חאן יונס%' OR headline_he LIKE '%חאן יונס%')
+  AND pub_iso >= to_char(CURRENT_DATE - 14,'YYYY-MM-DD')
 ORDER BY pub_iso DESC
 LIMIT 60
 ```
 
 ואז הפריסה עצמה:
 ```sql
-SELECT sector, category, COUNT(*) n, GROUP_CONCAT(DISTINCT outlet) outlets
+SELECT sector, category, COUNT(*) n, string_agg(DISTINCT outlet, ', ') outlets
 FROM news_headlines
-WHERE (headline LIKE '%מונח%' OR headline_he LIKE '%מונח%')
-  AND pub_iso >= date('now','-30 days')
+WHERE (headline LIKE '%חאן יונס%' OR headline_he LIKE '%חאן יונס%')
+  AND pub_iso >= to_char(CURRENT_DATE - 30,'YYYY-MM-DD')
 GROUP BY sector, category
 ORDER BY n DESC
 ```
+(`string_agg`, לא `GROUP_CONCAT`: המאגר הוא Postgres. השרת מתרגם `GROUP_CONCAT` פשוט, אבל `string_agg` עובד בכל מסלול.)
 
-**הליד:** נושא שמופיע ב-`osint` בכמה מגזרים ואין לו אף שורה ב-`mainstream`. זה אומר שהוא דווח בשוליים ולא חצה. בדוק למה.
+**הליד:** נושא שמופיע ב-`osint` בכמה מגזרים ואין לו אף שורה עם `category = 'mainstream'`. זה אומר שהוא דווח בשוליים ולא חצה. בדוק למה. אם הוא מופיע רק ב-`mainstream_en`, הוא חצה לאנגלית ולא לעברית - גם זה פער, אבל אחר.
 
 חפש בכמה ניסוחים - בעברית, ובמונח שיופיע בתרגום מערבית (שם מקום, שם אדם).
 
 ## מצב ב - מה עולה במגזר מסוים
 
-מה מעסיק מגזר בשבוע האחרון:
+מה מעסיק מגזר בימים האחרונים:
 ```sql
 SELECT outlet, substr(pub_iso,1,10) d, COALESCE(headline_he, headline) title, url
 FROM news_headlines
-WHERE sector = 'arabic' AND pub_iso >= date('now','-3 days')
+WHERE sector = 'arabic' AND pub_iso >= to_char(CURRENT_DATE - 3,'YYYY-MM-DD')
 ORDER BY pub_iso DESC
 LIMIT 80
 ```
-(החלף ל-`haredi`, `dati_leumi`, `local`, `alternative`, `foreign`.)
+(החלף ל-`haredi`, `dati_leumi`, `local`, `alternative`, `independent`, `arab_il`, `palestinian`, `arab_regional`, `russian`, `foreign`, `agency`.)
 
-`local` (1,123) הוא המגזר המוניציפלי והוא הפחות מכוסה בסיקור הארצי - שם יושבים סיפורי רשויות מקומיות. `alternative` (747) הוא כלי התקשורת הקטנים.
+`local` (3,276; YCOM, כל העיר ירושלים, כלבו חיפה, עמק ניוז ועוד) הוא המגזר המוניציפלי והוא הפחות מכוסה בסיקור הארצי - שם יושבים סיפורי רשויות מקומיות. `alternative` (+972, זמן ישראל, שיחה מקומית) ו-`independent` (דבר, שומרים, העין השביעית ועוד) הם כלי התקשורת הקטנים. `arab_il` (בוקרא, כל אלערב, פאנט) הוא התקשורת של החברה הערבית בישראל, להבדיל מ-`arabic` ו-`palestinian`.
 
-מה שוליים לגמרי: `gendered` מחזיק 8 שורות בלבד - כלומר הזרוע הזאת בקושי אוספת. אל תסיק ממנה על היעדר סיקור מגדרי.
+מה שוליים לגמרי: `gendered` מחזיק 44 שורות בלבד מכלי אחד - כלומר הזרוע הזאת בקושי אוספת. אל תסיק ממנה על היעדר סיקור מגדרי.
 
 ## מצב ג - הפער מול הדוברות הרשמית
 
@@ -81,14 +93,15 @@ LIMIT 80
 
 ```sql
 SELECT pub_date, text, url FROM police_announcements
-WHERE pub_date >= date('now','-7 days') ORDER BY pub_date DESC LIMIT 20
+WHERE pub_date >= to_char(CURRENT_DATE - 7,'YYYY-MM-DD') ORDER BY pub_date DESC LIMIT 20
 ```
 ```sql
 SELECT pub_date, headline, body, url FROM idf_spokesman
-WHERE pub_date >= date('now','-7 days') ORDER BY pub_date DESC LIMIT 20
+WHERE pub_date >= to_char(CURRENT_DATE - 7,'YYYY-MM-DD') ORDER BY pub_date DESC LIMIT 20
 ```
+(`pub_date` בשתיהן הוא טקסט ISO עם שעה.)
 
-ואז חפש את אותו אירוע ב-`news_headlines` (במיוחד ב-`sector='arabic'`, שמדווח מהשטח בעזה ובגדה). הפערים שמעניינים: מספרים שונים, ייחוס אחראי שונה, אירוע שהדובר לא הזכיר, או אירוע שרק הדובר מדווח עליו.
+ואז חפש את אותו אירוע ב-`news_headlines` (במיוחד ב-`sector` `arabic` ו-`palestinian`, שמדווחים מהשטח בעזה ובגדה). הפערים שמעניינים: מספרים שונים, ייחוס אחראי שונה, אירוע שהדובר לא הזכיר, או אירוע שרק הדובר מדווח עליו.
 
 **זהירות מחייבת.** לפי כלל הדסק, גרסת צה"ל נרשמת אבל אינה נבנית עליה הכתבה; אותו דבר לגבי דיווח מהשטח שלא אומת. שתי הגרסאות הן טענות של גורמים מעורבים. הליד הוא **הפער**, והכתבה תלויה באימות עצמאי - לא בהעדפת צד. אל תציג דיווח מכותרת כעובדה, מאיזה כיוון שיהיה.
 
@@ -96,16 +109,16 @@ WHERE pub_date >= date('now','-7 days') ORDER BY pub_date DESC LIMIT 20
 
 השלמה מהירה מול הארכיון שלנו (לעומק - `osint-archive-check`):
 ```sql
-SELECT title, pub_date, url FROM wp_articles
-WHERE title LIKE '%מונח%' OR excerpt LIKE '%מונח%'
+SELECT title, pub_date, category, url FROM wp_articles
+WHERE title LIKE '%חאן יונס%' OR excerpt LIKE '%חאן יונס%'
 ORDER BY pub_date DESC LIMIT 15
 ```
-זכור: `wp_articles.category` ריק בכל 5,912 השורות - אל תסנן לפיו.
+**הארכיון קפוא מ-9.11.2026** (האתר הוחלף; הכתבה האחרונה בטבלה מ-8.11.2026). מה שפורסם אחרי זה אינו בטבלה, ולכן לשאלה "כתבנו על זה לאחרונה" בודקים גם באתר. `category` מלא (6,007 מתוך 6,008 השורות) ואפשר לסנן לפיו.
 
 ## שלב האימות
 
 - **פתח את ה-`url` של כל כותרת** שאתה מתכוון להסתמך עליה. הטבלה מחזיקה כותרות, ואין דרך לדעת מהכותרת מה הכתבה אומרת.
-- לכותרת ערבית או זרה - קרא את המקור, לא את התרגום האוטומטי.
+- לכותרת שאינה בעברית - קרא את המקור, לא את התרגום האוטומטי.
 - לפער מול דוברות - פנה לדובר לתגובה ואמת עצמאית לפני פרסום.
 - ציין את שם הכלי והתאריך בכל ייחוס.
 
@@ -113,12 +126,16 @@ ORDER BY pub_date DESC LIMIT 15
 
 | תקלה | פתרון |
 |---|---|
-| `new_since("news_headlines", ...)` מחזיר שגיאה | לא צפוי מאז 08.2026. אם קורה - `WHERE pub_iso >= date('now','-N days')` |
-| `headline_he` ריק | צפוי בכל המגזרים העבריים. השתמש ב-`COALESCE(headline_he, headline)` |
-| `sector` הוא NULL | אלה שורות ה-`mainstream`. זה לא חסר דאטה |
+| `function date(unknown, unknown) does not exist` | `date('now','-N days')` הוא SQLite, ומחוץ לשרת אין לו תרגום. השתמש ב-`to_char(CURRENT_DATE - N,'YYYY-MM-DD')` |
+| `function group_concat does not exist` | מחוץ לשרת אין תרגום מ-SQLite. Postgres: `string_agg(DISTINCT outlet, ', ')` |
+| `operator does not exist: text >= date` | `pub_iso` / `pub_date` הם טקסט. השווה מול `to_char(...)`, לא מול `CURRENT_DATE` |
+| `headline_he` ריק | צפוי בכל המגזרים העבריים, ובכ-15% מהשאר. השתמש ב-`COALESCE(headline_he, headline)` |
+| `sector` הוא NULL | אלה שורות מיינסטרים (`category = 'mainstream'`). זה לא חסר דאטה |
+| סינון `sector = 'mainstream'` מפספס כלים | המיינסטרים מפוצל. סנן `category = 'mainstream'` |
 | החיפוש לא מצא נושא שאתה יודע שדווח | הטבלה מחזיקה כותרות בלבד; המונח יכול להיות בגוף ולא בכותרת. נסה שם מקום, שם אדם, וניסוח מהתרגום |
+| אין כותרות מהיום | בדוק ב-`scrape_runs` (`source = 'news_rss_scraper'`) שהמקור רץ, לפני "אין" |
 | `multi_source` תמיד 0 | לא בשימוש. התעלם |
-| הפלט נחתך | צמצם את חלון הזמן; 3 ימים מחזירים כ-3,000 שורות בכל המגזרים |
+| הפלט נחתך | צמצם את חלון הזמן או את המגזר; 3 ימים בכל המגזרים הם כ-10 אלף שורות (10,260 ב-20.11.2026), מול תקרה של 500 שורות לשאילתה |
 
 **אסור:** להציג כותרת כדיווח מאומת, לצטט מתרגום מכונה, או לכתוב "התקשורת התעלמה" על סמך היעדר התאמה בכותרות. היעדר כותרת אינו היעדר סיקור.
 

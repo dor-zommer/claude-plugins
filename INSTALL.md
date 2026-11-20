@@ -87,7 +87,7 @@ docker compose up -d --build
 
 בתוך Claude Code, אחרי התקנת `hamakom-osint`:
 
-> תריץ `list_tables` על osint-db
+> תריץ `describe_table` על osint-db
 
 אם חוזרת רשימת טבלאות — החיבור עובד.
 

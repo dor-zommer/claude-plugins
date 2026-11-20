@@ -1,8 +1,9 @@
 ---
+allowed-tools: mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__query_db
 name: checkid-holders
-version: 1.1.0
+version: 1.2.0
 description: >-
-  שליפת בעלי שליטה, מחזיקי מניות ודירקטורים של חברה פרטית מ-checkid.co.il, פר-ח.פ, דרך דפדפן אמיתי (השמות הגלויים חינם, לא הנסח בתשלום). הפעל כשדור נותן ח.פ או שם חברה ומבקש "מי הבעלים של", "מי מחזיק ב", "בעלי המניות של", "מי עומד מאחורי החברה X", "מי הדירקטורים", "checkid", או כשבתחקיר צריך לדעת מי שולט בחברה שאין עליה בעלי מניות בדאטה הפתוח. משלים את החוליה החסרה: רשם החברות (ica_companies ב-osint-db) לא מפרסם בעלי מניות. נקודתי בלבד - לא לבאלק.
+  שליפת בעלי שליטה, מחזיקי מניות ודירקטורים של חברה פרטית מ-checkid.co.il, פר-ח.פ, דרך דפדפן אמיתי (השמות הגלויים חינם, לא הנסח בתשלום). הפעל כשדור נותן ח.פ או שם חברה ומבקש "מי הבעלים של", "מי מחזיק ב", "בעלי המניות של", "מי עומד מאחורי החברה X", "מי הדירקטורים", "checkid", או כשבתחקיר צריך לדעת מי שולט בחברה שאין עליה בעלי מניות בדאטה הפתוח. משלים את החוליה החסרה: רשם החברות (ica_companies ב-osint-db) לא מפרסם בעלי מניות. אחרי השליפה מחבר את החברה ואת השמות לתיק הישות ב-osint-db (entity_profile לח.פ, search_entity לכל שם). נקודתי בלבד - לא לבאלק.
 ---
 
 # checkid - בעלי שליטה ומניות פר-ח.פ
@@ -17,6 +18,12 @@ description: >-
 - **רק דרך דפדפן אמיתי** (ה-MCP browser / Claude in Chrome). checkid מגן על עמודי הפרטים באתגר Cloudflare מנוהל ("רק רגע...").
 - **אסור לבנות סקריפט Playwright/headless שמהונדס לעבור את האתגר** - זו עקיפת זיהוי-בוטים. צפייה בעמוד ציבורי בדפדפן אמיתי = לגיטימי; כלי אוטומטי שמנצח את החסימה = לא. אם צריך אוטומציה אמיתית, המסלול הוא ה-API הרשמי בתשלום (`/exApi/v1/CheckId/GetData/CompanyDetailsDataModel`, ~2.5₪), שדורש חשבון+key שדור פותח.
 - **המידע ציבורי אך לא מאומת** - checkid מסייגים ("יתכנו טעויות"). כל שם הוא **ליד לבדיקה מול הנסח הרשמי**, לא ממצא. אסור לפרסם "X הוא בעל השליטה" על סמך checkid בלבד.
+
+## חוקי המאגר כשמצליבים את החברה
+
+- **כסף בהתקשרויות:** `budget_contracts.volume` הוא במטבע של `currency`, ושורה `superseded` הוחלפה בדיווח מאוחר יותר. כל סכום הוא `SUM(volume * FX)` עם `superseded IS NOT TRUE`, לפי הנוסחה בתיאור של `query_db`. לעולם לא `SUM(volume)`.
+- **פטורים:** בכל סכום או דירוג של `exemptions.amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (הקצאות ותמורות של רמ"י) היא תמורה שהמדינה מקבלת, לא הוצאה.
+- **שורה שירדה מהמקור** מסומנת ב-`gone_at` (כנסת) או ב-`removed_at` (רשם החברות, מאיה). מסננים `IS NULL`.
 
 ## הצעדים (דרך ה-MCP browser)
 
@@ -63,10 +70,27 @@ return JSON.stringify(res);})()
 ### 5. מיפוי תפקידים ל-עברית
 `ShareHolders`→בעל מניות · `Directors`→דירקטור · `OptionHolders`→מחזיק אופציות · `Signatories`→מורשה חתימה · `Officers`→נושא משרה · `Trustees`→נאמן.
 
-### 6. הצלבה למאגר
-עם השמות ביד, מצליבים ב-osint-db (Supabase, פרויקט Hamakom-Osint-DB): החברה ב-`ica_companies` (סטטוס, מפרה, שעבודים ב-`ica_changes`), והשם כתורם ב-`mevaker_donations`, כספק ב-`exemptions` או ב-`budget_contracts` (`supplier_name`), או כמקבל ב-`budget_supports` (תמיד עם `year = ...`, אחרת השאילתה נקטעת). שם ← חברה ← מה עוד יש עליו. חברה ציבורית - גם `maya_officers`.
+### 6. חיבור לתיק הישות ב-osint-db
+כלי קודם, SQL אחרון:
+
+1. **החברה:** `entity_profile("<ח.פ>")` - מספר בן 9 ספרות מחזיר ישירות את הפרופיל של `il-reg.<ח.פ>`: מה שהמודל מקשר לחברה, מקובץ (פטורים והתקשרויות כספק, תמיכות, אירועי רשם החברות, נושאי משרה כשהם מקושרים), עם סכומים לפי מטבע ו-`sourceUrl`. לא מחברים בין מטבעות או בין תפקידים.
+2. **כל שם שעלה ב-checkid:** `search_entity("<שם מלא>")`. אם חוזרת ישות מסוג אדם עם קשרים (`incoming_links`), `entity_profile("<id>")` שלה מראה כהונות, תרומות וקשרים אחרים. בחר לפי מספר הקשרים ולא לפי הסדר, והתאמת שם אינה זהות: אדם בשם זהה אינו בהכרח בעל המניות.
+3. **רק מה שהכלים לא מחזירים - `query_db`:**
+```sql
+SELECT company_id, name_he, status, sub_status, company_type, is_violating, registration_date, city
+FROM ica_companies WHERE company_id = <ח.פ>
+```
+```sql
+SELECT request_type, status_date, lien_id FROM ica_changes
+WHERE company_id = '<ח.פ>' ORDER BY status_date DESC NULLS LAST LIMIT 50
+```
+(`company_id` הוא מספר ב-`ica_companies` וטקסט ב-`ica_changes`.) התקשרויות מעבר לפרופיל - רק לפי `entity_id = '<ח.פ>'` (חיפוש לפי `supplier_name` נקטע; ראה `osint-money`). תמיכות לפי שם - תמיד עם `year = ...`, אחרת השאילתה נקטעת. חברה ציבורית - גם `maya_officers` לפי `company_name` (שם מקוצר; לא תמיד מקושר לחברה בפרופיל). תורם בשם - `mevaker_donations`, דרך `osint-donor-profile`.
 
 **`mod_tenders` לא מתאים להצלבה הזו:** אלה הודעות מכרז, בלי עמודת זוכה או ספק.
+
+לפני "אין עליה כלום במאגר": בדוק ב-`scrape_runs` שהמקור רץ (`SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source IN ('ica_scraper','maya_scraper','budget_contracts','exemptions') GROUP BY 1`).
+
+לתיק מלא על החברה או על בעל השליטה - `osint-entity-dossier`.
 
 ### 7. פרטיות וזהירות משפטית
 - **בעלי מניות הם לעיתים קרובות אנשים פרטיים.** שם שעלה ב-checkid לא מועבר ל-`population_search` או להעשרה אחרת בלי אישור של דור, ורק כשיש עניין ציבורי ברור (תפקיד ציבורי, כסף ציבורי, ניגוד עניינים).
