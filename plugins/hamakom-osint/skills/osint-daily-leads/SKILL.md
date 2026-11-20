@@ -57,7 +57,14 @@ SELECT h.changed_at::date, h.old_status, h.new_status, p.pl_number, p.pl_name,
 FROM yosh_status_history h JOIN yosh_plans p USING (pl_number)
 WHERE h.changed_at >= :since ORDER BY h.new_status, h.changed_at;
 ```
-ואותו דבר ל-`mavat_status_history` מול `mavat_plans`. לשים לב לגל: כמה דחיות או אישורים ביום אחד, מול הקצב הרגיל של 90 הימים האחרונים. הגל עצמו יכול להיות ליד, גם אם הוא סגירה מנהלית, ואז זו השאלה.
+ואותו דבר ל-`mavat_status_history` מול `mavat_plans`, שאין בה `sector` (במקומה `district_name`):
+```sql
+SELECT h.changed_at::date, h.old_status, h.new_status, p.pl_number, p.pl_name,
+       p.district_name, p.plan_county_name, p.pl_area_dunam, p.quantity_delta_120, p.pl_url
+FROM mavat_status_history h JOIN mavat_plans p USING (pl_number)
+WHERE h.changed_at >= :since ORDER BY h.new_status, h.changed_at;
+```
+ לשים לב לגל: כמה דחיות או אישורים ביום אחד, מול הקצב הרגיל של 90 הימים האחרונים. הגל עצמו יכול להיות ליד, גם אם הוא סגירה מנהלית, ואז זו השאלה.
 
 אחר כך `new_since(table, since)` על:
 ```
@@ -73,7 +80,7 @@ new_since("police_announcements", since)
 
 - `budget_contracts`, `budget_supports`, `budget_items`, `budget_categories` - כולן נטענו ב-import חד-פעמי, וה-`first_seen_at` שלהן הוא שניות רצות של אותה טעינה. `new_since` עליהן יחזיר את כל הטבלה או כלום. הן מקור לתחקיר יזום (`osint-money`), לא לדייג'סט יומי.
 - `news_headlines`, `election_polls`, `wp_articles` - אין בהן `first_seen_at`, אבל **מאז 11.8.2026 `new_since` מזהה לבד את עמודת הזמן** (`scraped_at` וכדומה) ועובד עליהן. לזרימת החדשות עדיין עדיף הסקיל הנפרד (`osint-blindspot`), אבל `new_since` כאן אינו שגיאה.
-- `mevaker_reports` נשאר בלופ. **מאז 8.11.2026 היא תצוגה מעל ספריית הפרסומים** (migrations/mevaker_reports_unify.sql): הדוחות הישנים, ועוד כל פרסום שהאוסף `mevaker_library_collector.py` מוצא (פעם ביום, בקרון של 01:50 UTC). הארכיון שנטען בטעינה המלאה לא נכנס אליה, ולכן לא קופץ כחדש. לנושא של דוח חדש - שמות הפרקים שלו: `SELECT title, main_audited FROM mevaker_chapters WHERE page_no = <id>`. ריק בדרך כלל אומר היעדר דוחות (המבקר מפרסם בגלים) ולא תקלה, וגם פיגור של עד יממה אינו תקלה; לפני שמכריזים על תקלה - `scrape_runs`.
+- `mevaker_reports` נשאר בלופ. **מאז 8.11.2026 היא תצוגה מעל ספריית הפרסומים** (migrations/mevaker_reports_unify.sql): הדוחות הישנים, ועוד כל פרסום שהאוסף `mevaker_library_collector.py` מוצא (פעם ביום, בקרון של 01:50 UTC). הארכיון שנטען בטעינה המלאה לא נכנס אליה, ולכן לא קופץ כחדש. לנושא של דוח חדש - שמות הפרקים שלו: `SELECT title, main_audited FROM mevaker_chapters WHERE page_no = <id>`. הטקסט בתצוגה הזו חתוך ב-20 אלף תווים; את הטקסט המלא של פרק קוראים ב-`mevaker_chapter_texts` (ראה osint-comptroller). ריק בדרך כלל אומר היעדר דוחות (המבקר מפרסם בגלים) ולא תקלה, וגם פיגור של עד יממה אינו תקלה; לפני שמכריזים על תקלה - `scrape_runs`.
 
 **המנוע הוא Postgres, לא SQLite** (מאז 11.8.2026). שלוש מסקנות מעשיות:
 
@@ -103,7 +110,7 @@ new_since("police_announcements", since)
 - **פטורים:** בכל סכום או דירוג של `exemptions.amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (הקצאות ותמורות של רמ"י) היא תמורה שהמדינה מקבלת, לא הוצאה.
 
 
-לכל מועמד, לפני שהוא נכתב, למשוך מהמאגר את כל מה שמחובר לאותו מקום, גוף או נושא:
+לכל מועמד, לפני שהוא נכתב, למשוך מהמאגר את כל מה שמחובר לאותו מקום, גוף או נושא. **קודם הכלים:** לגוף, חברה, יישוב או ח"כ - `search_entity`, ואחריו `entity_profile` על הישות עם הכי הרבה קשרים (לא בהכרח הראשונה ברשימה). הפרופיל מאחד תכנון, החלטות, חקיקה, מבקר וכסף תחת ישות אחת. לחוק - `legislation_history`. לספק שעלה ברקע - `search_exemption_documents`. `query_db` רק למה שהם לא מחזירים:
 - **היסטוריה תכנונית:** כל התוכניות של היישוב או השכונה ב-`yosh_plans` / `mavat_plans`, ומעברי הסטטוס שלהן ב-`*_status_history`.
 - **החלטות ממשלה:** החלטות שמזכירות את המקום או את הגוף (`decisions.body_text`).
 - **חקיקה ותזכירים:** חקיקה ותזכירים שחלים על המקום או על התחום (`legislation`, `knesset_bills`).
@@ -136,7 +143,7 @@ new_since("police_announcements", since)
 
 ## שלב 7 - דירוג
 
-הביט של המקום קובע, לפי `wp_articles` של השנה האחרונה. ראה את הטבלה בזיכרון `reference_hamakom_actual_beat`:
+הביט של המקום קובע, לפי `wp_articles` של השנה האחרונה (הארכיון קפוא מ-9.11.2026, ולכן השנה שעד אז):
 - **הביט החם:** חם, דמוקרטיה במשבר, **בריאות הנפש**, יהודה ושומרון, אלימות מינית, החברה הערבית, חינוך, דיור ציבורי, משפט ופלילים, משטרה.
 - **ביט רדום הוא עדיין ביט:** אלימות מינית ודיור ציבורי גדולים בארכיון.
 

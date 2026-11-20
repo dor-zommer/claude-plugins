@@ -5,7 +5,8 @@
 ## איך השרת מריץ שאילתה
 
 - המאגר הוא Postgres. ה-MCP קורא ישירות ממנו, בתפקיד קריאה בלבד. אין SQLite ואין סנכרון לילי.
-- `query_db`: SELECT או WITH אחד בלבד, עד 500 שורות, עד 50 אלף תווים בפלט, ועד 10 שניות. שאילתה ארוכה יותר נקטעת בשגיאת timeout.
+- `query_db`: SELECT או WITH אחד בלבד, עד 50 אלף תווים בפלט, ועד 10 שניות. שאילתה ארוכה יותר נקטעת בשגיאת timeout.
+- `query_db` מחזיר 100 שורות כברירת מחדל. `LIMIT` בתוך ה-SQL לא מעלה את התקרה; כדי לקבל יותר מעבירים `limit` לכלי, עד 500.
 - כלי קודם: `search_entity`, `entity_profile`, `legislation_history`, `search_exemption_documents`, `read_exemption_documents`, `new_since`. `query_db` רק למה שהם לא מחזירים. `describe_table()` מחזיר את רשימת הטבלאות, ו-`describe_table(name)` את העמודות של טבלה.
 - לפני מסקנה של "אין במאגר": לבדוק ב-`scrape_runs` שהמקור רץ (`status IN ('ok','warn')`).
 
@@ -41,13 +42,13 @@
 | `mevaker_donations` | 112,396 | `id`, `election_type`, `donor_name`, `recipient`, `party`, `publication_date` | `publication_date` | 2026-10-29 | פעיל |
 | `police_announcements` | 4,715 | `id`, `pub_date`, `channel` | `pub_date` | 2026-11-20T11:38:21 | פעיל |
 | `idf_spokesman` | 20,507 | `id`, `url` | `pub_date` | 2026-11-20T12:02:29 | פעיל |
-| `news_headlines` | 300,770 | `id`, `outlet`, `category`, `sector`, `url` | `pub_iso` | 2026-11-20T17:05:00 | פעיל |
+| `news_headlines` | 300,770 | `id`, `outlet`, `category`, `sector`, `url` | `pub_iso` | 2026-11-20T17:40:44 | פעיל |
 | `wp_articles` | 6,008 | `post_id`, `author_id` | `pub_date` | 2026-11-08T08:00:00 | קפוא: האתר הוחלף; איסוף הכתבות מ-WP REST (local_news_wp_api.py) הוצא מהקרון ב-9.11.2026 |
 | `ica_companies` | 733,995 | `company_id`, `name_he`, `status`, `registration_date`, `city` | `registration_date` | 2026-11-19 | פעיל |
 | `ica_changes` | 688,775 | `company_id`, `company_name`, `request_type`, `status_date` | `status_date` | 2026-11-20 | פעיל |
 | `maya_officers` | 21,530 | `id`, `name`, `company_name`, `position`, `person_id` | - | - | פעיל |
 | `exemption_attachments` | 137,654 | `att_key`, `exemption_id`, `status`, `sha256` | - | - | פעיל |
-| `scrape_runs` | 64,518 | `id`, `source` | `started_at` | 2026-11-20T17:07:11 | פעיל |
+| `scrape_runs` | 64,529 | `id`, `source` | `started_at` | 2026-11-20T17:40:01 | פעיל |
 
 "~" הוא אומדן של Postgres לטבלה של יותר משני מיליון שורות.
 
