@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Internal Claude plugins for ha-makom.co.il editorial work",
-    "version": "2.39.0"
+    "version": "2.40.0"
   },
   "plugins": [
     {
       "name": "hamakom-factcheck",
       "source": "./plugins/hamakom-factcheck",
-      "description": "המקום פאקטצ'ק — אימות תוכן ויראלי, נתונים, ציטוטים, גיאו, פורנזיקת תמונה, ואימות כתבה"
+      "description": "המקום פאקטצ'ק: אימות תוכן ויראלי, נתונים, ציטוטים, גיאו, פורנזיקת תמונה, אירועי שטח ואימות כתבה"
     },
     {
       "name": "hamakom-osint",
