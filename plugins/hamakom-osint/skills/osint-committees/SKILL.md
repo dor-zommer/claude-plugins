@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-committees
-version: 1.3.0
+version: '1.4.0'
 description: >-
   מה קורה בוועדות הכנסת ומה השרים לא עונים - עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db. סדר יום של ישיבות ועדה כולל ישיבות עתידיות (knesset_committee_sessions + knesset_session_items), חומרי רקע ופרוטוקולים להורדה כולל מסמכי מרכז המחקר והמידע (knesset_session_documents), וזיהוי ישיבות חסויות. הליד המובנה: שאילתות ח"כים שהמועד לתשובת השר חלף ולא נענו (knesset_queries), עם שם המשרד מ-gov_ministers; המספר נמדד בכל ריצה. הפעל כשדור כותב "מה על סדר היום בוועדה", "ישיבות ועדת הכספים", "מה נדון בוועדה", "פרוטוקול ועדה", "חומר רקע לישיבה", "ישיבה חסויה", "שאילתות שלא נענו", "מה השר לא ענה", "שאילתה של ח\"כ". כל פריט הוא ליד לבדיקה מול אתר הכנסת, לא ממצא מאומת. להצבעות, פרופיל ח"כ ומסלול חוק ראה osint-knesset.
 ---
@@ -26,6 +26,8 @@ description: >-
   GROUP BY 1
   ```
   ריצה מוצלחת אינה בהכרח נתונים חדשים: בדוק גם `max(first_seen_at)` בטבלה עצמה (נמדד 20.11.2026: `knesset_queries` רץ בהצלחה ב-20.11.2026, והשורה החדשה ביותר בה מ-9.11.2026). מקור שלא רץ הוא "לא נאסף", לא "אין".
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## עקרונות יסוד
 

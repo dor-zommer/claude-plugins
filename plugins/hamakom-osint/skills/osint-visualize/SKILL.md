@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Write Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db
+allowed-tools: Read Write Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-visualize
-version: 1.3.0
+version: '1.4.0'
 description: הופך תוצאות שאילתה מ-osint-db לגרף אינטראקטיבי בצ'אט, ומייצא אותו לקוד הטמעה או לקובץ תמונה. כוללני לכל טבלאות המאגר - כסף (פטורים, התקשרויות, תמיכות, תרומות בחירות, מכרזי ביטחון), זמן (כותרות, הודעות דוברות, החלטות, חקיקה), גיאוגרפיה (תוכניות מבא"ת ויו"ש, ערי תורמים, מיקומי כתבות), רשת וזרימה (תורם-מקבל, ספק-מפרסם, יוזם-חוק), פרלמנט (הצבעות וסיעות), והשוואת סיקור בין מדורים. הפעל כשדור כותב "תראה לי גרף", "תעשה ויזואליזציה", "תמחיש את זה", "גרף של", "תוציא לי תמונה מהנתונים", "קוד הטמעה לגרף", "תראה את זה ויזואלית", או אחרי שסקיל אוסינט אחר החזיר טבלה שקשה לקרוא. לעמוד סקרולי-טלינג מלא לאתר ראה hamakom-data-page - זה פרויקט אחר וגדול יותר.
 ---
 
@@ -29,6 +29,7 @@ description: הופך תוצאות שאילתה מ-osint-db לגרף אינטר�
 - **פטורים:** בכל סכום או דירוג של `exemptions.amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (43,794 הקצאות ותמורות של רמ"י) היא תמורה שהמדינה מקבלת, לא הוצאה.
 - **שורה שירדה מהמקור** מסומנת ב-`gone_at` (הצבעות הכנסת) או ב-`removed_at` (רשם החברות, מאיה). מסננים `IS NULL`.
 - **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין".
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## בחירת סוג הגרף לפי צורת הנתונים
 

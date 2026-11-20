@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-comptroller
-version: 2.1.0
+version: '2.2.0'
 description: >-
   תחקיר דוחות מבקר המדינה עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db: ספריית הפרסומים המלאה, פרק אחר פרק, בטקסט מלא (mevaker_chapters, mevaker_chapter_texts), והודעות הדוברות (mevaker_news). היכולת המרכזית היא חיפוש בתוך גוף הדוחות ולא רק בכותרות - כך עולה גוף, פרויקט או סכום שמוזכר בתוך פרק שכותרתו על נושא אחר לגמרי. כולל מעקב אחרי המשך טיפול: אותו נושא שחוזר בדוחות של שנים שונות. הפעל כשדור כותב "מה המבקר אמר על", "דוחות מבקר המדינה", "יש דוח מבקר על X", "מה כתוב בדוח המבקר", "המבקר בדק את", "אנגלמן", "ביקורת המדינה על". אזהרה מחייבת: פרק סרוק אין לו שכבת טקסט במאגר, ולכן גם בטקסט המלא אסור לטעון שדוח "אינו מזכיר" משהו בלי לפתוח את הדוח באתר. כל פריט הוא ליד לבדיקה מול הדוח באתר המבקר. לתיק חוצה-תחומים ראה osint-entity-dossier. כשדור מעלה דוח (PDF) ומבקש לכתוב ממנו אייטם - hamakom-source-to-item.
 ---
@@ -16,6 +16,7 @@ description: >-
 - **חוק הזהב:** אין אגרגציה ואין `LIKE` על טבלה גדולה בלי `WHERE` על עמודה מאונדקסת. שאילתה שנקטעה או שחרגה מהזמן (10 שניות) אינה "אין תוצאות".
 - **תאריכים.** רוב עמודות התאריך במאגר הן טקסט. `osint_date(col)` מחזיר מהן ISO (`YYYY-MM-DD`) בכל הפורמטים שבמאגר (ISO, `DD/MM/YYYY`, גם עם שעה), ומשווים מול `to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. `date('now', ...)` הוא SQLite: השרת מתרגם אותו בשקט, אבל מול המאגר ישירות הוא נכשל (`function date(unknown, unknown) does not exist`), ולכן כותבים את הצורה המפורשת שעובדת בכל מסלול. השוואה של עמודת טקסט ל-`CURRENT_DATE` נכשלת בכל מסלול (`operator does not exist: text >= date`).
 - **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין". המקור של ספריית הפרסומים הוא `source = 'mevaker_library_collector'`, ושל הודעות הדוברות `source = 'mevaker'`.
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 **לגוף מבוקר מסוים** - `search_entity("<שם הגוף>")` מחזיר בין השאר שורות מבקר, ו-`entity_profile` על המזהה שחזר מקבץ את המסמכים שקשורים לישות. השאילתות למטה הן לחיפוש בפרקים ובטקסט עצמו.
 

@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-knesset
-version: 1.4.0
+version: '1.5.0'
 description: פרופיילר כנסת מעל ה-osint-db עבור דסק "המקום הכי חם בגיהנום", בשלושה מצבים - (א) פרופיל ח"כ - search_entity(שם) ואז entity_profile("knesset.person.<PersonID>") לתפקידים, סיעות, חוקים שיזם, הצבעות ושאילתות, והעמקה ב-knesset_mk_positions, knesset_bill_initiators ו-knesset_mk_factions; (ב) מסלול הצעת חוק - legislation_history(שם או מספר) ליוזמים, להצבעות, לחוקים שתיקנה ולמסמכים, ו-knesset_bills לקוד הסטטוס; (ג) פירוק הצבעה - knesset_votes לפי תיאור הסעיף + ספירת בעד/נגד/נמנע, ופילוח לכל ח"כ דרך knesset_vote_options (תמיד עם vote_id ספציפי ו-gone_at IS NULL, כדי לא לסרוק כ-2.4 מיליון שורות). מציף הצבעות חוצות-סיעה ומפתיעות. הפעל כשדור כותב "פרופיל ח\"כ", "מה X הצביע", "איזה חוקים X יזם", "תפרק לי את ההצבעה", "מי בעד ומי נגד", "מה הסטטוס של החוק", "מי יזם את ההצעה". כל פריט הוא ליד לבדיקה מול אתר הכנסת - לא ממצא מאומת. לתיק חוצה-תחומים על אותו אדם ראה osint-entity-dossier.
 ---
 
@@ -19,6 +19,8 @@ WHERE status IN ('ok','warn')
 GROUP BY 1
 ```
 ריצה מוצלחת אינה בהכרח נתונים חדשים: בדוק גם `max(first_seen_at)` בטבלה עצמה.
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## עקרונות יסוד
 

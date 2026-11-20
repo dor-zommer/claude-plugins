@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-donations-crossref
-version: 1.2.0
+version: '1.3.0'
 description: הצלבת תרומות בחירות מול כסף ציבורי ורגולציה מעל ה-osint-db - לוקח תורם או מקבל מ-mevaker_donations ומצליב אותו מול פטורים ממכרז (exemptions), התקשרויות ממשלתיות (budget_contracts), תמיכות (budget_supports), תוכניות בנייה (mavat_plans, yosh_plans), דוחות מבקר, חקיקה, הצבעות וארכיון האתר. זה מה שהופך תרומה לסיפור. הפעל כשדור כותב "תצליב את התרומה", "האם התורם קיבל משהו", "מה הוא קיבל בתמורה", "תרומות מול מכרזים", "תרם וגם זכה", "מה יש לו מול המדינה", או אחרי שסקיל תרומות אחר החזיר שם מעניין. כל פריט הוא ליד לבדיקה מול המקור הרשמי, לא ממצא מאומת. לתורם בודד ראה osint-donor-profile; למקבל ראה osint-candidate-funding; לחריגות רוחביות ראה osint-donation-patterns.
 ---
 
@@ -18,6 +18,7 @@ description: הצלבת תרומות בחירות מול כסף ציבורי ו�
 - **פטורים:** בכל סכום של `exemptions.amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (הקצאות ותמורות של רשות מקרקעי ישראל) היא כסף שהמדינה מקבלת, לא הוצאה.
 - **שורה שירדה מהמקור** מסומנת ב-`gone_at` (כנסת) או ב-`removed_at` (רשם החברות). מסננים `IS NULL`.
 - **טריות:** לפני "אין במאגר" על מאגר מסוים, בדוק ב-`scrape_runs` שהמקור שלו רץ:
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
   ```sql
   SELECT source, max(started_at) FROM scrape_runs
   WHERE status IN ('ok','warn')

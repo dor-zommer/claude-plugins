@@ -1,12 +1,14 @@
 ---
-allowed-tools: mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__query_db
+allowed-tools: mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: checkid-holders
-version: 1.2.0
+version: '1.3.0'
 description: >-
   שליפת בעלי שליטה, מחזיקי מניות ודירקטורים של חברה פרטית מ-checkid.co.il, פר-ח.פ, דרך דפדפן אמיתי (השמות הגלויים חינם, לא הנסח בתשלום). הפעל כשדור נותן ח.פ או שם חברה ומבקש "מי הבעלים של", "מי מחזיק ב", "בעלי המניות של", "מי עומד מאחורי החברה X", "מי הדירקטורים", "checkid", או כשבתחקיר צריך לדעת מי שולט בחברה שאין עליה בעלי מניות בדאטה הפתוח. משלים את החוליה החסרה: רשם החברות (ica_companies ב-osint-db) לא מפרסם בעלי מניות. אחרי השליפה מחבר את החברה ואת השמות לתיק הישות ב-osint-db (entity_profile לח.פ, search_entity לכל שם). נקודתי בלבד - לא לבאלק.
 ---
 
 # checkid - בעלי שליטה ומניות פר-ח.פ
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## מה זה פותר
 

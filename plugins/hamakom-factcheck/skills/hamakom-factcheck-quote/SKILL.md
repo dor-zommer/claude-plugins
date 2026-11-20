@@ -1,13 +1,15 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status
 name: hamakom-factcheck-quote
-version: 1.1.0
+version: '1.2.0'
 description: אימות ציטוטים וייחוס אמירות עבור דסק "המקום הכי חם בגיהנום" - האם דמות ציבורית באמת אמרה X, מתי ובאיזה הקשר, או שהציטוט בודה, מיוחס בטעות, נקטע, או הוצא מהקשרו. מאתר את המקור הראשוני של האמירה (וידאו/אודיו של האירוע, תמליל רשמי, פרוטוקול כנסת, הקלטה) ובודק את הנוסח המדויק וההקשר המלא. הפעל כשדור מבקש "האם X אמר את זה", "מי אמר את המשפט הזה", "הציטוט הזה אמיתי?", "תמצא את המקור לאמירה", "זה הוצא מהקשר?", "מתי הוא אמר את זה", או שולח ציטוט מיוחס לבדיקה. לאימות מספרים - ראה hamakom-factcheck-data; לתוכן ויראלי כללי - hamakom-factcheck.
 ---
 
 # hamakom-factcheck-quote - אימות ציטוטים וייחוס
 
 סקיל לאימות אמירות עבור דסק "המקום הכי חם בגיהנום": האם נאמר, מי אמר, מתי, ובאיזה הקשר. התוצר הוא דוח דסק בעברית עם קישור למקור הראשוני של האמירה.
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## עקרונות יסוד
 

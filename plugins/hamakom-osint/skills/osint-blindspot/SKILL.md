@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-blindspot
-version: 1.2.0
+version: '1.3.0'
 description: איתור נקודות עיוורון בסיקור עבור דסק "המקום הכי חם בגיהנום" מעל ה-osint-db (news_headlines, כ-300 אלף כותרות מ-96 כלי תקשורת ב-15 מגזרים). מה עולה בתקשורת הערבית, החרדית, הדתי-לאומית, המקומית והזרה ולא מגיע למיינסטרים העברי - ומה מכל אלה לא סוקר אצלנו. רוב הכותרות שאינן בעברית מתורגמות לעברית (headline_he). כולל השוואה מול הודעות הדוברות הרשמיות (police_announcements, idf_spokesman) לזיהוי פער בין הגרסה הרשמית לדיווח בשטח. הפעל כשדור כותב "מה פספסנו", "בליינדספוט", "מה בתקשורת הערבית", "מה החרדים מדווחים", "מה לא סוקר", "מה עולה בזרה ולא כאן", "פערי סיקור", "מה מדווח בשטח מול הדובר". כל פריט הוא ליד לבדיקה מול המקור, לא ממצא מאומת. לבדיקה אם כבר כתבנו על נושא ראה osint-archive-check.
 ---
 
@@ -15,6 +15,7 @@ description: איתור נקודות עיוורון בסיקור עבור דסק
 - **חוק הזהב:** אין אגרגציה ואין `LIKE` על טבלה גדולה בלי `WHERE` על עמודה מאונדקסת. שאילתה שנקטעה או שחרגה מהזמן (10 שניות) אינה "אין תוצאות".
 - **תאריכים.** רוב עמודות התאריך במאגר הן טקסט. `osint_date(col)` מחזיר מהן ISO (`YYYY-MM-DD`) בכל הפורמטים שבמאגר (ISO, `DD/MM/YYYY`, גם עם שעה), ומשווים מול `to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. `date('now', ...)` הוא SQLite: השרת מתרגם אותו בשקט, אבל מול המאגר ישירות הוא נכשל (`function date(unknown, unknown) does not exist`), ולכן כותבים את הצורה המפורשת שעובדת בכל מסלול. השוואה של עמודת טקסט ל-`CURRENT_DATE` נכשלת בכל מסלול (`operator does not exist: text >= date`).
 - **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין". המקורות כאן: `news_rss_scraper` (הכותרות), `news_translate` (התרגום ל-`headline_he`), `police` (הודעות המשטרה) ו-`idf_spokesman_scraper` (דובר צה"ל).
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 לשם מסוים (אדם, מקום, ארגון) `search_entity("<שם>")` מחזיר, כשאין לשם ישות במודל, כרטיס זמני מתוך הכותרות שמזכירות אותו: ספירה לפי כלי ומגזר, טווח תאריכים, וחמש האחרונות עם קישור. זו נקודת פתיחה מהירה לפני השאילתות של מצב א.
 

@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-candidate-funding
-version: 1.2.0
+version: '1.3.0'
 description: מי מימן מועמד, ח"כ, ראש רשות, רשימה מקומית או מפלגה - פרופיל המימון מעל ה-osint-db, מתוך מאגר תרומות הבחירות של מבקר המדינה (mevaker_donations). מפלח לפי מערכות בחירות, מזהה תורמים גדולים וחוזרים, מפריד מימון עצמי, ומחשב ריכוזיות. הפעל כשדור כותב "מי מימן את X", "מי תרם ל-X", "תרומות שקיבל", "מאיפה הכסף של X", "פרופיל מימון", "כמה גייס", "מי מממן את הרשימה". כל פריט הוא ליד לבדיקה מול הפרסום הרשמי של מבקר המדינה, לא ממצא מאומת. לתיק על תורם בודד ראה osint-donor-profile; לחריגות רוחביות ראה osint-donation-patterns; להצלבה מול כסף ציבורי ראה osint-donations-crossref.
 ---
 
@@ -15,6 +15,7 @@ description: מי מימן מועמד, ח"כ, ראש רשות, רשימה מקו
 - את העמודות נותן `describe_table("mevaker_donations")`. לא מנחשים שם עמודה.
 - **הגבול הוא פלט, לא זמן.** הטבלה (112,396 שורות) מהירה: גם אגרגציה על כולה חוזרת בפחות משתי שניות, ויש אינדקס טריגרם על `donor_name`, `recipient`, `candidate_name` ו-`party`. מה שנחתך הוא הפלט: `query_db` מחזיר 100 שורות כברירת מחדל, ו-`LIMIT` בתוך ה-SQL לא מעלה את התקרה הזו. ליותר שורות מעבירים לכלי את הפרמטר `limit` (עד 500). ו-50 אלף התווים נגמרים לפני 500 השורות - שורה של 12 עמודות מהטבלה היא כ-280 תווים בממוצע, כך שבערך 175 שורות ממלאות את הפלט. "כהן" לבדו תואם 2,593 שורות.
 - **טריות:** לפני מסקנה של "אין במאגר", בדוק שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = 'mevaker_donations_scraper' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין".
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 - **הערכים בפועל** (נמדד 20.11.2026): `election_type` - `primaries` (51,835), `local` (46,078), `parties` (10,357), `regional` (3,818), `special` (308). `publication_type` - `תרומה` (107,898), `הלוואה` (3,557), `ערבות` (941). `is_deficit_coverage` הוא טקסט: `'True'` (1,289), `'False'`, או ריק. `publication_date` הוא טקסט ISO (YYYY-MM-DD), מ-2007 עד 2026.
 - **מלכודות:**
   - סדר השם ב-`donor_name` אינו עקבי ("כהן יצחק" מול "יצחק כהן").
