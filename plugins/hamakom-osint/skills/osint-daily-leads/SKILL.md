@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table
 name: osint-daily-leads
-version: '2.3.0'
+version: '2.3.1'
 description: דייג'סט בוקר של לידים תחקיריים - מה חדש ב-osint-db מאז הסריקה הקודמת - עבור דסק "המקום הכי חם בגיהנום". סורק את הפעולות של המדינה שמשנות מציאות - מעברי סטטוס בתכנון (yosh_status_history, mavat_status_history), החלטות ממשלה ורגולטורים, תזכירים, הצעות חוק, דוחות מבקר - ואת האותות (police_announcements, news_headlines). פטורים והתקשרויות אינם מקור ללידים. קובע את חלון הזמן מהריצה הקודמת (scrape_runs) או ברירת מחדל ל-24-48 השעות האחרונות, מעשיר כל מועמד מתוך המאגר עצמו, בודק שהוא לא פורסם, מדרג גם את העיתונות שלא פורסמה בעברית, ומדרג לפי הביט האמיתי של המקום. מתוכנן לרוץ כמשימה מתוזמנת בבוקר. הפעל כשדור כותב "לידים יומיים", "מה חדש במאגר", "תסרוק מה נכנס היום", "דייג'סט בוקר osint", "מה התחדש מאתמול", "תביא לי את הלידים של הבוקר". כל פריט הוא ליד לבדיקה עם עדיפות - לא ממצא מאומת; אימות מול ה-URL הרשמי לפני פרסום. לתיק על ישות ראה osint-entity-dossier;
 ---
 
