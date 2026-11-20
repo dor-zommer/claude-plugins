@@ -24,6 +24,7 @@ description: סריקה תחקירנית של פטורים ממכרז (התקש�
 - את העמודות נותן `describe_table("exemptions")`. לא מנחשים שם עמודה.
 - **כסף:** בכל סכום או דירוג של `amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (43,794 שורות, הקצאות ותמורות של רשות מקרקעי ישראל) היא כסף שהמדינה מקבלת, לא הוצאה.
 - **תאריכים:** `pub_date` ו-`update_date` הם טקסט בצורה DD/MM/YYYY. השוואה שלהם למחרוזת ISO היא השוואת טקסט ומחזירה זבל (`update_date >= '2026-11-06'` מחזיר 78,107 שורות), והשוואה ל-`date` נכשלת (`operator does not exist: text >= date`). לחלון זמן משתמשים ב-`pub_date_iso` (טקסט ISO) מול `to_char(CURRENT_DATE - N, 'YYYY-MM-DD')`. `osint_date(update_date)` עובד על שורה בודדת, אבל כתנאי על כל הטבלה הוא חורג מ-10 השניות.
+- **כסף בהתקשרויות:** `budget_contracts.volume` הוא במטבע של `currency`, ושורה `superseded` הוחלפה בדיווח מאוחר יותר. כל סכום הוא `SUM(volume * FX)` עם `superseded IS NOT TRUE`, לפי הנוסחה בתיאור של `query_db`. לעולם לא `SUM(volume)`.
 - **טריות:** לפני מסקנה של "אין במאגר", בדוק שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = 'exemptions' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין".
 - **שאילתה שנכשלה בזמן אינה "אין תוצאות".** הגבול הוא 10 שניות לשאילתה, 500 שורות ו-50 אלף תווים בפלט. `query_db` מחזיר 100 שורות כברירת מחדל, ו-`LIMIT` בתוך ה-SQL לא מעלה את התקרה הזו. ליותר שורות מעבירים לכלי את הפרמטר `limit` (עד 500).
 

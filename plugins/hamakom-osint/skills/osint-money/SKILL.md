@@ -50,6 +50,9 @@ GROUP BY 1
 
 **נקודות הכניסה המאונדקסות:** ב-`budget_contracts`: `publisher_name`, `entity_id`, `volume`, `order_id`. ב-`budget_supports`: `year`, `supporting_ministry`, `recipient_entity_id`, `amount_approved`.
 
+- **פטורים:** בכל סכום או דירוג של `exemptions.amount_ils` מסננים `amount_kind IS NULL`. שורה עם `amount_kind` (הקצאות ותמורות של רמ"י) היא תמורה שהמדינה מקבלת, לא הוצאה.
+- **שורה שירדה מהמקור** מסומנת ב-`gone_at` (כנסת) או ב-`removed_at` (רשם החברות, מאיה). מסננים `IS NULL`.
+
 ## מצב א - התקשרויות של משרד (budget_contracts)
 
 ```sql
