@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: hamakom-article-verify
-version: 1.1.0
+version: '1.2.0'
 description: >-
   אימות עובדתי והצלבה של טיוטת כתבה לפני פרסום עבור "המקום הכי חם בגיהנום" - בלי לערוך את הטקסט. מחלץ כל טענה עובדתית (מספרים, שמות, תאריכים, ציטוטים, טענות סיבתיות), בודק כל אחת מול מקור (WebSearch/WebFetch + osint-db), בוחן לוגיקה פנימית והצלבות, ומחזיר דוח אימות שמסמן כל טענה כמאומת / שגוי / לא אומת / דורש מקור - עם קישור-מקור והצעת תיקון כהערה לכותב. הסקיל לא נוגע בניסוח - לא Edit, לא Write, לא שכתוב. הפעל כשדור מבקש "תאמת את הכתבה", "בדוק עובדות בטיוטה", "תצליב את הטענות", "fact-check לכתבה", "מה לא מאומת בכתבה", "תבדוק את העובדות לפני פרסום". זה אימות בלבד - הוא לא עורך. לעריכה ראה dor-edit.
 ---
@@ -9,6 +9,8 @@ description: >-
 # hamakom-article-verify - אימות כתבה לפני פרסום (בלי לערוך)
 
 סקיל לאימות עובדתי של טיוטת כתבה ב"המקום הכי חם בגיהנום" לפני פרסום: חילוץ כל טענה, בדיקתה מול מקור, ובחינת ההיגיון הפנימי. התוצר הוא **דוח אימות** עם פסיקה וקישור-מקור לכל טענה. **הסקיל לא עורך את הכתבה** - הוא מאתר ומדווח, והתיקון נשאר בידי הכותב.
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## הכלל המרכזי - הסקיל לא נוגע בטקסט
 

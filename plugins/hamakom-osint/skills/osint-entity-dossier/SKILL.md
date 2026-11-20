@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-entity-dossier
-version: 1.3.0
+version: '1.4.0'
 description: בניית תיק מאוחד על אדם, חברה או משרד ממשלתי חוצה כל ה-osint-db עבור דסק "המקום הכי חם בגיהנום". מצליב שם אחד על פני החלטות ממשלה (decisions), מבקר המדינה (mevaker_chapters), תכנון ובנייה (mavat_plans, yosh_plans), חקיקה (legislation, knesset_bills), התקשרויות, פטורים ותמיכות (budget_contracts, exemptions, budget_supports), רשם החברות (ica_companies, ica_changes), נושאי משרה בחברות ציבוריות (maya_officers) ותרומות לבחירות (mevaker_donations). הנתיב הראשי הוא search_entity(name) לבחירת הישות, ואחריו entity_profile(id) שמחזיר את כל מה שמודל הישויות מקשר אליה, כולל סכומים; query_db רק למה שהפרופיל לא מחזיר. הפעל כשדור כותב "תבנה תיק על X", "מה יש לנו על חברת Y", "תצליב את השם הזה", "dossier", "מה הקשר של X לממשלה", "איפה השם הזה מופיע במאגר", "תעשה לי תחקיר רקע על". התוצר הוא תיק לפי סדר העניין (פעולות המדינה קודם), עם קישורי מקור ורשימת "מה לאמת בהמשך". התאמת שם אינה אישור זהות - כל פריט הוא ליד לבדיקה. לסריקת פטורים ייעודית ראה osint-exemptions; לפרופיל ח"כ מעמיק ראה osint-knesset.
 ---
 
@@ -19,6 +19,7 @@ description: בניית תיק מאוחד על אדם, חברה או משרד מ
 - **שורה שירדה מהמקור** מסומנת ב-`gone_at` (כנסת) או ב-`removed_at` (רשם החברות, מאיה). מסננים `IS NULL`.
 - **תאריכים טקסטואליים:** `yosh_plans.depositing_date` ו-`exemptions.update_date` הם DD/MM/YYYY; ממיינים ומשווים דרך `osint_date(col)` או העמודה ה-ISO (`exemptions.pub_date_iso`, `legislation.pub_date_iso`). `mavat_plans.depositing_date` הוא ISO (וריק ברוב השורות).
 - **טריות - לפני כל "אין במאגר":** בודקים שהמקור רץ. שמות המקורות ב-`scrape_runs` אינם שמות הטבלאות:
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
   ```sql
   SELECT source, max(started_at) AS last_ok FROM scrape_runs
   WHERE status IN ('ok','warn')

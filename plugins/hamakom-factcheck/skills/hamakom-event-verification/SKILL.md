@@ -1,13 +1,15 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: hamakom-event-verification
-version: 1.1.0
+version: '1.2.0'
 description: אימות דיווחים מרובי-אירועים עבור דסק "המקום הכי חם בגיהנום" - גלי אלימות, מבצעים, פשיטות, אסונות, מחאות, גלי פשיעה, או כל רשימת אירועי שטח ("X אירועים ב-Y שעות"). הצלבה אירוע-אירוע מול osint-db MCP (כ-300 אלף כותרות מ-96 כלי תקשורת + הודעות דוברות המשטרה ודובר צה"ל), סוכנויות רשמיות, תקשורת מקומית ובינלאומית וגופים בינלאומיים. התוצר הוא דוח אימות בלבד - לא כתבה. הפעל על "תאמת את האירועים", "תצליב את הרשימה", "תבדוק מה קרה ב-24 שעות", "כמה מזה אמיתי", או כל דיווח מרובה-אירועים שנשלח לבדיקה. לנתון מספרי בודד - hamakom-factcheck-data; לתוכן ויראלי - hamakom-factcheck; לכתיבת האייטם אחרי האימות - hamakom-source-to-item.
 ---
 
 # hamakom-event-verification - אימות דיווחים מרובי-אירועים
 
 מקבל דיווח שמונה שורת אירועים ("יותר מ-20 תקיפות ביממה", "גל פריצות בעשרה יישובים", "12 תקריות בגזרה") ומחזיר דוח אימות: מה אומת, ממי, מה נשאר דיווח יחיד, ומה התגלה בדרך. **הסקיל מסתיים בדוח האימות** - כתיבת הכתבה היא שלב נפרד (hamakom-source-to-item).
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## מקור הדאטה: osint-db MCP
 

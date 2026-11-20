@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-daily-leads
-version: '2.3.1'
+version: '2.4.0'
 description: דייג'סט בוקר של לידים תחקיריים - מה חדש ב-osint-db מאז הסריקה הקודמת - עבור דסק "המקום הכי חם בגיהנום". סורק את הפעולות של המדינה שמשנות מציאות - מעברי סטטוס בתכנון (yosh_status_history, mavat_status_history), החלטות ממשלה ורגולטורים, תזכירים, הצעות חוק, דוחות מבקר - ואת האותות (police_announcements, news_headlines). פטורים והתקשרויות אינם מקור ללידים. קובע את חלון הזמן מהריצה הקודמת (scrape_runs) או ברירת מחדל ל-24-48 השעות האחרונות, מעשיר כל מועמד מתוך המאגר עצמו, בודק שהוא לא פורסם, מדרג גם את העיתונות שלא פורסמה בעברית, ומדרג לפי הביט האמיתי של המקום. מתוכנן לרוץ כמשימה מתוזמנת בבוקר. הפעל כשדור כותב "לידים יומיים", "מה חדש במאגר", "תסרוק מה נכנס היום", "דייג'סט בוקר osint", "מה התחדש מאתמול", "תביא לי את הלידים של הבוקר". כל פריט הוא ליד לבדיקה עם עדיפות - לא ממצא מאומת; אימות מול ה-URL הרשמי לפני פרסום. לתיק על ישות ראה osint-entity-dossier;
 ---
 
@@ -81,6 +81,7 @@ new_since("police_announcements", since)
 - `budget_contracts`, `budget_supports`, `budget_items`, `budget_categories` - כולן נטענו ב-import חד-פעמי, וה-`first_seen_at` שלהן הוא שניות רצות של אותה טעינה. `new_since` עליהן יחזיר את כל הטבלה או כלום. הן מקור לתחקיר יזום (`osint-money`), לא לדייג'סט יומי.
 - `news_headlines`, `election_polls`, `wp_articles` - אין בהן `first_seen_at`, אבל **מאז 11.8.2026 `new_since` מזהה לבד את עמודת הזמן** (`scraped_at` וכדומה) ועובד עליהן. לזרימת החדשות עדיין עדיף הסקיל הנפרד (`osint-blindspot`), אבל `new_since` כאן אינו שגיאה.
 - `mevaker_reports` נשאר בלופ. **מאז 8.11.2026 היא תצוגה מעל ספריית הפרסומים** (migrations/mevaker_reports_unify.sql): הדוחות הישנים, ועוד כל פרסום שהאוסף `mevaker_library_collector.py` מוצא (פעם ביום, בקרון של 01:50 UTC). הארכיון שנטען בטעינה המלאה לא נכנס אליה, ולכן לא קופץ כחדש. לנושא של דוח חדש - שמות הפרקים שלו: `SELECT title, main_audited FROM mevaker_chapters WHERE page_no = <id>`. הטקסט בתצוגה הזו חתוך ב-20 אלף תווים; את הטקסט המלא של פרק קוראים ב-`mevaker_chapter_texts` (ראה osint-comptroller). ריק בדרך כלל אומר היעדר דוחות (המבקר מפרסם בגלים) ולא תקלה, וגם פיגור של עד יממה אינו תקלה; לפני שמכריזים על תקלה - `scrape_runs`.
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 **המנוע הוא Postgres, לא SQLite** (מאז 11.8.2026). שלוש מסקנות מעשיות:
 

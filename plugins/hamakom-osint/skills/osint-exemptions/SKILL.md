@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-exemptions
-version: 1.3.0
+version: '1.4.0'
 description: סריקה תחקירנית של פטורים ממכרז (התקשרויות ללא מכרז) עבור דסק "המקום הכי חם בגיהנום", מעל ה-osint-db (טבלת exemptions ומסמכי הפטורים המצורפים). מאתר את ההתקשרויות שראויות לבדיקה - ספק שחוזר שוב ושוב אצל אותו משרד או בכמה משרדים, ריכוז התקשרויות אצל מפרסם אחד, סכומים גדולים ביחס לגוף ולתקופה, ונימוק שלא מתיישב עם ההתקשרות. הפעל כשדור כותב "תבדוק פטורים", "פטור ממכרז חשוד", "מי הספק שחוזר", "כמה X קיבל בפטור", "פטורים גדולים החודש", "תסרוק פטורים של משרד Y", "מי מקבל הכי הרבה בלי מכרז". התוצר הוא לידים לבדיקה עם עדיפות - לא ממצא מאומת. כל ליד חייב אימות מול detail_url הרשמי לפני שהוא הופך לסיפור. לתיק מאוחד על ישות חוצה-מאגר ראה osint-entity-dossier; לדייג'סט יומי של פטורים חדשים ראה osint-daily-leads.
 ---
 
@@ -26,6 +26,7 @@ description: סריקה תחקירנית של פטורים ממכרז (התקש�
 - **תאריכים:** `pub_date` ו-`update_date` הם טקסט בצורה DD/MM/YYYY. השוואה שלהם למחרוזת ISO היא השוואת טקסט ומחזירה זבל (`update_date >= '2026-11-06'` מחזיר 78,107 שורות), והשוואה ל-`date` נכשלת (`operator does not exist: text >= date`). לחלון זמן משתמשים ב-`pub_date_iso` (טקסט ISO) מול `to_char(CURRENT_DATE - N, 'YYYY-MM-DD')`. `osint_date(update_date)` עובד על שורה בודדת, אבל כתנאי על כל הטבלה הוא חורג מ-10 השניות.
 - **כסף בהתקשרויות:** `budget_contracts.volume` הוא במטבע של `currency`, ושורה `superseded` הוחלפה בדיווח מאוחר יותר. כל סכום הוא `SUM(volume * FX)` עם `superseded IS NOT TRUE`, לפי הנוסחה בתיאור של `query_db`. לעולם לא `SUM(volume)`.
 - **טריות:** לפני מסקנה של "אין במאגר", בדוק שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = 'exemptions' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין".
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 - **שאילתה שנכשלה בזמן אינה "אין תוצאות".** הגבול הוא 10 שניות לשאילתה, 500 שורות ו-50 אלף תווים בפלט. `query_db` מחזיר 100 שורות כברירת מחדל, ו-`LIMIT` בתוך ה-SQL לא מעלה את התקרה הזו. ליותר שורות מעבירים לכלי את הפרמטר `limit` (עד 500).
 
 (נמדד 20.11.2026 על 212,875 שורות.) מפת המאגר המלאה, שנבנית מהמאגר: `references/db-map.md` בתיקיית התוסף.

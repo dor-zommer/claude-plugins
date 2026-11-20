@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-planning
-version: 1.3.0
+version: '1.4.0'
 description: לידים מתכנון ובנייה (מנהל התכנון / מבא"ת) בכל ישראל, מעל ה-osint-db (טבלת mavat_plans) עבור דסק "המקום הכי חם בגיהנום". מסנן לפי מחוז (district_name) ורשות/מרחב (plan_county_name), לפי תוכן מטרות (pl_objectives, pl_landuse_string), תוכניות שהופקדו לאחרונה או שעברו שלב (depositing_date, mavat_status_history), תוכניות גדולות בשטח (pl_area_dunam), ומספר יחידות דיור מתוכננות (quantity_delta_120/60/75/80). יש lat/lng למיפוי. הפעל כשדור כותב "תוכניות בנייה ב<מקום>", "מה הופקד לאחרונה", "תוכניות גדולות", "כמה יח\"ד מתוכננות ב", "מה מתוכנן ב<עיר>", "תוכניות דיור באזור". זהו התכנון של מוסדות התכנון בישראל (מבא"ת), כולל מזרח ירושלים ורמת הגולן - לתכנון ביו"ש/התנחלויות ראה osint-yosh-planning. כל תוכנית היא ליד לבדיקה מול pl_url הרשמי - לא ממצא מאומת. לתיק על יזם/חברה ראה osint-entity-dossier.
 ---
 
@@ -27,6 +27,7 @@ description: לידים מתכנון ובנייה (מנהל התכנון / מב�
 - **חוק הזהב:** אין אגרגציה ואין `LIKE` על טבלה גדולה בלי `WHERE` על עמודה מאונדקסת. שאילתה שנקטעה או שחרגה מהזמן (10 שניות) אינה "אין תוצאות".
 - **תאריכים.** רוב עמודות התאריך במאגר הן טקסט. `osint_date(col)` מחזיר מהן ISO (`YYYY-MM-DD`) בכל הפורמטים שבמאגר (ISO, `DD/MM/YYYY`, גם עם שעה), ומשווים מול `to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. `date('now', ...)` הוא SQLite: השרת מתרגם אותו בשקט, אבל מול המאגר ישירות הוא נכשל (`function date(unknown, unknown) does not exist`), ולכן כותבים את הצורה המפורשת שעובדת בכל מסלול. השוואה של עמודת טקסט ל-`CURRENT_DATE` נכשלת בכל מסלול (`operator does not exist: text >= date`).
 - **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין". המקור של `mavat_plans` הוא `source = 'mavat'`.
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 נקודות הכניסה המאונדקסות כאן: `district_name`, `plan_county_name`, `station_desc`, `osint_date(depositing_date)`.
 

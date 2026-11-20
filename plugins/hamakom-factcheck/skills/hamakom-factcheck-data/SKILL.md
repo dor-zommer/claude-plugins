@@ -1,13 +1,15 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__legislation_history mcp__plugin_hamakom-osint_osint-db__search_exemption_documents mcp__plugin_hamakom-osint_osint-db__read_exemption_documents mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: hamakom-factcheck-data
-version: 1.1.0
+version: '1.2.0'
 description: אימות טענות מספריות, סטטיסטיות וסקרים עבור דסק "המקום הכי חם בגיהנום" - מספרים, אחוזים, נתוני תקציב, סקרים, מגמות, ודירוגים. מאתר את המקור הראשוני (למ"ס, בנק ישראל, ביטוח לאומי, אגף התקציבים, הכנסת, מבקר המדינה, data.gov.il, וה-osint-db הפנימי) ובודק את המספר מולו, לא מול הסיקור המשני. הפעל כשדור שולח טענה עם מספר ומבקש "תאמת את הנתון", "האם נכון ש-X אחוז", "הסקר הזה אמין?", "מאיפה המספר הזה", "זה באמת עלה ב-Y%", "תבדוק את הסטטיסטיקה", "כמה זה באמת", או כל טענה כמותית שצריך לאשש מול מקור רשמי. לאימות תוכן ויראלי כללי (תמונות, סרטונים, מי פרסם ראשון) - ראה hamakom-factcheck.
 ---
 
 # hamakom-factcheck-data - אימות נתונים, סטטיסטיקה וסקרים
 
 סקיל לאימות טענות כמותיות עבור דסק "המקום הכי חם בגיהנום": האם המספר נכון, מאיזה מקור הוא בא, האם הוא מוצג בהקשר הנכון, ומה הוא לא אומר. התוצר הוא דוח דסק בעברית עם קישור-מקור לכל מספר.
+
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## עקרונות יסוד
 

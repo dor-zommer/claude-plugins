@@ -1,7 +1,7 @@
 ---
-allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since
+allowed-tools: Read Grep Glob Bash WebSearch WebFetch TaskCreate TaskUpdate mcp__plugin_hamakom-osint_osint-db__search_entity mcp__plugin_hamakom-osint_osint-db__entity_profile mcp__plugin_hamakom-osint_osint-db__describe_table mcp__plugin_hamakom-osint_osint-db__query_db mcp__plugin_hamakom-osint_osint-db__new_since mcp__plugin_hamakom-osint_osint-db__source_status mcp__plugin_hamakom-osint_osint-db__search_text
 name: osint-archive-check
-version: 1.3.0
+version: '1.4.0'
 description: >-
   בדיקת הארכיון של "המקום הכי חם בגיהנום" לפני שמתחילים תחקיר - מה כבר כתבנו על הנושא, על הגוף או על המקום. מעל ה-osint-db (wp_articles, 6,008 כתבות מ-2013 עד 8.11.2026 - הארכיון קפוא מאז שהאתר הוחלף; wp_article_locations, 487 שיוכי מקום עם קואורדינטות). שני שימושים: מניעת כפילות והמשכיות (מי כתב, מתי, ומה נשאר פתוח), וזיהוי פערי סיקור גיאוגרפיים - איפה סיקרנו הרבה ואיפה כמעט לא. מצליב מקום מול תוכניות בנייה (mavat_plans, yosh_plans) כדי לקשור ליד תכנוני לכתבה קיימת. הפעל כשדור כותב "כבר כתבנו על", "יש לנו כתבה על", "מה כתבנו על X", "בדוק בארכיון", "כתבנו על המקום הזה", "מה סיקרנו ב<מקום>", "יש המשך לכתבה", או לפני שהוא שולח כתב לתחקר ליד. מלכודת מחייבת: הגרשיים הוסרו מהכותרות במאגר. הארכיון הוא אינדקס, לא הכתבה - לפני הסתמכות יש לפתוח את ה-URL. לפערי סיקור מול כלי תקשורת אחרים ראה osint-blindspot.
 ---
@@ -18,6 +18,7 @@ description: >-
 - **חוק הזהב:** אין אגרגציה ואין `LIKE` על טבלה גדולה בלי `WHERE` על עמודה מאונדקסת. שאילתה שנקטעה או שחרגה מהזמן (10 שניות) אינה "אין תוצאות".
 - **תאריכים.** רוב עמודות התאריך במאגר הן טקסט. `osint_date(col)` מחזיר מהן ISO (`YYYY-MM-DD`) בכל הפורמטים שבמאגר (ISO, `DD/MM/YYYY`, גם עם שעה), ומשווים מול `to_char(CURRENT_DATE - 90,'YYYY-MM-DD')`. `date('now', ...)` הוא SQLite: השרת מתרגם אותו בשקט, אבל מול המאגר ישירות הוא נכשל (`function date(unknown, unknown) does not exist`), ולכן כותבים את הצורה המפורשת שעובדת בכל מסלול. השוואה של עמודת טקסט ל-`CURRENT_DATE` נכשלת בכל מסלול (`operator does not exist: text >= date`).
 - **טריות:** לפני מסקנה של "אין במאגר" בודקים שהמקור רץ: `SELECT source, max(started_at) FROM scrape_runs WHERE status IN ('ok','warn') AND source = '<מקור>' GROUP BY 1`. מקור שלא רץ הוא "לא נאסף", לא "אין". לארכיון אין מקור חי (ראה למעלה); בהצלבה מול תוכניות (מצב ג) המקורות הם `mavat` ו-`yosh`.
+- **לפני "אין במאגר" או "לא סוקר":** לקרוא ל-`source_status` (בלי שם, או עם שם הטבלה או העיתון). מקור קפוא, חסום, באיחור או בתקלה, ועיתון שהוסר, שותק או שאין לו כותרות, הם חוסר שלנו: לכתוב זאת במפורש, ולא להסיק שהדבר לא קרה.
 
 ## מגבלות הארכיון - קרא לפני שאתה מחפש
 

@@ -1,6 +1,6 @@
 {
   "name": "hamakom-factcheck",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "המקום פאקטצ'ק: אימות עבור 'המקום הכי חם בגיהנום', 7 סקילים. תוכן ויראלי ומקור ראשוני (hamakom-factcheck), נתונים וסטטיסטיקה (-data), ציטוטים וייחוס, כולל חיפוש בפרוטוקולי הכנסת (-quote), גיאולוקיישן וזמן (-geo), פורנזיקת תמונה ווידאו (-visual), אימות כתבה לפני פרסום בלי עריכת טקסט (hamakom-article-verify), ואימות רשימות אירועי שטח מול osint-db (hamakom-event-verification). סקילי הנתונים, הציטוטים והאירועים נשענים על osint-db (פלאגין hamakom-osint).",
   "dependencies": [
     "hamakom-osint"
